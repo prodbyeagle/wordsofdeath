@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import Dropdown from './Dropdown';
-import { User } from '@/types/types';
+import { User } from '@/types';
 
 const Navbar = () => {
    const [user, setUser] = useState<User | null>(null);

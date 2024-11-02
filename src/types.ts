@@ -10,9 +10,12 @@ export interface User {
 export interface Entry {
    _id: string;
    entry: string;
+   type: string;
    categories: string[];
    author: string;
+   authorId: string;
    timestamp: string;
+   variation: string[];
 }
 
 export interface TokenPayload {

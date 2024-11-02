@@ -37,7 +37,6 @@ app.use(session({
 
 app.use(express.json());
 
-// OAuth2 Endpunkt für Discord Login
 app.get('/auth/discord', (req, res) => {
    const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify`;
    res.redirect(discordAuthUrl);
@@ -48,7 +47,6 @@ app.get('/auth/discord/callback', async (req, res) => {
    if (!code) return res.status(400).send('Fehler: Kein Code erhalten.');
 
    try {
-      // Token von Discord abrufen
       const tokenResponse = await axios.post(
          'https://discord.com/api/oauth2/token',
          new URLSearchParams({
@@ -64,14 +62,12 @@ app.get('/auth/discord/callback', async (req, res) => {
 
       const { access_token } = tokenResponse.data;
 
-      // Benutzerinformationen abrufen
       const userInfoResponse = await axios.get('https://discord.com/api/users/@me', {
          headers: { Authorization: `Bearer ${access_token}` },
       });
 
       const { username, avatar, id } = userInfoResponse.data;
 
-      // Prüfen, ob Benutzer auf Whitelist steht
       const database = await connectDB();
       const userInWhitelist = await database.collection('whitelist').findOne({ username });
 
@@ -79,7 +75,6 @@ app.get('/auth/discord/callback', async (req, res) => {
          return res.status(403).send('Fehler: Benutzer nicht auf der Whitelist.');
       }
 
-      // Benutzer in "users" speichern, wenn nicht vorhanden
       const usersCollection = database.collection('users');
       const existingUser = await usersCollection.findOne({ id });
 
@@ -94,14 +89,12 @@ app.get('/auth/discord/callback', async (req, res) => {
       }
 
       // JWT erzeugen
-      const token = jwt.sign({ username, avatar }, JWT_SECRET, { expiresIn: '1d' });
+      const token = jwt.sign({ username, avatar, id }, JWT_SECRET, { expiresIn: '1d' });
 
       // JWT als Cookie setzen
-      res.cookie('wordsofdeath', token, {
-         httpOnly: true,
+      res.cookie('wod_token', token, {
          maxAge: 24 * 60 * 60 * 1000,
-         sameSite: 'none',
-         secure: false
+         sameSite: 'lax',
       });
       res.redirect('http://localhost:3000/');
    } catch (error) {
@@ -112,7 +105,7 @@ app.get('/auth/discord/callback', async (req, res) => {
 
 // Middleware zur Authentifizierung
 function authenticateToken(req, res, next) {
-   const token = req.cookies.wordsofdeath;  // Verwende hier das richtige Cookie
+   const token = req.cookies.wod_token;
    if (!token) return res.status(401).send('Nicht autorisiert.');
 
    jwt.verify(token, JWT_SECRET, (err, user) => {
@@ -125,12 +118,6 @@ function authenticateToken(req, res, next) {
 // Beispiel-Endpunkte, die nur mit Authentifizierung zugänglich sind
 app.get('/account', authenticateToken, async (req, res) => {
    res.send(`Willkommen, ${req.user.username}`);
-});
-
-app.get('/api/entries', authenticateToken, async (req, res) => {
-   const database = await connectDB();
-   const entries = await database.collection('entries').find().toArray();
-   res.json(entries);
 });
 
 // Server starten

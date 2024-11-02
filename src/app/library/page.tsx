@@ -1,14 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from "react";
-
-interface Entry {
-   _id: string;
-   entry: string;
-   categories: string[];
-   author: string;
-   timestamp: string;
-}
+import { Entry } from "@/types";
 
 const Library = () => {
    const [entries, setEntries] = useState<Entry[]>([]);
@@ -16,7 +9,7 @@ const Library = () => {
 
    useEffect(() => {
       const fetchEntries = async () => {
-         const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
+         const token = document.cookie.split('; ').find(row => row.startsWith('wod_token='))?.split('=')[1];
 
          if (!token) {
             setError("Authentifizierung fehlgeschlagen: Kein Token gefunden.");

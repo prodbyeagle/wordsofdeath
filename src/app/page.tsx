@@ -1,101 +1,63 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+import React, { useEffect, useState } from "react";
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+interface TokenPayload {
+   username: string;
+   // Füge hier weitere Eigenschaften hinzu, falls dein Token mehr Daten enthält
 }
+
+const Homepage = () => {
+   const [username, setUsername] = useState<string | null>(null);
+   const [greeting, setGreeting] = useState<string>("");
+
+   useEffect(() => {
+      // Alle Cookies auslesen
+      const cookies = document.cookie.split('; ');
+      console.log("Alle Cookies:", cookies); // Logge alle Cookies
+
+      // Token aus Cookies finden
+      const token = cookies.find(row => row.startsWith('wordsofdeath='));
+      if (token) {
+         const tokenValue = token.split('=')[1];
+         console.log("Token gefunden:", tokenValue); // Logge den gefundenen Token
+
+         try {
+            const decoded: TokenPayload = JSON.parse(atob(tokenValue.split('.')[1])); // Token ohne jwt-decode dekodieren
+            console.log("Dekodierte Daten:", decoded); // Logge die dekodierten Daten
+
+            setUsername(decoded.username);
+            setGreeting(getGreetingMessage());
+         } catch (error) {
+            console.error("Fehler beim Dekodieren des Tokens:", error); // Logge Fehler, falls die Dekodierung fehlschlägt
+         }
+      } else {
+         console.log("Kein Token gefunden."); // Logge, wenn kein Token vorhanden ist
+      }
+   }, []);
+
+   const getGreetingMessage = (): string => {
+      const currentHour = new Date().getHours();
+      if (currentHour < 12) {
+         return "Guten Morgen";
+      } else if (currentHour < 18) {
+         return "Guten Mittag";
+      } else {
+         return "Guten Abend";
+      }
+   };
+
+   return (
+      <div className="min-h-screen bg-zinc-800 text-white flex items-center justify-center">
+         <div className="max-w-3xl p-8 rounded-xl shadow-md border border-zinc-600 text-center">
+            <h1 className="text-4xl font-bold mb-4">{greeting}, {username}!</h1>
+            <p className="text-lg mb-6">Eine Plattform zum Speichern und Durchsuchen von Wörtern und Sätzen, exklusiv für Discord-Nutzer.</p>
+            <button className="bg-zinc-600 hover:bg-zinc-500 text-white font-semibold py-2 px-4 rounded-md shadow-md transition duration-200">
+               Jetzt Starten
+            </button>
+         </div>
+      </div>
+   );
+};
+
+export default Homepage;

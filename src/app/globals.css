@@ -8,7 +8,6 @@
 
 :root {
    font-family: 'Space Grotesk', Tahoma, Geneva, Verdana, sans-serif;
-   user-select: none;
 }
 .eagle-text {
    background-clip: text;

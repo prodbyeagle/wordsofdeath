@@ -16,7 +16,6 @@ const UserProfile = async ({ params }: { params: { username: string } }) => {
    if (user) {
       try {
          entries = await getEntriesByUser(user.username);
-         console.log("Einträge für Benutzer:", username, entries); // Logging der abgerufenen Einträge
       } catch (error) {
          console.error("Fehler beim Abrufen der Einträge:", error);
       }

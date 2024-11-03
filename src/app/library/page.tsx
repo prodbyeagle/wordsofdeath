@@ -3,7 +3,7 @@
 
 import React, { useEffect, useState } from "react";
 import Image from 'next/image';
-import type { Entry, User, TokenPayload } from "@/types";
+import type { Entry, User } from "@/types";
 import Modal from "@/components/Modal";
 
 const Library = () => {
@@ -15,10 +15,10 @@ const Library = () => {
    const [entryType, setEntryType] = useState<string>('word');
    const [categories, setCategories] = useState<string>('');
    const [variation, setVariation] = useState<string>('');
-   const [user, setUser] = useState<User | null>(null);
+   const [user, setUser] = useState<User | null>(null); // user State beibehalten
 
-   const getAvatarUrl = (id: string, avatar: string): string => {
-      return `https://cdn.discordapp.com/avatars/${id}/${avatar}.png`;
+   const getAvatarUrl = (user: User | null): string => {
+      return user ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` : '/placeholder-avatar.png';
    };
 
    useEffect(() => {
@@ -30,8 +30,8 @@ const Library = () => {
       }
 
       try {
-         const payload = JSON.parse(atob(token.split('.')[1])) as TokenPayload;
-         setUser({ id: payload.username, avatar: payload.avatar, username: payload.username, joined_at: "" });
+         const payload = JSON.parse(atob(token.split('.')[1])) as User;
+         setUser(payload); // User-Objekt aus dem Token setzen
       } catch (error) {
          setError("[SERVER]: Fehler beim Verarbeiten des Tokens.");
       }
@@ -127,25 +127,32 @@ const Library = () => {
             ) : error ? (
                <div className="text-red-500 text-center text-lg font-medium">{error}</div>
             ) : (
-               <ul className="space-y-4 max-h-80 overflow-y-scroll">
+               <ul className="space-y-4 max-h-200 overflow-y-scroll">
                   {entries.map(entry => (
-                     <li key={entry._id || entry.timestamp} className="bg-zinc-700 p-4 rounded-lg shadow-md flex items-center space-x-4">
-                        <strong className="block text-xl font-semibold text-white">{entry.entry}</strong>
-                        <div className="flex items-center">
+                     <li key={entry._id || entry.timestamp} className="bg-zinc-700 p-4 rounded-lg shadow-md flex flex-col md:flex-row items-start md:items-center space-x-4">
+                        <div className="flex items-center space-x-2 mb-2 md:mb-0">
                            <Image
-                              src={user ? getAvatarUrl(user.id, user.avatar) : '/placeholder-avatar.png'}
+                              src={getAvatarUrl(user)}
                               alt={`${entry.author}'s Avatar`}
-                              width={32}
-                              height={32}
-                              className="rounded-full mr-2"
+                              width={40}
+                              height={40}
+                              className="rounded-full border border-zinc-600"
                            />
-                           <span className="text-gray-300">Autor: {entry.author}</span>
+                           <span className="text-white font-bold text-sm">@{entry.author}</span>
                         </div>
-                        <div className="text-gray-400">Kategorien: {entry.categories?.join(", ") || "Keine Kategorien"}</div>
-                        <div className="text-gray-400">Variationen: {entry.variation?.join(", ") || "Keine Variationen"}</div>
+                        <div className="flex-1">
+                           <strong className="block text-lg font-semibold text-white">{entry.entry}</strong>
+                           {entry.categories && entry.categories.length > 0 && (
+                              <div className="text-gray-400 mt-1">Kategorien: {entry.categories.join(", ")}</div>
+                           )}
+                           {entry.variation && entry.variation.length > 0 && (
+                              <div className="text-gray-400">Variationen: {entry.variation.join(", ")}</div>
+                           )}
+                        </div>
                      </li>
                   ))}
                </ul>
+
             )}
          </div>
 

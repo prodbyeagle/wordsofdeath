@@ -1,7 +1,7 @@
 import express from 'express';
 import session from 'express-session';
 import jwt from 'jsonwebtoken';
-import { MongoClient } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import axios from 'axios';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
@@ -17,7 +17,7 @@ async function connectDB() {
    if (!db) {
       await client.connect();
       db = client.db("wordsofdeath");
-      console.log("[SERVER]: Datenbank verbunden und Whitelist initialisiert.");
+      console.log("[SERVER]: Database connected and whitelist initialized.");
    }
    return db;
 }
@@ -29,7 +29,7 @@ const DISCORD_CLIENT_SECRET = process.env.DISCORD_CLIENT_SECRET;
 const REDIRECT_URI = `${process.env.SERVER_URL}/auth/discord/callback`;
 const corsOptions = {
    origin: 'http://localhost:3000',
-   credentials: true,    
+   credentials: true,
 };
 
 app.use(cookieParser());
@@ -43,30 +43,30 @@ app.use(express.json());
 app.use(cors(corsOptions));
 
 /**
- * Authentifiziert den Benutzer über Discord und leitet ihn zurück zur Anwendung.
+ * Authenticates the user via Discord and redirects back to the application.
  * @param {express.Request} req 
  * @param {express.Response} res 
  */
 app.get('/auth/discord', (req, res) => {
    const discordAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=code&scope=identify`;
-   console.log("[SERVER]: Benutzer wird zur Discord Authentifizierungsseite umgeleitet.");
+   console.error("[SERVER]: Redirecting user to Discord authentication page.");
    res.redirect(discordAuthUrl);
 });
 
 /**
- * Callback-Route für Discord OAuth2. Authentifiziert den Benutzer und erstellt ein JWT.
+ * Callback route for Discord OAuth2. Authenticates the user and creates a JWT.
  * @param {express.Request} req 
  * @param {express.Response} res 
  */
 app.get('/auth/discord/callback', async (req, res) => {
    const { code } = req.query;
    if (!code) {
-      console.log("[SERVER]: Fehler - Kein Code erhalten.");
-      return res.status(400).send('Fehler: Kein Code erhalten.');
+      console.error("[SERVER]: Error - No code received.");
+      return res.status(400).send('Error: No code received.');
    }
 
    try {
-      console.log("[SERVER]: Versuche, Token von Discord zu erhalten...");
+      // console.log("[SERVER]: Attempting to obtain token from Discord...");
       const tokenResponse = await axios.post(
          'https://discord.com/api/oauth2/token',
          new URLSearchParams({
@@ -82,7 +82,7 @@ app.get('/auth/discord/callback', async (req, res) => {
 
       const { access_token } = tokenResponse.data;
 
-      console.log("[SERVER]: Token erhalten, Benutzerinformationen werden abgerufen...");
+      // console.log("[SERVER]: Token obtained, retrieving user information...");
       const userInfoResponse = await axios.get('https://discord.com/api/users/@me', {
          headers: { Authorization: `Bearer ${access_token}` },
       });
@@ -93,8 +93,8 @@ app.get('/auth/discord/callback', async (req, res) => {
       const userInWhitelist = await database.collection('whitelist').findOne({ username });
 
       if (!userInWhitelist) {
-         console.log("[SERVER]: Fehler - Benutzer nicht auf der Whitelist.");
-         return res.status(403).send('Fehler: Benutzer nicht auf der Whitelist.');
+         console.warn("[SERVER]: Error - User not on the whitelist.");
+         return res.status(403).send('Error: User not on the whitelist.');
       }
 
       const usersCollection = database.collection('users');
@@ -107,7 +107,7 @@ app.get('/auth/discord/callback', async (req, res) => {
             avatar,
             joined_at: new Date(),
          });
-         console.log(`[SERVER]: Benutzer ${username} zur Datenbank hinzugefügt.`);
+         // console.log(`[SERVER]: User ${username} added to the database.`);
       }
 
       const token = jwt.sign({ username, avatar, id }, JWT_SECRET, { expiresIn: '1d' });
@@ -115,16 +115,16 @@ app.get('/auth/discord/callback', async (req, res) => {
          maxAge: 24 * 60 * 60 * 1000,
          sameSite: 'lax',
       });
-      console.log("[SERVER]: Benutzer erfolgreich authentifiziert und zur Anwendung umgeleitet.");
+      console.log("[SERVER]: User successfully authenticated and redirected to the application.");
       res.redirect('http://localhost:3000/');
    } catch (error) {
-      console.error('[SERVER]: Fehler bei der Discord Authentifizierung:', error);
-      res.status(500).send('Fehler bei der Authentifizierung');
+      console.error('[SERVER]: Error during Discord authentication:', error);
+      res.status(500).send('Error during authentication');
    }
 });
 
 /**
- * Middleware zur Authentifizierung des Tokens.
+ * Middleware to authenticate the token.
  * @param {express.Request} req 
  * @param {express.Response} res 
  * @param {express.NextFunction} next 
@@ -133,23 +133,22 @@ function authenticateToken(req, res, next) {
    const authHeader = req.headers.authorization;
    const token = authHeader && authHeader.split(' ')[1];
    if (!token) {
-      console.log("[SERVER]: Fehler - Kein Token im Authorization-Header.");
-      return res.status(401).send('Nicht autorisiert.');
+      console.error("[SERVER]: Error - No token in Authorization header.");
+      return res.status(401).send('Unauthorized.');
    }
 
    jwt.verify(token, JWT_SECRET, (err, user) => {
       if (err) {
-         console.log("[SERVER]: Fehler - Token ungültig.");
-         return res.status(403).send('Token ungültig.');
+         console.error("[SERVER]: Error - Invalid token.");
+         return res.status(403).send('Invalid token.');
       }
       req.user = user;
       next();
    });
 }
 
-
 /**
- * POST-Endpunkt zum Erstellen eines neuen Eintrags.
+ * POST endpoint to create a new entry.
  * @param {express.Request} req 
  * @param {express.Response} res 
  */
@@ -158,8 +157,8 @@ app.post('/api/entries', authenticateToken, async (req, res) => {
    const { entry, type, categories, variation } = req.body;
 
    if (!entry || !type || !categories || !variation) {
-      console.log("[SERVER]: Fehler - Alle Felder müssen ausgefüllt sein.");
-      return res.status(400).send('Fehler: Alle Felder müssen ausgefüllt sein.');
+      console.log("[SERVER]: Error - All fields must be filled.");
+      return res.status(400).send('Error: All fields must be filled.');
    }
 
    const newEntry = {
@@ -175,32 +174,33 @@ app.post('/api/entries', authenticateToken, async (req, res) => {
    try {
       const database = await connectDB();
       const result = await database.collection('entries').insertOne(newEntry);
-      console.log(`[SERVER]: Neuer Eintrag erstellt: ${entry} (ID: ${result.insertedId})`);
-      res.status(201).send({ message: 'Eintrag erfolgreich erstellt', entryId: result.insertedId });
+      console.log(`[SERVER]: New entry created: ${entry} (ID: ${result.insertedId})`);
+      res.status(201).send({ message: 'Entry successfully created', entryId: result.insertedId });
    } catch (error) {
-      console.error('[SERVER]: Fehler beim Erstellen des Eintrags:', error);
-      res.status(500).send('Fehler beim Erstellen des Eintrags.');
+      console.error('[SERVER]: Error creating the entry:', error);
+      res.status(500).send('Error creating the entry.');
    }
 });
 
 app.post('/api/whitelist', authenticateToken, async (req, res) => {
    const { username } = req.body;
    if (!username) {
-      return res.status(400).send('Benutzername ist erforderlich.');
+      return res.status(400).send('Username is required.');
    }
 
    try {
       const database = await connectDB();
       const existingUser = await database.collection('whitelist').findOne({ username });
       if (existingUser) {
-         return res.status(400).send('Benutzer ist bereits auf der Whitelist.');
+         return res.status(400).send('User is already on the whitelist.');
       }
 
-      const result = await database.collection('whitelist').insertOne({ username });
-      res.status(201).send({ id: result.insertedId, username });
+      const result = await database.collection('whitelist').insertOne({ username, added_at: new Date() });
+
+      res.status(201).send({ id: result.insertedId, username, added_at: new Date() });
    } catch (error) {
-      console.error('[SERVER]: Fehler beim Hinzufügen des Benutzers zur Whitelist:', error);
-      res.status(500).send('Fehler beim Hinzufügen des Benutzers zur Whitelist.');
+      console.error('[SERVER]: Error adding user to whitelist:', error);
+      res.status(500).send('Error adding user to whitelist.');
    }
 });
 
@@ -210,31 +210,31 @@ app.get('/api/whitelist', authenticateToken, async (req, res) => {
       const users = await database.collection('whitelist').find({}).toArray();
       res.status(200).json(users);
    } catch (error) {
-      console.error('[SERVER]: Fehler beim Abrufen der Whitelist-Benutzer:', error);
-      res.status(500).send('Fehler beim Abrufen der Whitelist-Benutzer.');
+      console.error('[SERVER]: Error retrieving whitelist users:', error);
+      res.status(500).send('Error retrieving whitelist users.');
    }
 });
 
 app.delete('/api/whitelist/:username', authenticateToken, async (req, res) => {
-   const username = req.params.username; // username ist jetzt der Parameter
+   const username = req.params.username;
 
    try {
       const database = await connectDB();
       const result = await database.collection('whitelist').deleteOne({ username });
 
       if (result.deletedCount === 0) {
-         return res.status(404).json({ message: "Benutzer nicht gefunden." });
+         return res.status(404).json({ message: "User not found." });
       }
 
-      res.status(200).json({ message: "Benutzer erfolgreich entfernt." });
+      res.status(200).json({ message: "User successfully removed." });
    } catch (error) {
-      console.error('[SERVER]: Fehler beim Entfernen des Benutzers von der Whitelist:', error);
-      res.status(500).json({ message: "Interner Serverfehler." });
+      console.error('[SERVER]: Error removing user from whitelist:', error);
+      res.status(500).json({ message: "Internal server error." });
    }
 });
 
 /**
- * GET-Endpunkt zum Abrufen aller Einträge.
+ * GET endpoint to retrieve all entries.
  * @param {express.Request} req 
  * @param {express.Response} res 
  */
@@ -243,11 +243,11 @@ app.get('/api/entries', authenticateToken, async (req, res) => {
       const database = await connectDB();
       const entries = await database.collection('entries').find({}).toArray();
 
-      console.log(`[SERVER]: ${entries.length} Einträge wurden abgerufen.`);
+      console.log(`[SERVER]: ${entries.length} entries retrieved.`);
       res.status(200).json(entries);
    } catch (error) {
-      console.error('[SERVER]: Fehler beim Abrufen der Einträge:', error);
-      res.status(500).send('Fehler beim Abrufen der Einträge.');
+      console.error('[SERVER]: Error retrieving entries:', error);
+      res.status(500).send('Error retrieving entries.');
    }
 });
 
@@ -255,25 +255,19 @@ app.delete('/api/entries/:id', authenticateToken, async (req, res) => {
    const entryId = req.params.id;
    try {
       const database = await connectDB();
-      const result = await database.collection('entries').deleteOne({ _id: new MongoClient.ObjectId(entryId) });
+      const result = await database.collection('entries').deleteOne({ _id: new ObjectId(entryId) });
 
       if (result.deletedCount === 0) {
-         return res.status(404).send('Eintrag nicht gefunden.');
+         return res.status(404).send('Entry not found.');
       }
 
-      res.status(200).send('Eintrag erfolgreich gelöscht.');
+      res.status(200).send('Entry successfully deleted.');
    } catch (error) {
-      console.error('[SERVER]: Fehler beim Löschen des Eintrags:', error);
-      res.status(500).send('Fehler beim Löschen des Eintrags.');
+      console.error('[SERVER]: Error deleting entry:', error);
+      res.status(500).send('Error deleting entry.');
    }
 });
 
-// Die App startet und hört auf dem angegebenen Port
 app.listen(PORT, () => {
-   console.log(`[SERVER]: Server läuft auf http://localhost:${PORT}`);
+   console.log(`[SERVER]: Listening on port ${PORT}`);
 });
-
-export default app;
-
-// Verbinden mit der Datenbank bei Serverstart
-connectDB().catch(console.error);

@@ -27,6 +27,7 @@ const Navbar = () => {
             avatar: decoded.avatar,
             id: decoded.id,
             joined_at: decoded.joined_at, // does not exist in the JWT payload.
+            roles: decoded.roles, // does not exist in the JWT payload.
          });
       }
    }, []);
@@ -60,11 +61,17 @@ const Navbar = () => {
                />
                <Dropdown isOpen={dropdownOpen} toggleDropdown={toggleDropdown}>
                   <>
-                     <Link href="/settings" className="block px-4 py-2 text-sm text-gray-200 hover:bg-zinc-600 duration-100 transition-all">
-                        Einstellungen
+                     <Link href={`/library`} className="block px-4 py-2 text-sm text-gray-200 hover:bg-zinc-600 duration-100 transition-all">
+                        + Neuer Eintrag
                      </Link>
+                     {/* <Link href="/settings" className="block px-4 py-2 text-sm text-gray-200 hover:bg-zinc-600 duration-100 transition-all">
+                        Einstellungen
+                     </Link> */}
                      <Link href={`/u/${user.username}`} className="block px-4 py-2 text-sm text-gray-200 hover:bg-zinc-600 duration-100 transition-all">
                         Konto
+                     </Link>
+                     <Link href={`/dashboard`} className="block px-4 py-2 text-sm text-gray-200 hover:bg-zinc-600 duration-100 transition-all">
+                        Dashboard
                      </Link>
                      <button
                         className="block w-full text-left text-sm px-4 py-2 text-red-600 hover:bg-red-600/30 duration-100 transition-all"
@@ -72,9 +79,6 @@ const Navbar = () => {
                      >
                         Ausloggen
                      </button>
-                     <div className="block px-4 py-2 text-sm text-gray-400 cursor-default opacity-50">
-                        Neuer Eintrag
-                     </div>
                   </>
                </Dropdown>
             </div>

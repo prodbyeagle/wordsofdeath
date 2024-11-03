@@ -142,7 +142,6 @@ const Dashboard: React.FC = () => {
             throw new Error(errorData.message || "Fehler beim Entfernen des Benutzers.");
          }
 
-         console.log("Benutzer erfolgreich entfernt.");
          setWhitelistedUsers(prev => prev.filter(user => user.username !== username));
          setError({ type: 'info', message: "Benutzer erfolgreich entfernt." });
       } catch (error) {

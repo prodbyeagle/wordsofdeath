@@ -22,7 +22,7 @@ const Dashboard: React.FC = () => {
 
       const fetchUserStatus = async () => {
          try {
-            const response = await fetch("http://localhost:3001/api/check-admin", {
+            const response = await fetch("https://wordsofdeath-backend.vercel.app/api/check-admin", {
                method: 'GET',
                headers: { 'Authorization': `Bearer ${token}` },
             });
@@ -50,11 +50,11 @@ const Dashboard: React.FC = () => {
       const fetchUsersAndEntries = async () => {
          try {
             const [usersResponse, entriesResponse] = await Promise.all([
-               fetch("http://localhost:3001/api/whitelist", {
+               fetch("https://wordsofdeath-backend.vercel.app/api/whitelist", {
                   method: 'GET',
                   headers: { 'Authorization': `Bearer ${token}` },
                }),
-               fetch("http://localhost:3001/api/entries", {
+               fetch("https://wordsofdeath-backend.vercel.app/api/entries", {
                   method: 'GET',
                   headers: { 'Authorization': `Bearer ${token}` },
                }),
@@ -94,7 +94,7 @@ const Dashboard: React.FC = () => {
       }
 
       try {
-         const response = await fetch("http://localhost:3001/api/whitelist", {
+         const response = await fetch("https://wordsofdeath-backend.vercel.app/api/whitelist", {
             method: "POST",
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: newUser }),
@@ -129,7 +129,7 @@ const Dashboard: React.FC = () => {
       }
 
       try {
-         const response = await fetch(`http://localhost:3001/api/whitelist/${username}`, {
+         const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/whitelist/${username}`, {
             method: "DELETE",
             headers: {
                'Authorization': `Bearer ${token}`,
@@ -159,7 +159,7 @@ const Dashboard: React.FC = () => {
       }
 
       try {
-         const response = await fetch(`http://localhost:3001/api/entries/${entryId}`, {
+         const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/entries/${entryId}`, {
             method: "DELETE",
             headers: { 'Authorization': `Bearer ${token}` },
          });

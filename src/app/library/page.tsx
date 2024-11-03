@@ -47,7 +47,7 @@ const Library = () => {
          }
 
          try {
-            const response = await fetch('http://localhost:3001/api/entries', {
+            const response = await fetch('https://wordsofdeath-backend.vercel.app/api/entries', {
                method: 'GET',
                headers: { 'Authorization': `Bearer ${token}` },
             });
@@ -78,7 +78,7 @@ const Library = () => {
       }
 
       try {
-         const response = await fetch('http://localhost:3001/api/entries', {
+         const response = await fetch('https://wordsofdeath-backend.vercel.app/api/entries', {
             method: 'POST',
             headers: {
                'Authorization': `Bearer ${token}`,
@@ -128,7 +128,7 @@ const Library = () => {
                <div className="text-red-500 text-center text-lg font-medium">{error}</div>
             ) : (
                <ul className="space-y-4 max-h-200 overflow-y-scroll">
-                        {entries.map((entry, index) => (
+                  {entries.map((entry, index) => (
                      <li key={entry._id || entry.timestamp || index} className="bg-zinc-700 p-4 rounded-lg shadow-md flex flex-col md:flex-row items-start md:items-center space-x-4">
                         <div className="flex items-center space-x-2 mb-2 md:mb-0">
                            <Image

@@ -5,6 +5,7 @@ export interface User {
    username: string;
    avatar: string;
    joined_at: string;
+   roles: string[];
 }
 
 export interface Entry {

@@ -1,14 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import { TokenPayload } from "@/types";
+import { TokenPayload, Entry } from "@/types";
 import Link from 'next/link';
-
-interface Entry {
-   entry: string;
-   author: string;
-   timestamp: string;
-}
 
 const Homepage = () => {
    const [username, setUsername] = useState<string | null>(null);
@@ -18,13 +12,11 @@ const Homepage = () => {
 
    useEffect(() => {
       const cookies = document.cookie.split('; ');
-
       const token = cookies.find(row => row.startsWith('wod_token='));
       if (token) {
          const tokenValue = token.split('=')[1];
          try {
             const decoded: TokenPayload = JSON.parse(atob(tokenValue.split('.')[1]));
-
             setUsername(decoded.username);
             setGreeting(getGreetingMessage());
             setIsLoggedIn(true);
@@ -40,11 +32,11 @@ const Homepage = () => {
    const getGreetingMessage = (): string => {
       const currentHour = new Date().getHours();
       if (currentHour < 12) {
-         return "Good morning";
+         return "Guten Morgen";
       } else if (currentHour < 18) {
-         return "Good afternoon";
+         return "Guten Tag";
       } else {
-         return "Good evening";
+         return "Guten Abend";
       }
    };
 
@@ -68,40 +60,61 @@ const Homepage = () => {
       }
    };
 
+   const getRelativeTime = (timestamp: string): string => {
+      const now = new Date();
+      const entryTime = new Date(timestamp);
+      const secondsAgo = Math.floor((now.getTime() - entryTime.getTime()) / 1000);
+
+      if (secondsAgo < 60) return `${secondsAgo} seconds ago`;
+      const minutesAgo = Math.floor(secondsAgo / 60);
+      if (minutesAgo < 60) return `${minutesAgo} minutes ago`;
+      const hoursAgo = Math.floor(minutesAgo / 60);
+      if (hoursAgo < 24) return `${hoursAgo} hours ago`;
+      const daysAgo = Math.floor(hoursAgo / 24);
+      if (daysAgo < 30) return `${daysAgo} days ago`;
+      const monthsAgo = Math.floor(daysAgo / 30);
+      if (monthsAgo < 12) return `${monthsAgo} months ago`;
+      const yearsAgo = Math.floor(monthsAgo / 12);
+      return `${yearsAgo} years ago`;
+   };
+
    return (
-      <div className="min-h-screen bg-zinc-800 text-white flex flex-col items-center justify-center">
-         <div className="max-w-3xl bg-zinc-900 p-8 rounded-xl shadow-md border border-zinc-600 text-center mb-8">
+      <div className="min-h-screen bg-zinc-800 text-white flex flex-col items-center py-10">
+         <div className="max-w-2xl bg-zinc-900 p-8 rounded-xl shadow-lg border border-zinc-600 text-center mb-10 w-full">
             {isLoggedIn ? (
                <>
-                  {/* <h1 className="text-4xl font-bold mb-4">{greeting}, {username}!</h1>
-                  <p className="text-lg">A platform to store and search words and sentences, exclusively for Discord users.</p> */}
-                  {/* <button className="bg-zinc-600 hover:bg-zinc-500 text-white font-semibold py-2 px-4 rounded-md shadow-md transition duration-200">
-                     Get Started
-                  </button> */}
+                  <h1 className="text-4xl font-semibold mb-2">{greeting}, {username}!</h1>
+                  <p className="text-lg text-zinc-400 mb-6">Willkommen zurück! Hier ist dein persönlicher Feed.</p>
                </>
             ) : (
                <>
-                  <h1 className="text-4xl font-bold mb-4">You are not logged in!</h1>
-                  <p className="text-lg mb-6">Please sign in to use the platform.</p>
+                  <h1 className="text-4xl font-bold mb-4">Du bist nicht eingeloggt!</h1>
+                  <p className="text-lg text-zinc-400 mb-6">Bitte melde dich an, um die Plattform zu nutzen.</p>
                   <Link href="/signin">
-                     <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md shadow-md transition duration-200">
-                        Sign In
+                     <button className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-md shadow-md transition duration-200">
+                        Anmelden
                      </button>
                   </Link>
                </>
             )}
          </div>
 
-         <div className="max-w-3xl bg-zinc-900 p-4 rounded-xl shadow-md border border-zinc-600 text-left">
-            <h2 className="text-2xl font-bold mb-4">Feed</h2>
-            <ul>
+         <div className="max-w-2xl w-full">
+            <h2 className="text-3xl font-bold mb-6 text-center">Feed</h2>
+            <div className="space-y-6">
                {entries.map((entry) => (
-                  <li key={entry.timestamp} className="border-b border-zinc-600 py-2">
-                     <p className="text-lg">{entry.entry}</p>
-                     <p className="text-sm text-zinc-400">By {entry.author} on {new Date(entry.timestamp).toLocaleString()}</p>
-                  </li>
+                  <div key={entry.timestamp} className="bg-zinc-700 p-6 rounded-lg shadow-md border border-zinc-600 hover:scale-[1.02] transition-transform">
+                     <p className="text-lg font-medium mb-2">{entry.entry}</p>
+                     <div className="text-sm text-zinc-400 flex justify-between">
+                        <span>Von {entry.author}</span>
+                        <span>{getRelativeTime(entry.timestamp)}</span>
+                     </div>
+                  </div>
                ))}
-            </ul>
+               {entries.length === 0 && (
+                  <p className="text-center text-zinc-500">Noch keine Einträge vorhanden.</p>
+               )}
+            </div>
          </div>
       </div>
    );

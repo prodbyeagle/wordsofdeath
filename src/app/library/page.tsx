@@ -15,7 +15,7 @@ const Library = () => {
    const [entryType, setEntryType] = useState<string>('word');
    const [categories, setCategories] = useState<string>('');
    const [variation, setVariation] = useState<string>('');
-   const [user, setUser] = useState<User | null>(null); // user State beibehalten
+   const [user, setUser] = useState<User | null>(null);
 
    const getAvatarUrl = (user: User | null): string => {
       return user ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` : '/placeholder-avatar.png';
@@ -31,7 +31,7 @@ const Library = () => {
 
       try {
          const payload = JSON.parse(atob(token.split('.')[1])) as User;
-         setUser(payload); // User-Objekt aus dem Token setzen
+         setUser(payload);
       } catch (error) {
          setError("[SERVER]: Fehler beim Verarbeiten des Tokens.");
       }
@@ -128,8 +128,8 @@ const Library = () => {
                <div className="text-red-500 text-center text-lg font-medium">{error}</div>
             ) : (
                <ul className="space-y-4 max-h-200 overflow-y-scroll">
-                  {entries.map(entry => (
-                     <li key={entry._id || entry.timestamp} className="bg-zinc-700 p-4 rounded-lg shadow-md flex flex-col md:flex-row items-start md:items-center space-x-4">
+                        {entries.map((entry, index) => (
+                     <li key={entry._id || entry.timestamp || index} className="bg-zinc-700 p-4 rounded-lg shadow-md flex flex-col md:flex-row items-start md:items-center space-x-4">
                         <div className="flex items-center space-x-2 mb-2 md:mb-0">
                            <Image
                               src={getAvatarUrl(user)}

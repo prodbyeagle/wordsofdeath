@@ -3,9 +3,14 @@ import Image from "next/image";
 import { getUser, connectToDatabase } from "@/db";
 import { User, Entry } from "@/types";
 
-const UserProfile = async ({ params }: { params: { username: string } }) => {
-   const { username } = params;
-   const user: User | null = await getUser(username) as User | null;
+interface UserProfileProps {
+   params: Promise<{ username: string }>;
+}
+
+const UserProfile = async ({ params }: UserProfileProps) => {
+   const { username } = await params;
+
+   const user: User | null = (await getUser(username)) as User | null;
 
    const getEntriesByUser = async (user: string): Promise<Entry[]> => {
       const database = await connectToDatabase();
@@ -55,7 +60,6 @@ const UserProfile = async ({ params }: { params: { username: string } }) => {
                   {entries.map((entry) => (
                      <div key={entry._id} className="bg-zinc-900 border border-zinc-700 p-4 rounded-lg shadow-md">
                         <h4 className="font-bold">{entry.entry}</h4>
-                        {/* <p className="text-sm text-gray-400">Typ: {entry.type}</p> */}
                         <p className="text-sm text-gray-200">
                            Variationen: {entry.variation.length > 0 ? entry.variation.join(", ") : "Keine Variationen"}
                         </p>

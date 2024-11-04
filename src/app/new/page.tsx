@@ -20,7 +20,7 @@ const Library = () => {
    // };
 
    useEffect(() => {
-      const token = document.cookie.split('; ').find(row => row.startsWith('wod_token='))?.split('=')[1];
+      const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
       if (!token) {
          setError("[SERVER]: Authentifizierung fehlgeschlagen: Kein Token gefunden.");
          setLoading(false);
@@ -38,7 +38,7 @@ const Library = () => {
    }, []);
 
    const handleNewEntrySubmit = async () => {
-      const token = document.cookie.split('; ').find(row => row.startsWith('wod_token='))?.split('=')[1];
+      const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
       if (!token || !newEntry.trim()) {
          setError("[SERVER]: Kein Token oder leerer Eintrag.");
          return;

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Dropdown from './Dropdown';
 import { User } from '@/types';
-import { LogOut, Shield, User as UserIcon, Library } from 'lucide-react'; // Importiere die gewünschten Icons
+import { LogOut, Shield, User as UserIcon, Plus } from 'lucide-react';
 
 const Navbar = () => {
    const [user, setUser] = useState<User | null>(null);
@@ -16,7 +16,7 @@ const Navbar = () => {
    };
 
    useEffect(() => {
-      const token = document.cookie.split('; ').find(row => row.startsWith('wod_token='));
+      const token = document.cookie.split('; ').find(row => row.startsWith('token='));
       if (token) {
          const tokenValue = token.split('=')[1];
          const decoded = JSON.parse(atob(tokenValue.split('.')[1])) as User;
@@ -36,14 +36,14 @@ const Navbar = () => {
    };
 
    const handleLogout = () => {
-      document.cookie = 'wod_token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;';
+      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;';
       window.location.href = '/signin';
    };
 
    return (
       <nav className="p-2 bg-zinc-900 backdrop-blur-xl flex justify-between items-center">
          <Link href="/" className="text-xl ml-1 font-bold border border-zinc-900 text-white hover:bg-zinc-800 hover:border-zinc-700 rounded-md p-1 duration-100 transition-all">
-            WOD | add dynamic entry pages /e/:_id | update the ui a bit (its boring) | fix the vercel cookie error (or just use localstorage...) | add searchbar (intelligente) 
+            WOD | add dynamic entry pages /e/:_id | update the ui a bit (its boring) | fix the vercel cookie error (or just use localstorage...) | add searchbar (intelligente)
          </Link>
          {user && (
             <div onClick={toggleDropdown} className="mr-1 relative flex items-center space-x-3 border border-zinc-900 hover:bg-zinc-800 hover:border-zinc-700 rounded-md p-1 duration-100 transition-all">
@@ -64,8 +64,8 @@ const Navbar = () => {
                         <Shield className="mr-2 w-5 h-5" /> Admin
                      </Link>
                      <hr className="border-zinc-600 border-t" />
-                     <Link href={`/library`} className="flex items-center rounded-md px-4 py-2 text-base text-gray-200 hover:bg-zinc-600 duration-100 transition-all">
-                        <Library className="mr-2 w-5 h-5" /> Library
+                     <Link href={`/new`} className="flex items-center rounded-md px-4 py-2 text-base text-gray-200 hover:bg-zinc-600 duration-100 transition-all">
+                        <Plus className="mr-2 w-5 h-5" /> Neuer Eintrag
                      </Link>
                      <Link href={`/u/${user.username}`} className="flex items-center rounded-md px-4 py-2 text-base text-gray-200 hover:bg-zinc-600 duration-100 transition-all">
                         <UserIcon className="mr-2 w-5 h-5" /> Konto

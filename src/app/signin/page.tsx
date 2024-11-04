@@ -14,7 +14,7 @@ const SignInPage: React.FC = () => {
             <p className="text-center mb-4">Melde dich mit Discord an, um auf WordsofDeath zuzugreifen.</p>
             <button
                onClick={handleSignIn}
-               className="w-full py-3 px-4 mt-4 bg-blue-600 hover:bg-blue-700 rounded-lg shadow-md text-white font-medium transition-all duration-150"
+               className="w-full py-3 bg-blue-600 hover:bg-blue-700 border-2 border-blue-600 rounded-lg shadow-lg text-white font-semibold transition-all duration-150"
             >
                Anmelden mit Discord
             </button>

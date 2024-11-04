@@ -10,7 +10,7 @@ const Homepage = () => {
 
    useEffect(() => {
       const cookies = document.cookie.split('; ');
-      const token = cookies.find(row => row.startsWith('wod_token='));
+      const token = cookies.find(row => row.startsWith('token='));
       if (token) {
          try {
             setIsLoggedIn(true);

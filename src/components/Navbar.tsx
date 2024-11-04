@@ -1,5 +1,3 @@
-// src/components/Navbar.tsx
-
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -7,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Dropdown from './Dropdown';
 import { User } from '@/types';
+import { LogOut, Shield, User as UserIcon, Library } from 'lucide-react'; // Importiere die gewünschten Icons
 
 const Navbar = () => {
    const [user, setUser] = useState<User | null>(null);
@@ -43,11 +42,11 @@ const Navbar = () => {
 
    return (
       <nav className="p-2 bg-zinc-900 backdrop-blur-xl flex justify-between items-center">
-         <Link href="/" className="text-xl font-bold text-white">
-            WordsOfDeath
+         <Link href="/" className="text-xl ml-1 font-bold border border-zinc-900 text-white hover:bg-zinc-800 hover:border-zinc-700 rounded-md p-1 duration-100 transition-all">
+            WOD | add dynamic entry pages /e/:_id | update the ui a bit (its boring) | fix the vercel cookie error (or just use localstorage...) | add searchbar (intelligente) 
          </Link>
          {user && (
-            <div onClick={toggleDropdown} className="relative flex items-center space-x-3 border border-zinc-900 hover:bg-zinc-800 hover:border-zinc-700 rounded-md p-1 duration-100 transition-all">
+            <div onClick={toggleDropdown} className="mr-1 relative flex items-center space-x-3 border border-zinc-900 hover:bg-zinc-800 hover:border-zinc-700 rounded-md p-1 duration-100 transition-all">
                <span className="text-white font-medium cursor-pointer">
                   {user.username}
                </span>
@@ -60,27 +59,27 @@ const Navbar = () => {
                   onClick={toggleDropdown}
                />
                <Dropdown isOpen={dropdownOpen} toggleDropdown={toggleDropdown}>
-                  <>
-                     <Link href={`/library`} className="block px-4 py-2 text-sm text-gray-200 hover:bg-zinc-600 duration-100 transition-all">
-                        + Neuer Eintrag
+                  <div className="bg-zinc-800 rounded-md shadow-lg p-1 space-y-1">
+                     <Link href={`/dashboard`} className="flex items-center rounded-md px-4 py-2 text-base text-gray-200 hover:bg-zinc-600 duration-100 transition-all">
+                        <Shield className="mr-2 w-5 h-5" /> Admin
                      </Link>
-                     {/* <Link href="/settings" className="block px-4 py-2 text-sm text-gray-200 hover:bg-zinc-600 duration-100 transition-all">
-                        Einstellungen
-                     </Link> */}
-                     <Link href={`/u/${user.username}`} className="block px-4 py-2 text-sm text-gray-200 hover:bg-zinc-600 duration-100 transition-all">
-                        Konto
+                     <hr className="border-zinc-600 border-t" />
+                     <Link href={`/library`} className="flex items-center rounded-md px-4 py-2 text-base text-gray-200 hover:bg-zinc-600 duration-100 transition-all">
+                        <Library className="mr-2 w-5 h-5" /> Library
                      </Link>
-                     <Link href={`/dashboard`} className="block px-4 py-2 text-sm text-gray-200 hover:bg-zinc-600 duration-100 transition-all">
-                        Dashboard
+                     <Link href={`/u/${user.username}`} className="flex items-center rounded-md px-4 py-2 text-base text-gray-200 hover:bg-zinc-600 duration-100 transition-all">
+                        <UserIcon className="mr-2 w-5 h-5" /> Konto
                      </Link>
+                     <hr className="border-zinc-600 border-t" />
                      <button
-                        className="block w-full text-left text-sm px-4 py-2 text-red-600 hover:bg-red-600/30 duration-100 transition-all"
+                        className="flex items-center w-full text-left rounded-md text-base px-4 py-2 text-red-600 hover:bg-red-600/30 duration-100 transition-all"
                         onClick={handleLogout}
                      >
-                        Ausloggen
+                        <LogOut className="mr-2 w-5 h-5" /> Ausloggen
                      </button>
-                  </>
+                  </div>
                </Dropdown>
+
             </div>
          )}
       </nav>

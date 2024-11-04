@@ -16,7 +16,7 @@ const Navbar = () => {
    };
 
    useEffect(() => {
-      const token = document.cookie.split('; ').find(row => row.startsWith('token='));
+      const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='));
       if (token) {
          const tokenValue = token.split('=')[1];
          const decoded = JSON.parse(atob(tokenValue.split('.')[1])) as User;
@@ -36,7 +36,7 @@ const Navbar = () => {
    };
 
    const handleLogout = () => {
-      document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;';
+      document.cookie = 'wordsofdeath=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;';
       window.location.href = '/signin';
    };
 

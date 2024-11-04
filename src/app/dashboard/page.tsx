@@ -23,7 +23,7 @@ const Dashboard: React.FC = () => {
    const [loading, setLoading] = useState<boolean>(true);
 
    useEffect(() => {
-      const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+      const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
 
       if (!token) {
          setError({ type: 'error', message: "[SERVER]: Authentifizierung fehlgeschlagen: Kein Token gefunden." });
@@ -95,7 +95,7 @@ const Dashboard: React.FC = () => {
    }, [isAdmin]);
 
    const addUserToWhitelist = async () => {
-      const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+      const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
       if (!token) {
          setError({ type: 'error', message: "[SERVER]: Authentifizierung fehlgeschlagen: Kein Token gefunden." });
          return;
@@ -135,7 +135,7 @@ const Dashboard: React.FC = () => {
          return;
       }
 
-      const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+      const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
       if (!token) {
          setError({ type: 'error', message: "[SERVER]: Authentifizierung fehlgeschlagen: Kein Token gefunden." });
          return;
@@ -165,7 +165,7 @@ const Dashboard: React.FC = () => {
    };
 
    const deleteEntry = async (entryId: string) => {
-      const token = document.cookie.split('; ').find(row => row.startsWith('token='))?.split('=')[1];
+      const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
       if (!token) {
          setError({ type: 'error', message: "[SERVER]: Authentifizierung fehlgeschlagen: Kein Token gefunden." });
          return;

@@ -2,12 +2,10 @@
 'use client';
 
 import React, { useEffect, useState } from "react";
-import Image from 'next/image';
-import type { Entry, User } from "@/types";
+import type { User } from "@/types";
 import Modal from "@/components/Modal";
 
 const Library = () => {
-   const [entries, setEntries] = useState<Entry[]>([]);
    const [error, setError] = useState<string | null>(null);
    const [loading, setLoading] = useState<boolean>(true);
    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -17,9 +15,9 @@ const Library = () => {
    const [variation, setVariation] = useState<string>('');
    const [user, setUser] = useState<User | null>(null);
 
-   const getAvatarUrl = (user: User | null): string => {
-      return user ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` : '/placeholder-avatar.png';
-   };
+   // const getAvatarUrl = (user: User | null): string => {
+   //    return user ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png` : '/placeholder-avatar.png';
+   // };
 
    useEffect(() => {
       const token = document.cookie.split('; ').find(row => row.startsWith('wod_token='))?.split('=')[1];
@@ -34,40 +32,9 @@ const Library = () => {
          setUser(payload);
       } catch (error) {
          setError("[SERVER]: Fehler beim Verarbeiten des Tokens.");
+      } finally {
+         setLoading(false);
       }
-   }, []);
-
-   useEffect(() => {
-      const fetchEntries = async () => {
-         const token = document.cookie.split('; ').find(row => row.startsWith('wod_token='))?.split('=')[1];
-         if (!token) {
-            setError("[SERVER]: Authentifizierung fehlgeschlagen: Kein Token gefunden.");
-            setLoading(false);
-            return;
-         }
-
-         try {
-            const response = await fetch('https://wordsofdeath-backend.vercel.app/api/entries', {
-               method: 'GET',
-               headers: { 'Authorization': `Bearer ${token}` },
-            });
-
-            if (!response.ok) {
-               setError(`[SERVER]: Fehler: ${response.statusText}`);
-               setLoading(false);
-               return;
-            }
-
-            const data = await response.json();
-            setEntries(data);
-         } catch (fetchError) {
-            setError("[SERVER]: Fehler beim Abrufen der Einträge.");
-         } finally {
-            setLoading(false);
-         }
-      };
-
-      fetchEntries();
    }, []);
 
    const handleNewEntrySubmit = async () => {
@@ -95,8 +62,6 @@ const Library = () => {
          });
 
          if (response.ok) {
-            const newEntryData = await response.json();
-            setEntries(prevEntries => [...prevEntries, newEntryData]);
             setNewEntry('');
             setCategories('');
             setVariation('');
@@ -112,7 +77,7 @@ const Library = () => {
    return (
       <div className="flex h-screen bg-zinc-800 items-center justify-center text-white">
          <div className="w-full max-w-3xl p-8 bg-zinc-900 shadow-lg rounded-2xl border border-zinc-600 transition-all duration-300 hover:shadow-xl mx-2">
-            <h1 className="text-4xl font-bold text-center text-white mb-6">Bibliothek</h1>
+            <h1 className="text-4xl font-bold text-center text-white mb-6">Neuen Eintrag erstellen</h1>
             <button
                onClick={() => setIsModalOpen(true)}
                className="w-full py-3 bg-green-600 hover:bg-green-700 border-2 border-green-600 rounded-lg shadow-lg text-white font-semibold transition-all duration-150 mb-6"
@@ -120,39 +85,13 @@ const Library = () => {
                + Neuen Eintrag hinzufügen
             </button>
 
-            {loading ? (
+            {loading && (
                <div className="flex justify-center items-center h-64">
                   <div className="loader text-lg font-medium text-gray-300">Lade...</div>
                </div>
-            ) : error ? (
+            )}
+            {error && (
                <div className="text-red-500 text-center text-lg font-medium">{error}</div>
-            ) : (
-               <ul className="space-y-4 max-h-200 overflow-y-scroll">
-                  {entries.map((entry, index) => (
-                     <li key={entry._id || entry.timestamp || index} className="bg-zinc-700 p-4 rounded-lg shadow-md flex flex-col md:flex-row items-start md:items-center space-x-4">
-                        <div className="flex items-center space-x-2 mb-2 md:mb-0">
-                           <Image
-                              src={getAvatarUrl(user)}
-                              alt={`${entry.author}'s Avatar`}
-                              width={40}
-                              height={40}
-                              className="rounded-full border border-zinc-600"
-                           />
-                           <span className="text-white font-bold text-sm">@{entry.author}</span>
-                        </div>
-                        <div className="flex-1">
-                           <strong className="block text-lg font-semibold text-white">{entry.entry}</strong>
-                           {entry.categories && entry.categories.length > 0 && (
-                              <div className="text-gray-400 mt-1">Kategorien: {entry.categories.join(", ")}</div>
-                           )}
-                           {entry.variation && entry.variation.length > 0 && (
-                              <div className="text-gray-400">Variationen: {entry.variation.join(", ")}</div>
-                           )}
-                        </div>
-                     </li>
-                  ))}
-               </ul>
-
             )}
          </div>
 

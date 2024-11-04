@@ -4,13 +4,23 @@
 import React, { useEffect, useState } from "react";
 import { Entry, User } from "@/types";
 
+const SkeletonLoader: React.FC<{ count: number }> = ({ count }) => {
+   return (
+      <div>
+         {[...Array(count)].map((_, index) => (
+            <div key={index} className="animate-pulse mb-2 bg-zinc-700 h-6 rounded-md"></div>
+         ))}
+      </div>
+   );
+};
+
 const Dashboard: React.FC = () => {
    const [whitelistedUsers, setWhitelistedUsers] = useState<User[]>([]);
    const [entries, setEntries] = useState<Entry[]>([]);
    const [newUser, setNewUser] = useState<string>("");
    const [error, setError] = useState<{ type: 'info' | 'warning' | 'error'; message: string } | null>(null);
    const [isAdmin, setIsAdmin] = useState<boolean>(false);
-   const [activeTab, setActiveTab] = useState<'users' | 'entries'>('users');
+   const [loading, setLoading] = useState<boolean>(true);
 
    useEffect(() => {
       const token = document.cookie.split('; ').find(row => row.startsWith('wod_token='))?.split('=')[1];
@@ -48,6 +58,7 @@ const Dashboard: React.FC = () => {
       fetchUserStatus();
 
       const fetchUsersAndEntries = async () => {
+         setLoading(true);
          try {
             const [usersResponse, entriesResponse] = await Promise.all([
                fetch("https://wordsofdeath-backend.vercel.app/api/whitelist", {
@@ -73,6 +84,8 @@ const Dashboard: React.FC = () => {
             const errorMessage = error instanceof Error ? error.message : "Unbekannter Fehler.";
             setError({ type: 'error', message: "Fehler beim Abrufen der Daten: " + errorMessage });
             console.error(error);
+         } finally {
+            setLoading(false);
          }
       };
 
@@ -180,8 +193,8 @@ const Dashboard: React.FC = () => {
    // Rendering-Logik für nicht admin Benutzer
    if (!isAdmin) {
       return (
-         <div className="min-h-screen bg-zinc-800 text-white p-10">
-            <h2 className="text-3xl text-red-300 hover:text-red-600 hover:font-extralight font-semibold mb-6 duration-750 transition">Zugriff verweigert</h2>
+         <div className="min-h-screen bg-zinc-800 text-white p-10 flex items-center justify-center">
+            <h2 className="text-3xl text-red-300 font-semibold mb-6">Zugriff verweigert</h2>
             <p>Sie haben keine Berechtigung, um auf dieses Dashboard zuzugreifen.</p>
          </div>
       );
@@ -197,66 +210,71 @@ const Dashboard: React.FC = () => {
                   <p>{error.message}</p>
                </div>
             )}
-            <div className="mb-4">
-               <button onClick={() => setActiveTab('users')} className={`py-2 px-4 rounded-l-md ${activeTab === 'users' ? 'bg-zinc-600' : 'bg-zinc-500'} hover:bg-zinc-400`}>Benutzerverwaltung</button>
-               <button onClick={() => setActiveTab('entries')} className={`py-2 px-4 rounded-r-md ${activeTab === 'entries' ? 'bg-zinc-600' : 'bg-zinc-500'} hover:bg-zinc-400`}>Einträge verwalten</button>
-            </div>
 
-            {activeTab === 'users' && (
-               <div className="p-6 border border-zinc-600 rounded-xl shadow-md">
-                  <h3 className="text-xl font-semibold mb-4">Benutzerverwaltung</h3>
+            <div className="mb-4">
+               <h3 className="text-xl font-semibold mb-4">Benutzer zur Whitelist hinzufügen</h3>
+               <div className="flex space-x-2 mb-4">
                   <input
                      type="text"
                      value={newUser}
                      onChange={(e) => setNewUser(e.target.value)}
-                     placeholder="Benutzername hinzufügen"
-                     className="w-full p-2 mb-2 border border-zinc-600 rounded bg-zinc-700 text-white"
+                     className="flex-grow p-2 bg-zinc-700 border border-zinc-600 rounded-md"
+                     placeholder="Benutzernamen eingeben"
                   />
                   <button
                      onClick={addUserToWhitelist}
-                     className="bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2 px-4 rounded">
+                     className="bg-green-500 hover:bg-green-600 text-white p-2 rounded-md"
+                  >
                      Hinzufügen
                   </button>
-                  <ul className="mt-4">
-                     {whitelistedUsers.map((user) => (
-                        <li key={user.username} className="flex justify-between items-center py-2 border-b border-zinc-600">
-                           {user.username}
+               </div>
+            </div>
+
+            <div className="mb-4">
+               <h3 className="text-xl font-semibold mb-4">Whitelisted Benutzer</h3>
+               {loading ? (
+                  <SkeletonLoader count={5} />
+               ) : (
+                  <ul className="space-y-2">
+                     {whitelistedUsers.map(user => (
+                        <li key={user.username} className="flex justify-between items-center p-2 bg-zinc-700 rounded-md">
+                           <span>{user.username}</span>
                            <button
                               onClick={() => removeUserFromWhitelist(user.username)}
-                              className="text-red-500 hover:text-red-400">
+                              className="bg-red-500 hover:bg-red-600 text-white p-1 rounded-md"
+                           >
                               Entfernen
                            </button>
                         </li>
                      ))}
                   </ul>
-               </div>
-            )}
+               )}
+            </div>
 
-            {activeTab === 'entries' && (
-               <div className="p-6 border border-zinc-600 rounded-xl shadow-md">
-                  <h3 className="text-xl font-semibold mb-4">Einträge verwalten</h3>
-                  <ul>
+            <div className="mb-4">
+               <h3 className="text-xl font-semibold mb-4">Einträge</h3>
+               {loading ? (
+                  <SkeletonLoader count={5} />
+               ) : (
+                  <ul className="space-y-2">
                      {entries.map(entry => (
-                        <li key={entry._id} className="bg-zinc-700 p-2 rounded mb-2 flex justify-between items-center">
-                           <span>{entry.entry}</span>
-                           <div>
-                              <button
-                                 onClick={() => deleteEntry(entry._id)}
-                                 className="text-red-600 hover:text-red-800 mr-2 transition-colors duration-300"
-                              >
-                                 Löschen
-                              </button>
-                              <button className="text-blue-600 hover:text-blue-800 transition-colors duration-300">Bearbeiten</button>
-                           </div>
+                        <li key={entry._id} className="flex justify-between items-center p-2 bg-zinc-700 rounded-md">
+                           <span>{`${entry.entry} | ${entry.type}`}</span>
+                           <button
+                              onClick={() => deleteEntry(entry._id)}
+                              className="bg-red-500 hover:bg-red-600 text-white p-1 rounded-md"
+                           >
+                              Entfernen
+                           </button>
                         </li>
                      ))}
                   </ul>
-               </div>
-            )}
+
+               )}
+            </div>
          </div>
       </div>
    );
-
 };
 
 export default Dashboard;

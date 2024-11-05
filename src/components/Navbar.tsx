@@ -50,7 +50,7 @@ const Navbar = () => {
 
       if (value.length > 2) {
          const timer = setTimeout(async () => {
-            const response = await fetch(`http://localhost:3001/api/search?q=${value}`);
+            const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/search?q=${value}`);
             const data = await response.json();
 
             setSuggestions(data.words || []);
@@ -103,7 +103,7 @@ const Navbar = () => {
                         <Link href={`https://wordsofdeath-backend.vercel.app`} className="flex items-center rounded-md px-4 py-2 text-base text-amber-200 hover:bg-amber-600/30 duration-100 transition-all" onClick={handleLogout}>
                            <Database className="mr-2 w-5 h-5" /> Backend
                         </Link>
-                        <Link href={`http://localhost:3001`} className="flex items-center rounded-md px-4 py-2 text-base text-red-400 hover:bg-red-400/30 duration-100 transition-all" onClick={handleLogout}>
+                        <Link href={`https://wordsofdeath-backend.vercel.app`} className="flex items-center rounded-md px-4 py-2 text-base text-red-400 hover:bg-red-400/30 duration-100 transition-all" onClick={handleLogout}>
                            <LogOut className="mr-2 w-5 h-5" /> Abmelden
                         </Link>
                      </div>

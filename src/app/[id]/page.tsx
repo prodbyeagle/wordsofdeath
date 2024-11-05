@@ -4,13 +4,13 @@ import { connectToDatabase } from "@/db";
 import { Entry, User } from "@/types";
 
 interface EntryProps {
-   params: {
+   params: Promise<{
       id: string;
-   };
+   }>;
 }
 
 const EntryPage = async ({ params }: EntryProps) => {
-   const { id } = params;
+   const { id } = await params;
 
    const fetchEntryById = async (id: string, token: string | undefined): Promise<Entry | null> => {
       const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/entries/${id}`, {

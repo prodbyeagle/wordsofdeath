@@ -10,6 +10,7 @@ export interface User {
 
 export interface Entry {
    _id: string;
+   id: string;
    entry: string;
    type: string;
    categories: string[];

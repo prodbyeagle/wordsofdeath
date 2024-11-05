@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import { getUser, connectToDatabase } from "@/db";
 import { User, Entry } from "@/types";
+import { BadgeCheck } from "lucide-react";
 
 interface UserProfileProps {
    params: Promise<{ username: string }>;
@@ -31,42 +32,58 @@ const UserProfile = async ({ params }: UserProfileProps) => {
    };
 
    return (
-      <div className="min-h-screen bg-zinc-800 text-white p-4 flex flex-col md:flex-row">
-         <div className="max-w-md w-full p-6 rounded-xl shadow-md border border-zinc-600 mb-4 md:mb-0 md:mr-4">
+      <div className="min-h-screen bg-zinc-900 text-white p-4 flex flex-col md:flex-row gap-4">
+         {/* Benutzerprofil */}
+         <div className="flex flex-col items-center md:items-start max-w-xs w-full p-6 rounded-xl shadow-md border border-zinc-700 bg-zinc-800">
             {user ? (
                <>
-                  <div className="flex items-center mb-4">
-                     <Image
-                        src={user.avatar ? getAvatarUrl(user.id, user.avatar) : "/default-avatar.png"}
-                        alt={`${user.username}'s Avatar`}
-                        width={48}
-                        height={48}
-                        className="rounded-full mr-4"
-                        loading="lazy"
-                     />
-                     <h2 className="text-3xl font-semibold">@{user.username}</h2>
-                  </div>
-                  <p>Beigetreten am: {new Date(user.joined_at).toLocaleDateString()}</p>
+                  <Image
+                     src={user.avatar ? getAvatarUrl(user.id, user.avatar) : "/default-avatar.png"}
+                     alt={`${user.username}'s Avatar`}
+                     width={96}
+                     height={96}
+                     className="rounded-full mb-4 border border-zinc-600 shadow-sm"
+                     loading="lazy"
+                  />
+                  <h2 className="text-2xl font-semibold mb-2 flex items-center">
+                     @{user.username}
+                     {user.roles.includes("admin") && (
+                        <BadgeCheck className="ml-2 text-blue-500" size={20} aria-label="Admin Badge" />
+                     )}
+                  </h2>
+                  <p className="text-sm text-zinc-400">Beigetreten am: {new Date(user.joined_at).toLocaleDateString()}</p>
                </>
             ) : (
                <p className="text-zinc-400">Benutzer nicht gefunden.</p>
             )}
          </div>
 
-         <div className="flex-1 p-6 rounded-xl shadow-md border border-zinc-600">
-            <h3 className="text-2xl font-semibold mb-4">Hochgeladene Einträge</h3>
+         {/* Benutzer-Einträge */}
+         <div className="flex-1 p-6 rounded-xl shadow-md border border-zinc-700 bg-zinc-800">
+            <h3 className="text-2xl font-semibold mb-6">Hochgeladene Einträge</h3>
             {entries.length > 0 ? (
-               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {entries.map((entry) => (
-                     <div key={entry._id} className="bg-zinc-900 border border-zinc-700 p-4 rounded-lg shadow-md">
-                        <h4 className="font-bold">{entry.entry}</h4>
-                        <p className="text-sm text-gray-200">
-                           Variationen: {entry.variation.length > 0 ? entry.variation.join(", ") : "Keine Variationen"}
-                        </p>
-                        <p className="text-sm text-gray-200">
-                           Kategorien: {entry.categories.join(", ") || "Keine Kategorien"}
-                        </p>
-                        <p className="text-xs text-zinc-400">Erstellt am: {new Date(entry.timestamp).toLocaleDateString()}</p>
+                     <div key={entry._id} className="bg-zinc-900 border border-zinc-700 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                        <h4 className="font-semibold text-lg text-white mb-2">{entry.entry}</h4>
+
+                        {/* Variationen nur anzeigen, wenn vorhanden */}
+                        {entry.variation.length > 0 && (
+                           <p className="text-sm text-zinc-400 mb-1">
+                              Variationen:{" "}
+                              <span className="text-zinc-300">{entry.variation.join(", ")}</span>
+                           </p>
+                        )}
+
+                        {/* Kategorien nur anzeigen, wenn vorhanden */}
+                        {entry.categories.length > 0 && (
+                           <p className="text-sm text-zinc-400 mb-2">
+                              Kategorien:{" "}
+                              <span className="text-zinc-300">{entry.categories.join(", ")}</span>
+                           </p>
+                        )}
+
+                        <p className="text-xs text-zinc-500">Erstellt am: {new Date(entry.timestamp).toLocaleDateString()}</p>
                      </div>
                   ))}
                </div>

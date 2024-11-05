@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { connectToDatabase } from "@/db";
 import { Entry, User } from "@/types";
 
@@ -44,8 +45,23 @@ const EntryPage = async ({ params }: EntryProps) => {
    }
 
    if (!entry) {
-      return <div className="text-center text-red-500">Eintrag nicht gefunden.</div>;
+      return (
+         <div className="min-h-screen bg-zinc-800 text-white flex flex-col items-center justify-center">
+            <div className="bg-zinc-900 p-8 rounded-xl shadow-lg border border-zinc-600 text-center">
+               <h1 className="text-4xl font-bold text-red-500 mb-4">Eintrag nicht gefunden</h1>
+               <p className="text-lg text-zinc-400 mb-6">
+                  Der gesuchte Eintrag ist nicht verfügbar oder wurde möglicherweise gelöscht.
+               </p>
+               <Link href="/" passHref>
+                  <button className="bg-[#d683ff] hover:bg-[#aa6dc9] border-2 border-[#d683ff] text-white font-semibold py-2 px-6 rounded-md shadow-md transition duration-200">
+                     Zurück zur Startseite
+                  </button>
+               </Link>
+            </div>
+         </div>
+      );
    }
+
 
    const getAvatarUrl = (id: string, avatar: string): string => {
       return `https://cdn.discordapp.com/avatars/${id}/${avatar}.png`;

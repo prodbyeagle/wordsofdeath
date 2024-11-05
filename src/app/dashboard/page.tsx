@@ -3,6 +3,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Entry, User } from "@/types";
+import Link from "next/link";
 
 const SkeletonLoader: React.FC<{ count: number }> = ({ count }) => {
    return (
@@ -193,12 +194,22 @@ const Dashboard: React.FC = () => {
    // Rendering-Logik für nicht admin Benutzer
    if (!isAdmin) {
       return (
-         <div className="min-h-screen bg-zinc-800 text-white p-10 flex items-center justify-center">
-            <h2 className="text-3xl text-red-300 font-semibold mb-6">Zugriff verweigert</h2>
-            <p>Sie haben keine Berechtigung, um auf dieses Dashboard zuzugreifen.</p>
+         <div className="min-h-screen bg-zinc-800 text-white flex flex-col items-center justify-center p-6 space-y-4">
+            <div className="bg-zinc-900 p-8 rounded-xl shadow-md border border-zinc-600 text-center max-w-lg">
+               <h2 className="text-4xl font-bold text-red-400 mb-4">Zugriff verweigert</h2>
+               <p className="text-lg mb-6 text-zinc-300">
+                  Sie haben keine Berechtigung, um auf dieses Dashboard zuzugreifen.
+               </p>
+               <Link href="/" passHref>
+                  <button className="bg-red-400 hover:bg-red-500 border-2 border-red-400 text-white font-semibold py-2 px-6 rounded-md shadow-md transition duration-200">
+                     Zurück zur Startseite
+                  </button>
+               </Link>
+            </div>
          </div>
       );
    }
+
 
    return (
       <div className="min-h-screen bg-zinc-800 text-white p-10">

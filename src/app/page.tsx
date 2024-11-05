@@ -113,6 +113,22 @@ const Homepage = () => {
       return `https://cdn.discordapp.com/avatars/${id}/${avatar}.png`;
    };
 
+   if (!isLoggedIn) {
+      return (
+         <div className="min-h-screen bg-zinc-800 text-white flex flex-col items-center justify-center">
+            <div className="bg-zinc-900 p-8 rounded-xl shadow-lg border border-zinc-600 text-center mb-10">
+               <h1 className="text-4xl font-bold mb-4">Du bist nicht eingeloggt!</h1>
+               <p className="text-lg text-zinc-400 mb-6">Bitte melde dich an, um die Plattform zu nutzen.</p>
+               <Link href="/signin">
+                  <button className="bg-[#d683ff] hover:bg-[#aa6dc9] border-2 border-[#d683ff] text-white font-semibold py-2 px-6 rounded-md shadow-md transition duration-200">
+                     Anmelden
+                  </button>
+               </Link>
+            </div>
+         </div>
+      );
+   }
+
    return (
       <div className="min-h-screen bg-zinc-800 text-white flex flex-col items-center py-10">
          <div className="max-w-2xl w-full px-2">
@@ -126,36 +142,22 @@ const Homepage = () => {
             </button>
 
             <div className="flex flex-col space-y-6">
-               {isLoggedIn ? (
-                  entries.length > 0 ? (
-                     // Hier die Einträge umkehren, sodass die neuesten oben sind
-                     [...entries].reverse().map((entry) => (
-                        <Link key={entry.id} href={`/${entry.id}`}>
-                           <div className="bg-zinc-600 p-6 rounded-lg shadow-md hover:bg-zinc-700 duration-100 transition-all border-2 border-zinc-600 cursor-pointer">
-                              <p className="text-lg font-medium mb-2">{entry.entry}</p>
-                              <div className="text-sm text-zinc-400 flex justify-between">
-                                 <span>Von {entry.author}</span>
-                                 <span>{getRelativeTime(entry.timestamp)}</span>
-                              </div>
+               {entries.length > 0 ? (
+                  [...entries].reverse().map((entry) => (
+                     <Link key={entry.id} href={`/e/${entry.id}`}>
+                        <div className="bg-zinc-600 p-6 rounded-lg shadow-md hover:bg-zinc-700 duration-100 transition-all border-2 border-zinc-600 cursor-pointer">
+                           <p className="text-lg font-medium mb-2">{entry.entry}</p>
+                           <div className="text-sm text-zinc-400 flex justify-between">
+                              <span>Von {entry.author}</span>
+                              <span>{getRelativeTime(entry.timestamp)}</span>
                            </div>
-                        </Link>
-                     ))
-                  ) : (
-                     <p className="text-center text-zinc-500">Noch keine Einträge vorhanden.</p>
-                  )
-               ) : (
-                  <div className="bg-zinc-900 p-8 rounded-xl shadow-lg border border-zinc-600 text-center mb-10">
-                     <h1 className="text-4xl font-bold mb-4">Du bist nicht eingeloggt!</h1>
-                     <p className="text-lg text-zinc-400 mb-6">Bitte melde dich an, um die Plattform zu nutzen.</p>
-                     <Link href="/signin">
-                        <button className="bg-[#d683ff] hover:bg-[#aa6dc9] border-2 border-[#d683ff] text-white font-semibold py-2 px-6 rounded-md shadow-md transition duration-200">
-                           Anmelden
-                        </button>
+                        </div>
                      </Link>
-                  </div>
+                  ))
+               ) : (
+                  <p className="text-center text-zinc-500">Noch keine Einträge vorhanden.</p>
                )}
             </div>
-
          </div>
 
          <Modal

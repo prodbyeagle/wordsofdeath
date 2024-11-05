@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Dropdown from './Dropdown';
 import { User, Entry } from '@/types';
-import { LogOut, Shield, User as UserIcon } from 'lucide-react';
+import { Database, LogOut, Shield, User as UserIcon } from 'lucide-react';
 
 const Navbar = () => {
    const [user, setUser] = useState<User | null>(null);
@@ -50,7 +50,7 @@ const Navbar = () => {
 
       if (value.length > 2) {
          const timer = setTimeout(async () => {
-            const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/search?q=${value}`);
+            const response = await fetch(`http://localhost:3001/api/search?q=${value}`);
             const data = await response.json();
 
             setSuggestions(data.words || []);
@@ -67,12 +67,19 @@ const Navbar = () => {
    return (
       <nav className="p-2 bg-zinc-900 backdrop-blur-xl flex flex-col md:flex-row md:justify-between items-center space-y-2 md:space-y-0">
          <div className="flex items-center space-x-2">
-            <Link href="/" className="text-xl font-bold border border-zinc-900 text-white hover:bg-zinc-800 hover:border-zinc-700 rounded-md p-1 duration-100 transition-all">
-               WOD
+            <Link href="/" className="rounded-md p-2 duration-100 transition-all">
+               <Image
+                  src="/skull.gif"
+                  alt="Skull Icon"
+                  width={40}
+                  height={40}
+                  className="border border-zinc-900 text-white hover:bg-zinc-800 hover:border-zinc-700 rounded-md p-2 duration-100 transition-all cursor-pointer"
+                  loading='lazy'
+               />
             </Link>
             {user && (
                <div onClick={toggleDropdown} className="relative flex items-center space-x-3 border border-zinc-900 hover:bg-zinc-800 hover:border-zinc-700 rounded-md p-1 duration-100 transition-all">
-                  <span className="text-white font-medium hidden sm:inline cursor-pointer">
+                  <span className="text-white font-medium cursor-pointer">
                      {user.username}
                   </span>
                   <Image
@@ -82,10 +89,11 @@ const Navbar = () => {
                      height={32}
                      className="rounded-full cursor-pointer"
                      onClick={toggleDropdown}
+                     loading='lazy'
                   />
                   <Dropdown isOpen={dropdownOpen} toggleDropdown={toggleDropdown}>
                      <div className="bg-zinc-800 rounded-md shadow-lg p-1 space-y-1">
-                        <Link href={`/dashboard`} className="flex items-center rounded-md px-4 py-2 text-base text-gray-200 hover:bg-zinc-600 duration-100 transition-all">
+                        <Link href={`/dashboard`} className="flex items-center rounded-md px-4 py-2 text-base text-sky-200 hover:bg-sky-400/30 duration-100 transition-all">
                            <Shield className="mr-2 w-5 h-5" /> Admin
                         </Link>
                         <Link href={`/u/${user.username}`} className="flex items-center rounded-md px-4 py-2 text-base text-gray-200 hover:bg-zinc-600 duration-100 transition-all">
@@ -93,6 +101,9 @@ const Navbar = () => {
                         </Link>
                         <hr className="border-zinc-600 border-t" />
                         <Link href={`https://wordsofdeath-backend.vercel.app`} className="flex items-center rounded-md px-4 py-2 text-base text-amber-200 hover:bg-amber-600/30 duration-100 transition-all" onClick={handleLogout}>
+                           <Database className="mr-2 w-5 h-5" /> Backend
+                        </Link>
+                        <Link href={`http://localhost:3001`} className="flex items-center rounded-md px-4 py-2 text-base text-red-400 hover:bg-red-400/30 duration-100 transition-all" onClick={handleLogout}>
                            <LogOut className="mr-2 w-5 h-5" /> Abmelden
                         </Link>
                      </div>

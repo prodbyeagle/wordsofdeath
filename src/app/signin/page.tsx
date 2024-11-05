@@ -4,7 +4,7 @@ import React from 'react';
 
 const SignInPage: React.FC = () => {
    const handleSignIn = () => {
-      window.location.href = 'https://wordsofdeath-backend.vercel.app/auth/discord';
+      window.location.href = 'http://localhost:3001/auth/discord';
    };
 
    return (

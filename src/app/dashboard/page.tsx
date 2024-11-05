@@ -272,7 +272,7 @@ const Dashboard: React.FC = () => {
                         <li key={entry._id} className="flex justify-between items-center p-2 bg-zinc-700 rounded-md">
                            <span>{`${entry.entry} | ${entry.type}`}</span>
                            <button
-                              onClick={() => deleteEntry(entry._id)}
+                              onClick={() => deleteEntry(entry.id)}
                               className="bg-red-500 hover:bg-red-600 text-white p-1 rounded-md"
                            >
                               Entfernen

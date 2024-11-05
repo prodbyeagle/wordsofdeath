@@ -2,16 +2,15 @@ import React from "react";
 import Image from "next/image";
 import { connectToDatabase } from "@/db";
 import { Entry, User } from "@/types";
-import { NextRequest } from 'next/server';
-import { cookies } from 'next/headers';
 
 interface EntryProps {
-   params: { id: string };
-   request: NextRequest;
+   params: {
+      id: string;
+   };
 }
 
 const EntryPage = async ({ params }: EntryProps) => {
-   const { id } = await params; //! DO NOT CHANGE!
+   const { id } = params;
 
    const fetchEntryById = async (id: string, token: string | undefined): Promise<Entry | null> => {
       const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/entries/${id}`, {
@@ -33,6 +32,7 @@ const EntryPage = async ({ params }: EntryProps) => {
       return user || null;
    };
 
+   const { cookies } = await import('next/headers');
    const cookieStore = await cookies();
    const token = cookieStore.get('wordsofdeath')?.value;
 

@@ -3,7 +3,7 @@ import "./globals.css";
 import Navbar from '../components/Navbar';
 import { Inter_Tight } from 'next/font/google'
 
-const sg = Inter_Tight({ subsets: ['latin'] })
+const sg = Inter_Tight({ fallback: ["inter-tight, system-ui"], subsets: ['latin'] })
 
 export default function RootLayout({
   children,
@@ -13,7 +13,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <link rel="icon" href="/favicon.ico" sizes="any" />
-      <body className={sg.className}>
+      <body>
+        className={sg.className}
         <Navbar />
         {children}
       </body>

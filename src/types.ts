@@ -23,4 +23,7 @@ export interface Entry {
 export interface TokenPayload {
    username: string;
    avatar: string;
+   id: string;
+   joined_at: string;
+   roles: string[];
 }

@@ -21,7 +21,7 @@ const DiscordCallback = () => {
 
             console.log('Authentifizierungstoken gefunden:', token);
 
-            document.cookie = `wordsofdeath=${token}; path=/; secure; SameSite=Strict`;
+            document.cookie = `wordsofdeath=${token}; Max-Age=2592000; path=/; secure; SameSite=Strict`;
             console.log('Token erfolgreich als Cookie gespeichert:', token);
 
             router.push('/');

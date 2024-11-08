@@ -1,5 +1,7 @@
 "use client";
 
+//! cookie hat keine max age und löscht sich nach dem besuch
+
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 

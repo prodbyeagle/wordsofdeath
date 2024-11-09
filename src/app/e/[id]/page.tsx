@@ -91,12 +91,12 @@ const EntryPage = async ({ params }: EntryProps) => {
    };
 
    return (
-      <div className="min-h-screen bg-zinc-800 text-white p-4 flex flex-col items-center">
-         <div className="max-w-2xl w-full p-6 rounded-xl shadow-lg border border-zinc-600 bg-zinc-900">
+      <div className="min-h-screen bg-zinc-900 text-white p-4 flex flex-col items-center">
+         <div className="max-w-2xl w-full p-6 rounded-xl shadow-lg border border-zinc-600 bg-zinc-800">
             <h2 className="text-4xl font-bold mb-4">{entry.entry}</h2>
             <p className="text-lg font-medium mb-2">ID: {entry.id}</p>
             <div className="text-sm text-zinc-400 flex justify-between mb-4">
-               <span>Von: {user ? user.username : entry.author}</span>
+               {/* <span>Von: {user ? user.username : entry.author}</span> */}
                <span>{getRelativeTime(entry.timestamp)}</span>
             </div>
             <div className="mt-4">
@@ -120,8 +120,8 @@ const EntryPage = async ({ params }: EntryProps) => {
                   <Image
                      src={user.avatar ? getAvatarUrl(user.id, user.avatar) : "/default-avatar.png"}
                      alt={`${user.username}'s Avatar`}
-                     width={48}
-                     height={48}
+                     width={32}
+                     height={32}
                      className="rounded-full mr-4"
                      loading="lazy"
                   />

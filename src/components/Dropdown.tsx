@@ -32,7 +32,7 @@ const Dropdown: React.FC<DropdownProps> = ({ isOpen, toggleDropdown, disabled, c
    return (
       <div
          ref={dropdownRef}
-         className="absolute right-0 top-12 mt-2 w-48 bg-transparent backdrop-blur-xl rounded-md shadow-lg z-10 border border-zinc-600"
+         className="absolute right-0 top-12 mt-2 w-48 bg-transparent backdrop-blur-xl rounded-md shadow-lg z-20 border border-zinc-600"
       >
          <div className="duration-100 transition-all" onClick={toggleDropdown}>
             {children}

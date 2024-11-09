@@ -2,7 +2,8 @@ import React from "react";
 import Image from "next/image";
 import { getUser, connectToDatabase } from "@/db";
 import { User, Entry } from "@/types";
-import { BadgeCheck } from "lucide-react";
+import { BadgeCheck, BrainCog } from "lucide-react";
+import Tooltip from "@/components/Tooltip";
 
 interface UserProfileProps {
    params: Promise<{ username: string }>;
@@ -33,7 +34,6 @@ const UserProfile = async ({ params }: UserProfileProps) => {
 
    return (
       <div className="min-h-screen bg-zinc-900 text-white p-4 flex flex-col md:flex-row gap-4">
-         {/* Benutzerprofil */}
          <div className="flex flex-col items-center md:items-start max-w-xs w-full p-6 rounded-xl shadow-md border border-zinc-700 bg-zinc-800">
             {user ? (
                <>
@@ -48,7 +48,14 @@ const UserProfile = async ({ params }: UserProfileProps) => {
                   <h2 className="text-2xl font-semibold mb-2 flex items-center">
                      @{user.username}
                      {user.roles.includes("admin") && (
-                        <BadgeCheck className="ml-2 text-blue-500" size={20} aria-label="Admin Badge" />
+                        <Tooltip content="This user has admin privileges and can manage site settings and users.">
+                           <BadgeCheck className="ml-1 p-1 hover:bg-zinc-600 hover:scale-110 text-blue-500 rounded-md duration-100 transition-all" size={30} aria-label="Admin Badge" />
+                        </Tooltip>
+                     )}
+                     {user.roles.includes("developer") && (
+                        <Tooltip content="This user contributed to the website and backend development.">
+                           <BrainCog className="ml-1 p-1 hover:bg-zinc-600 hover:scale-110 text-neutral-300 rounded-md duration-100 transition-all" size={30} aria-label="Developer Badge" />
+                        </Tooltip>
                      )}
                   </h2>
                   <p className="text-sm text-zinc-400">Beigetreten am: {new Date(user.joined_at).toLocaleDateString()}</p>
@@ -58,7 +65,6 @@ const UserProfile = async ({ params }: UserProfileProps) => {
             )}
          </div>
 
-         {/* Benutzer-Einträge */}
          <div className="flex-1 p-6 rounded-xl shadow-md border border-zinc-700 bg-zinc-800">
             <h3 className="text-2xl font-semibold mb-6">Hochgeladene Einträge</h3>
             {entries.length > 0 ? (
@@ -67,7 +73,6 @@ const UserProfile = async ({ params }: UserProfileProps) => {
                      <div key={entry._id} className="bg-zinc-900 border border-zinc-700 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
                         <h4 className="font-semibold text-lg text-white mb-2">{entry.entry}</h4>
 
-                        {/* Variationen nur anzeigen, wenn vorhanden */}
                         {entry.variation.length > 0 && (
                            <p className="text-sm text-zinc-400 mb-1">
                               Variationen:{" "}
@@ -75,7 +80,6 @@ const UserProfile = async ({ params }: UserProfileProps) => {
                            </p>
                         )}
 
-                        {/* Kategorien nur anzeigen, wenn vorhanden */}
                         {entry.categories.length > 0 && (
                            <p className="text-sm text-zinc-400 mb-2">
                               Kategorien:{" "}

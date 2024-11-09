@@ -1,36 +1,73 @@
-import React from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+"use client"
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { getUser, connectToDatabase } from "@/db";
 import { User, Entry } from "@/types";
 import { BadgeCheck, BrainCog } from "lucide-react";
 import Tooltip from "@/components/Tooltip";
+
+import { formatDistanceToNow } from 'date-fns';
+import { de } from 'date-fns/locale';
 
 interface UserProfileProps {
    params: Promise<{ username: string }>;
 }
 
-const UserProfile = async ({ params }: UserProfileProps) => {
-   const { username } = await params;
+const UserProfile = ({ params }: UserProfileProps) => {
+   const [user, setUser] = useState<User | null>(null);
+   const [entries, setEntries] = useState<Entry[]>([]);
+   const [loading, setLoading] = useState(true);
 
-   const user: User | null = (await getUser(username)) as User | null;
+   useEffect(() => {
+      const fetchData = async () => {
+         const { username } = await params;
 
-   const getEntriesByUser = async (user: string): Promise<Entry[]> => {
-      const database = await connectToDatabase();
-      return database.collection("entries").find({ author: user }).toArray() as Promise<Entry[]>;
-   };
+         try {
+            // Fetch user data
+            const userResponse = await fetch(`https://wordsofdeath-backend.vercel.app/api/user/u/${username}`, {
+               method: 'GET',
+               headers: {
+                  'Authorization': `Bearer ${document.cookie.split('=')[1]}`,
+               },
+            });
 
-   let entries: Entry[] = [];
-   if (user) {
-      try {
-         entries = await getEntriesByUser(user.username);
-      } catch (error) {
-         console.error("Fehler beim Abrufen der Einträge:", error);
-      }
-   }
+            if (userResponse.ok) {
+               const userData = await userResponse.json();
+               setUser(userData);
+
+               // Fetch user's entries if the user exists
+               const entriesResponse = await fetch(`https://wordsofdeath-backend.vercel.app/api/entries/u/${username}`, {
+                  method: 'GET',
+                  headers: {
+                     'Authorization': `Bearer ${document.cookie.split('=')[1]}`,
+                  },
+               });
+
+               if (entriesResponse.ok) {
+                  const entriesData = await entriesResponse.json();
+                  setEntries(entriesData);
+               } else {
+                  console.error("Fehler beim Abrufen der Einträge");
+               }
+            } else {
+               console.error("Benutzer nicht gefunden");
+               setUser(null);
+            }
+         } catch (error) {
+            console.error("Fehler beim Abrufen der Benutzerdaten:", error);
+         } finally {
+            setLoading(false);
+         }
+      };
+
+      fetchData();
+   }, [params]);
 
    const getAvatarUrl = (id: string, avatar: string): string => {
       return `https://cdn.discordapp.com/avatars/${id}/${avatar}.png`;
    };
+
+   if (loading) return <p>Lade Daten...</p>;
 
    return (
       <div className="min-h-screen bg-zinc-900 text-white p-4 flex flex-col md:flex-row gap-4">
@@ -58,7 +95,9 @@ const UserProfile = async ({ params }: UserProfileProps) => {
                         </Tooltip>
                      )}
                   </h2>
-                  <p className="text-sm text-zinc-400">Beigetreten am: {new Date(user.joined_at).toLocaleDateString()}</p>
+                  <p className="text-sm text-zinc-400">
+                     Hat WordsOfDeath {formatDistanceToNow(new Date(user.joined_at), { addSuffix: true, locale: de })} betreten.
+                  </p>
                </>
             ) : (
                <p className="text-zinc-400">Benutzer nicht gefunden.</p>
@@ -87,7 +126,7 @@ const UserProfile = async ({ params }: UserProfileProps) => {
                            </p>
                         )}
 
-                        <p className="text-xs text-zinc-500">Erstellt am: {new Date(entry.timestamp).toLocaleDateString()}</p>
+                        <p className="text-xs text-zinc-500">Erstellt {formatDistanceToNow(new Date(entry.timestamp), { addSuffix: true, locale: de })}</p>
                      </div>
                   ))}
                </div>

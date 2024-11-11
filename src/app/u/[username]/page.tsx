@@ -5,7 +5,6 @@ import Image from "next/image";
 import { User, Entry } from "@/types";
 import { BadgeCheck, BrainCog } from "lucide-react";
 import Tooltip from "@/components/Tooltip";
-
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 
@@ -23,8 +22,7 @@ const UserProfile = ({ params }: UserProfileProps) => {
          const { username } = await params;
 
          try {
-            // Fetch user data
-            const userResponse = await fetch(`https://wordsofdeath-backend.vercel.app/api/user/u/${username}`, {
+            const userResponse = await fetch(`http://localhost:3001/api/user/u/${username}`, {
                method: 'GET',
                headers: {
                   'Authorization': `Bearer ${document.cookie.split('=')[1]}`,
@@ -35,8 +33,7 @@ const UserProfile = ({ params }: UserProfileProps) => {
                const userData = await userResponse.json();
                setUser(userData);
 
-               // Fetch user's entries if the user exists
-               const entriesResponse = await fetch(`https://wordsofdeath-backend.vercel.app/api/entries/u/${username}`, {
+               const entriesResponse = await fetch(`http://localhost:3001/api/entries/u/${username}`, {
                   method: 'GET',
                   headers: {
                      'Authorization': `Bearer ${document.cookie.split('=')[1]}`,
@@ -80,18 +77,18 @@ const UserProfile = ({ params }: UserProfileProps) => {
                      width={96}
                      height={96}
                      className="rounded-full mb-4 border border-zinc-600 shadow-sm"
-                     loading="lazy"
+                     priority
                   />
                   <h2 className="text-2xl font-semibold mb-2 flex items-center">
                      @{user.username}
                      {user.roles.includes("admin") && (
-                        <Tooltip content="This user has admin privileges and can manage site settings and users.">
-                           <BadgeCheck className="ml-1 p-1 hover:bg-zinc-600 hover:scale-110 text-blue-500 rounded-md duration-100 transition-all" size={30} aria-label="Admin Badge" />
+                        <Tooltip delay={500} content="Admin">
+                           <BadgeCheck className="ml-1 p-1 hover:bg-zinc-600 hover:scale-110 text-blue-600 rounded-md duration-100 transition-all" size={30} aria-label="Admin Badge" />
                         </Tooltip>
                      )}
                      {user.roles.includes("developer") && (
-                        <Tooltip content="This user contributed to the website and backend development.">
-                           <BrainCog className="ml-1 p-1 hover:bg-zinc-600 hover:scale-110 text-neutral-300 rounded-md duration-100 transition-all" size={30} aria-label="Developer Badge" />
+                        <Tooltip delay={500} content="Developer">
+                           <BrainCog className=" p-1 hover:bg-zinc-600 hover:scale-110 text-fuchsia-400 rounded-md duration-100 transition-all" size={30} aria-label="Developer Badge" />
                         </Tooltip>
                      )}
                   </h2>
@@ -107,7 +104,7 @@ const UserProfile = ({ params }: UserProfileProps) => {
          <div className="flex-1 p-6 rounded-xl shadow-md border border-zinc-700 bg-zinc-800">
             <h3 className="text-2xl font-semibold mb-6">Hochgeladene Einträge</h3>
             {entries.length > 0 ? (
-               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
                   {entries.map((entry) => (
                      <div key={entry._id} className="bg-zinc-900 border border-zinc-700 p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
                         <h4 className="font-semibold text-lg text-white mb-2">{entry.entry}</h4>

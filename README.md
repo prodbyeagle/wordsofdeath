@@ -33,15 +33,15 @@
 
 ## Datenbank-Schema
 
-| Feldname      | Datentyp | Beschreibung                       |
-| ------------- | -------- | ---------------------------------- |
-| `name`        | `string` | Name des Benutzers                 |
-| `timestamp`   | `Date.now`   | Zeitstempel des Zugriffs           |
-| `entry`       | `string` | Gespeichertes Wort oder Satz       |
-| `categories`  | `array`  | Liste der Kategorien               |
-| `author`      | `string` | Name des Erstellers                |
-| `variationen` | `array`  | Variationen vom `entry`            |
-| `audio?`      | `string` | Audio vom Entry wie man es Spricht |
+| Feldname      | Datentyp   | Beschreibung                       |
+|---------------|------------|------------------------------------|
+| `name`        | `string`   | Name des Benutzers                 |
+| `timestamp`   | `Date.now` | Zeitstempel des Zugriffs           |
+| `entry`       | `string`   | Gespeichertes Wort oder Satz       |
+| `categories`  | `array`    | Liste der Kategorien               |
+| `author`      | `string`   | Name des Erstellers                |
+| `variationen` | `array`    | Variationen vom `entry`            |
+| `audio?`      | `string`   | Audio vom Entry wie man es Spricht |
 
 ## JSON-Demo-Format
 

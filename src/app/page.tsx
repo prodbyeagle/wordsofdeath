@@ -1,15 +1,19 @@
 /* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
+// noinspection JSIgnoredPromiseFromCall
+
 'use client';
 
 import React, { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
-import { Entry, User } from "@/types";
+import type { Entry, User } from "@/types";
 import Link from 'next/link';
 import Modal from "@/components/Modal";
 import { useRouter } from 'next/navigation';
-import { Clock, User as UserIcon, BrainCog, BadgeCheck } from "lucide-react";
+import { Clock, User as UserIcon, BadgeCheck } from "lucide-react";
+import { formatDistanceToNow } from 'date-fns';
+import { de } from 'date-fns/locale';
 
 const Homepage = () => {
    const router = useRouter();
@@ -49,7 +53,7 @@ const Homepage = () => {
       if (avatarCache[author]) return null;
 
       try {
-         const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/user/u/${author}`, {
+         const response = await fetch(`http://localhost:3001/api/user/u/${author}`, {
             method: 'GET',
             headers: {
                'Authorization': `Bearer ${document.cookie.split('=')[1]}`,
@@ -89,7 +93,7 @@ const Homepage = () => {
 
    const fetchEntries = async () => {
       try {
-         const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/entries`, {
+         const response = await fetch(`http://localhost:3001/api/entries`, {
             method: 'GET',
             headers: {
                'Authorization': `Bearer ${document.cookie.split('=')[1]}`,
@@ -137,7 +141,7 @@ const Homepage = () => {
       }
 
       try {
-         const response = await fetch('https://wordsofdeath-backend.vercel.app/api/entries', {
+         const response = await fetch('http://localhost:3001/api/entries', {
             method: 'POST',
             headers: {
                'Authorization': `Bearer ${token}`,
@@ -165,29 +169,6 @@ const Homepage = () => {
       } catch (error) {
          setError("[SERVER]: Fehler beim Erstellen des Eintrags.");
       }
-   };
-
-   const getRelativeTime = (timestamp: string): string => {
-      const now = new Date();
-      const entryTime = new Date(timestamp);
-      const secondsAgo = Math.floor((now.getTime() - entryTime.getTime()) / 1000);
-
-      const daysAgo = Math.floor(secondsAgo / (3600 * 24));
-      if (daysAgo > 0) {
-         return `Erstellt vor: ${daysAgo} Tag${daysAgo === 1 ? '' : 'en'}`;
-      }
-
-      const hoursAgo = Math.floor(secondsAgo / 3600);
-      if (hoursAgo > 0) {
-         return `Erstellt vor: ${hoursAgo} Stunde${hoursAgo === 1 ? '' : 'n'}`;
-      }
-
-      const minutesAgo = Math.floor(secondsAgo / 60);
-      if (minutesAgo > 0) {
-         return `Erstellt vor: ${minutesAgo} Minute${minutesAgo === 1 ? '' : 'n'}`;
-      }
-
-      return `Erstellt vor: Jetzt`;
    };
 
    if (!isLoggedIn) {
@@ -281,7 +262,7 @@ const Homepage = () => {
                {uniqueEntries.length > 0 ? (
                   uniqueEntries.map((entry) => (
                      <Link key={entry.id} href={`/e/${entry.id}`} passHref>
-                        <div className="bg-zinc-700 p-6 rounded-lg shadow-md hover:bg-zinc-800 duration-300 hover:shadow-4xl hover:scale-110 transition-all border-2 border-zinc-700 cursor-pointer">
+                        <div className="bg-zinc-700 p-6 rounded-lg shadow-md hover:bg-zinc-800 duration-300 hover:shadow-4xl hover:translate-x-5 hover:border-l-green-500 transition-all border-2 border-zinc-700 cursor-pointer">
                            <Link href={`/u/${entry.author}`} passHref>
                               <div className="flex items-center space-x-2">
                                  {avatarCache[entry.author] ? (
@@ -299,21 +280,24 @@ const Homepage = () => {
                                  ) : (
                                     <UserIcon size={28} className="text-zinc-400" />
                                  )}
-                                 <span className="cursor-pointer hover:text-violet-300 hover:font-semibold duration-300 transition-all">@{entry.author}</span>
+                                 <span className="cursor-pointer hover:underline duration-300 transition-all">@{entry.author}</span>
                                  <div className="-space-x-1 flex flex-row items-center">
                                     {userRoles[entry.author]?.includes('admin') && (
-                                       <BadgeCheck className="p-1 text-blue-500" size={24} aria-label="Admin Badge" />
+                                       <BadgeCheck className="text-blue-400 cursor-default rounded-md duration-100 transition-all" size={14} aria-label="Admin Badge" />
                                     )}
-                                    {userRoles[entry.author]?.includes('developer') && (
-                                       <BrainCog className="p-1 text-neutral-300" size={24} aria-label="Developer Badge" />
-                                    )}
+                                    {/* user doesn't need all the badges admin badge is enough */}
+                                    {/* {userRoles[entry.author]?.includes('developer') && (
+                                       <BrainCog className="p-1 hover:bg-zinc-600 hover:scale-110 text-neutral-400 rounded-md duration-100 transition-all" size={24} aria-label="Developer Badge" />
+                                    )} */}
                                  </div>
                               </div>
                            </Link>
                            <p className="text-lg font-medium mb-2">{entry.entry}</p>
-                           <div className="text-sm text-zinc-400 flex items-center space-x-2">
-                              <Clock size={20} className="text-zinc-400" />
-                              <span>{getRelativeTime(entry.timestamp)}</span>
+                           <div className="text-sm text-zinc-400 flex items-center space-x-1">
+                              <Clock size={14} className="text-zinc-400" />
+                              <p className="text-sm text-zinc-400">
+                                 {formatDistanceToNow(new Date(entry.timestamp), { addSuffix: true, locale: de })} erstellt.
+                              </p>
                            </div>
                         </div>
                      </Link>

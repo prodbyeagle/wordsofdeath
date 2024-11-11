@@ -19,11 +19,3 @@ export interface Entry {
    timestamp: string;
    variation: string[];
 }
-
-export interface TokenPayload {
-   username: string;
-   avatar: string;
-   id: string;
-   joined_at: string;
-   roles: string[];
-}

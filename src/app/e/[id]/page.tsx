@@ -59,24 +59,54 @@ const EntryPage = async ({ params }: EntryProps) => {
         user = await getUserById(entry.authorId, token);
     }
 
-    if (!entry) {
+    if (!user || !entry) {
         return (
-            <div className="min-h-screen bg-zinc-900 text-white flex flex-col items-center justify-center">
-                <div className="bg-zinc-800 p-8 rounded-xl shadow-lg border border-zinc-600 text-center">
-                    <h1 className="text-4xl font-bold text-red-400 mb-4">Eintrag nicht gefunden</h1>
-                    <p className="text-lg text-zinc-400 mb-6">
-                        Der gesuchte Eintrag ist nicht verfügbar oder wurde möglicherweise gelöscht.
-                    </p>
-                    <Link href="/" passHref>
-                        <button
-                            className="bg-zinc-600 hover:bg-zinc-600 border-2 border-zinc-700 text-white font-semibold py-2 px-6 rounded-md shadow-md transition duration-200">
-                            Zurück zur Startseite
-                        </button>
-                    </Link>
+            <div className="min-h-screen bg-zinc-900 text-zinc-200 flex items-center justify-center py-12 px-6">
+                <div className="max-w-3xl w-full p-8 rounded-xl shadow-2xl bg-zinc-800">
+                    <div className="text-3xl font-bold mb-4 bg-zinc-700 rounded h-8 w-1/2 animate-pulse"></div>
+                    <div className="text-sm text-zinc-400 mb-6 flex items-center space-x-1">
+                        <div className="rounded-full bg-zinc-700 w-5 h-5 animate-pulse"></div>
+                        <span className="bg-zinc-700 h-4 w-3/4 rounded animate-pulse"></span>
+                    </div>
+
+                    <div className="mt-6">
+                        <div className="text-xl font-semibold mb-3 bg-zinc-700 rounded h-6 w-1/3 animate-pulse"></div>
+                        <div className="bg-zinc-700 p-4 rounded-xl animate-pulse"></div>
+                    </div>
+
+                    <div className="mt-6">
+                        <div className="text-xl font-semibold mb-3 bg-zinc-700 rounded h-6 w-1/3 animate-pulse"></div>
+                        <div className="flex flex-wrap gap-2">
+                            {[...Array(3)].map((_, index) => (
+                                <span
+                                    key={index}
+                                    className="px-3 py-1 bg-zinc-700 border-2 border-zinc-700 text-zinc-200 rounded-full text-sm animate-pulse"
+                                ></span>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="p-2 mt-8 w-fit flex items-center rounded-xl bg-zinc-800 border-2 border-zinc-800 animate-pulse">
+                        <div className="rounded-full bg-zinc-700 w-9 h-9 mr-4 animate-pulse"></div>
+                        <div className="h-5 bg-zinc-700 rounded w-1/3 animate-pulse"></div>
+                    </div>
+
+                    <div className="mt-12">
+                        <div className="text-xl font-semibold mb-3 bg-zinc-700 rounded h-6 w-1/3 animate-pulse"></div>
+                        <div className="flex flex-col space-y-4">
+                            {[...Array(3)].map((_, index) => (
+                                <div key={index} className="p-4 rounded-xl bg-zinc-700 border-2 border-zinc-700 animate-pulse">
+                                    <div className="h-5 bg-zinc-600 rounded w-3/4 mb-2 animate-pulse"></div>
+                                    <div className="h-4 bg-zinc-600 rounded w-1/2 animate-pulse"></div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
         );
     }
+
 
     const allEntries = await fetchAllEntries(token);
     const relevantEntries = allEntries.filter(
@@ -105,7 +135,6 @@ const EntryPage = async ({ params }: EntryProps) => {
                     </span>
                 </div>
 
-                {/* Variationen */}
                 {entry.variation.length > 0 && (
                     <div className="mt-6">
                         <h3 className="text-xl font-semibold mb-3 text-zinc-200">Variationen</h3>
@@ -121,7 +150,6 @@ const EntryPage = async ({ params }: EntryProps) => {
                     </div>
                 )}
 
-                {/* Kategorien */}
                 {entry.categories.length > 0 && (
                     <div className="mt-6">
                         <h3 className="text-xl font-semibold mb-3 text-zinc-200">Kategorien</h3>
@@ -138,7 +166,6 @@ const EntryPage = async ({ params }: EntryProps) => {
                     </div>
                 )}
 
-                {/* Autor */}
                 {user && (
                     <Link href={`/u/${user.username}`}>
                         <div
@@ -165,7 +192,6 @@ const EntryPage = async ({ params }: EntryProps) => {
                     </Link>
                 )}
 
-                {/* Relevante Einträge */}
                 {relevantEntries.length > 0 && (
                     <div className="mt-12">
                         <h3 className="text-xl font-semibold mb-3 text-zinc-200">Relevante Einträge</h3>

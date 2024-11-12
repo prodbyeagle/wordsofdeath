@@ -65,7 +65,37 @@ const UserProfile = ({ params }: UserProfileProps) => {
       return `https://cdn.discordapp.com/avatars/${id}/${avatar}.png`;
    };
 
-   if (loading) return <p>Lade Daten...</p>;
+   if (loading) {
+      return (
+         <div className="min-h-screen bg-zinc-900 text-white p-4 flex flex-col md:flex-row gap-4">
+            <div className="flex flex-col items-center md:items-start max-w-xs w-full p-6 rounded-xl shadow-md border border-zinc-700 bg-zinc-800">
+               <div className="rounded-full bg-zinc-700 w-24 h-24 mb-4 animate-pulse" style={{ animationDelay: "0s" }} />
+               <div className="h-6 bg-zinc-700 rounded w-3/4 mb-2 animate-pulse" style={{ animationDelay: "0.2s" }}></div>
+               <div className="h-4 bg-zinc-700 rounded w-1/2 mb-2 animate-pulse" style={{ animationDelay: "0.4s" }}></div>
+               <div className="h-3 bg-zinc-700 rounded w-2/3 animate-pulse" style={{ animationDelay: "0.6s" }} />
+            </div>
+
+            <div className="flex-1 p-6 rounded-xl shadow-md border border-zinc-700 bg-zinc-800">
+               <div className="h-8 bg-zinc-700 rounded w-1/3 mb-6 animate-pulse" style={{ animationDelay: "0.8s" }}></div>
+               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {[...Array(7)].map((_, index) => (
+                     <div
+                        key={index}
+                        className="bg-zinc-900 border-2 border-zinc-900 p-4 rounded-lg shadow-sm animate-pulse transition-all duration-200 min-h-[150px] flex flex-col justify-between"
+                        style={{ animationDelay: `${index * 0.2}s` }}
+                     >
+                        <div className="h-5 bg-zinc-700 rounded w-3/4 mb-2"></div>
+                        <div className="h-4 bg-zinc-700 rounded w-1/2 mb-1"></div>
+                        <div className="h-4 bg-zinc-700 rounded w-2/3 mb-2"></div>
+                        <div className="h-3 bg-zinc-700 rounded w-1/3 mt-auto"></div>
+                     </div>
+                  ))}
+               </div>
+            </div>
+         </div>
+      );
+   }
+
 
    return (
       <div className="min-h-screen bg-zinc-900 text-white p-4 flex flex-col md:flex-row gap-4">

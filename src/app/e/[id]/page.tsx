@@ -16,7 +16,7 @@ const EntryPage = async ({ params }: EntryProps) => {
     const { id } = await params;
 
     const fetchEntryById = async (id: string, token: string | undefined): Promise<Entry | null> => {
-        const response = await fetch(`http://localhost:3001/api/entries/${id}`, {
+        const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/entries/${id}`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -27,7 +27,7 @@ const EntryPage = async ({ params }: EntryProps) => {
     };
 
     const fetchAllEntries = async (token: string | undefined): Promise<Entry[]> => {
-        const response = await fetch(`http://localhost:3001/api/entries`, {
+        const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/entries`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -38,7 +38,7 @@ const EntryPage = async ({ params }: EntryProps) => {
     };
 
     const getUserById = async (id: string, token: string | undefined): Promise<User | null> => {
-        const response = await fetch(`http://localhost:3001/api/user/i/${id}`, {
+        const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/user/i/${id}`, {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`,

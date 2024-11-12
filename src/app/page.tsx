@@ -53,7 +53,7 @@ const Homepage = () => {
         if (avatarCache[author]) return null;
 
         try {
-            const response = await fetch(`http://localhost:3001/api/user/u/${author}`, {
+            const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/user/u/${author}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${document.cookie.split('=')[1]}`,
@@ -93,7 +93,7 @@ const Homepage = () => {
 
     const fetchEntries = async () => {
         try {
-            const response = await fetch(`http://localhost:3001/api/entries`, {
+            const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/entries`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${document.cookie.split('=')[1]}`,
@@ -141,7 +141,7 @@ const Homepage = () => {
         }
 
         try {
-            const response = await fetch('http://localhost:3001/api/entries', {
+            const response = await fetch('https://wordsofdeath-backend.vercel.app/api/entries', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,

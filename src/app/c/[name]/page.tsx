@@ -20,7 +20,7 @@ const CategoryPage = ({ params }: CategoryPageProps) => {
       const fetchEntriesByCategory = async () => {
          const { name } = await params;
          try {
-            const response = await fetch(`http://localhost:3001/api/categories/${name}`, {
+            const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/categories/${name}`, {
                method: "GET",
                headers: {
                   'Authorization': `Bearer ${document.cookie.split('=')[1]}`,

@@ -53,7 +53,7 @@ const Navbar = () => {
             const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
 
             if (!token) return;
-            const response = await fetch(`http://localhost:3001/api/search?q=${value}`, {
+            const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/search?q=${value}`, {
                method: "GET",
                headers: {
                   'Authorization': `Bearer ${token}`,
@@ -105,7 +105,7 @@ const Navbar = () => {
                            <UserIcon className="mr-2 w-5 h-5" /> Konto
                         </Link>
                         <hr className="border-zinc-600 border-t" />
-                        <Link href={`http://localhost:3001`} className="flex items-center rounded-md px-4 py-2 text-base text-amber-200 hover:bg-amber-600/30 duration-100 transition-all" onClick={handleLogout}>
+                        <Link href={`https://wordsofdeath-backend.vercel.app`} className="flex items-center rounded-md px-4 py-2 text-base text-amber-200 hover:bg-amber-600/30 duration-100 transition-all" onClick={handleLogout}>
                            <Database className="mr-2 w-5 h-5" /> Backend
                         </Link>
                         <div onClick={toggleDropdown} className="flex items-center cursor-pointer rounded-md px-4 py-2 text-base text-red-400 hover:bg-red-400/30 duration-100 transition-all">

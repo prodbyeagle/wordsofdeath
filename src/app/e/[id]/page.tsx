@@ -179,13 +179,13 @@ const EntryPage = async ({ params }: EntryProps) => {
                                 loading="lazy"
                             />
                             <span className="text-lg font-medium">von @{user.username}</span>
-                            {user.roles.includes("owner") && (
+                            {user.roles?.includes("owner") && (
                                 <BadgeCheck className="ml-1 p-1 text-red-400" size={24} aria-label="Admin Badge" />
                             )}
-                            {user.roles.includes("admin") && (
-                                <HeartHandshake className="p-1 text-blue-400" size={26} aria-label="Admin Badge" />
+                            {user.roles?.includes("admin") && (
+                                <HeartHandshake className="p-1 text-yellow-400" size={26} aria-label="Admin Badge" />
                             )}
-                            {user.roles.includes("developer") && (
+                            {user.roles?.includes("developer") && (
                                 <Server className="p-1 text-white" size={26} aria-label="Developer Badge" />
                             )}
                         </div>

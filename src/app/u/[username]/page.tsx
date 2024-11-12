@@ -112,17 +112,17 @@ const UserProfile = ({ params }: UserProfileProps) => {
                   />
                   <h2 className="text-2xl italic font-semibold mb-2 flex space-x-1 items-center">
                      @{user.username}
-                     {user.roles.includes("owner") && (
-                        <Tooltip delay={500} content="Owner. The One and Only!">
-                           <BadgeCheck className="ml-1 p-1 hover:bg-zinc-600 hover:scale-110 text-red-500 rounded-md duration-100 transition-all" size={32} aria-label="Admin Badge" />
+                     {user.roles?.includes("owner") && (
+                        <Tooltip delay={500} content="Owner">
+                           <BadgeCheck className="ml-1 p-1 hover:bg-zinc-600 hover:scale-110 text-red-400 rounded-md duration-100 transition-all" size={28} aria-label="Admin Badge" />
                         </Tooltip>
                      )}
-                     {user.roles.includes("admin") && (
-                        <Tooltip delay={500} content="Admin. Keeps the Page Safe">
-                           <HeartHandshake className="p-1 hover:bg-zinc-600 hover:scale-110 text-blue-400 rounded-md duration-100 transition-all" size={28} aria-label="Admin Badge" />
+                     {user.roles?.includes("admin") && (
+                        <Tooltip delay={500} content="Admin">
+                           <HeartHandshake className="p-1 hover:bg-zinc-600 hover:scale-110 text-yellow-400 rounded-md duration-100 transition-all" size={28} aria-label="Admin Badge" />
                         </Tooltip>
                      )}
-                     {user.roles.includes("developer") && (
+                     {user.roles?.includes("developer") && (
                         <Tooltip delay={500} content="Developer">
                            <Server className="p-1 hover:bg-zinc-600 hover:scale-110 text-white rounded-md duration-100 transition-all" size={28} aria-label="Developer Badge" />
                         </Tooltip>
@@ -138,13 +138,13 @@ const UserProfile = ({ params }: UserProfileProps) => {
          </div>
 
          <div className="flex-1 p-6 rounded-xl shadow-md border border-zinc-700 bg-zinc-800">
-            <h3 className="text-2xl italic font-semibold mb-6">Einträge von {user?.username}</h3>
+            <h3 className="text-2xl font-semibold mb-6">Einträge von {user?.username}</h3>
             {entries.length > 0 ? (
                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   {entries.map((entry) => (
                      <Link key={entry._id} href={`/e/${entry.id}`} passHref>
                         <div className="bg-zinc-900 border-2 border-zinc-900 p-4 rounded-lg shadow-sm hover:scale-[1.04] hover:rounded-2xl hover:border-zinc-700 transition-all duration-200 cursor-pointer min-h-[150px] flex flex-col justify-between">
-                           <h4 className="font-semibold text-lg text-white mb-2">{entry.entry}</h4>
+                           <h4 className="font-semibold text-lg text-white mb-2 truncate">{entry.entry}</h4>
 
                            {entry.variation.length > 0 && (
                               <p className="text-sm text-zinc-400 mb-1">

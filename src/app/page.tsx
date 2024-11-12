@@ -11,7 +11,7 @@ import type { Entry, User } from "@/types";
 import Link from 'next/link';
 import Modal from "@/components/Modal";
 import { useRouter } from 'next/navigation';
-import { BadgeCheck, CircleUserRound, Clock } from "lucide-react";
+import { BadgeCheck, CircleUserRound, Clock, HeartHandshake, Server } from "lucide-react";
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 
@@ -282,11 +282,21 @@ const Homepage = () => {
                                             <CircleUserRound size={28} className="text-zinc-400" />
                                         )}
                                         <span className="text-zinc-300 font-medium">@{entry.author}</span>
-                                        <div className="-space-x-1 flex flex-row items-center">
-                                            {userRoles[entry.author]?.includes('admin') && (
+                                        <div className="space-x-2 flex flex-row items-center">
+                                            {userRoles[entry.author]?.includes('owner') && (
                                                 <BadgeCheck
-                                                    className="text-blue-400 cursor-default rounded-md duration-100 transition-all"
-                                                    size={14} aria-label="Admin Badge" />
+                                                    className="text-red-400 cursor-default rounded-md duration-100 transition-all"
+                                                    size={20} aria-label="Admin Badge" />
+                                            )}
+                                            {userRoles[entry.author]?.includes('admin') && (
+                                                <HeartHandshake
+                                                    className="text-yellow-400 cursor-default rounded-md duration-100 transition-all"
+                                                    size={20} aria-label="Admin Badge" />
+                                            )}
+                                            {userRoles[entry.author]?.includes('developer') && (
+                                                <Server
+                                                    className="text-white cursor-default rounded-md duration-100 transition-all"
+                                                    size={18} aria-label="Admin Badge" />
                                             )}
                                         </div>
                                     </div>
@@ -295,6 +305,7 @@ const Homepage = () => {
                                         <Clock size={14} className="text-zinc-400" />
                                         <p className="text-sm text-zinc-400">
                                             {formatDistanceToNow(new Date(entry.timestamp), {
+                                                includeSeconds: true,
                                                 addSuffix: true,
                                                 locale: de
                                             })} erstellt.
@@ -337,7 +348,7 @@ const Homepage = () => {
                     type="text"
                     value={categories}
                     onChange={(e) => setCategories(e.target.value)}
-                    placeholder="Kategorien (durch Komma getrennt)"
+                    placeholder="Kategorien min. 1 (durch Komma getrennt)"
                     className="w-full p-3 bg-zinc-700 border border-neutral-600 rounded-lg mb-4 placeholder-gray-400 text-white"
                     maxLength={32}
                     minLength={3}
@@ -346,7 +357,7 @@ const Homepage = () => {
                     type="text"
                     value={variation}
                     onChange={(e) => setVariation(e.target.value)}
-                    placeholder="Variationen (durch Komma getrennt)"
+                    placeholder="Variationen [nicht nötig] (durch Komma getrennt)"
                     className="w-full p-3 bg-zinc-700 border border-neutral-600 rounded-lg mb-4 placeholder-gray-400 text-white"
                     maxLength={32}
                     minLength={3}

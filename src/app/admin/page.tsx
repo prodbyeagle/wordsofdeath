@@ -13,7 +13,7 @@ const SkeletonLoader: React.FC<{ count: number }> = ({ count }) => (
    </div>
 );
 
-const Dashboard: React.FC = () => {
+const Admin: React.FC = () => {
    const [whitelistedUsers, setWhitelistedUsers] = useState<User[]>([]);
    const [entries, setEntries] = useState<Entry[]>([]);
    const [newUser, setNewUser] = useState<string>("");
@@ -31,7 +31,7 @@ const Dashboard: React.FC = () => {
 
       const fetchUserStatus = async () => {
          try {
-            const response = await fetch("http://localhost:3001/api/check-admin", {
+            const response = await fetch("http://localhost:3001/auth/admin", {
                method: 'GET',
                headers: { 'Authorization': `Bearer ${token}` },
             });
@@ -193,4 +193,4 @@ const Dashboard: React.FC = () => {
    );
 };
 
-export default Dashboard;
+export default Admin;

@@ -18,7 +18,7 @@ const CategoryPage = ({ params }: CategoryPageProps) => {
 
    useEffect(() => {
       const fetchEntriesByCategory = async () => {
-         const { name } = await params
+         const { name } = await params;
          try {
             const response = await fetch(`http://localhost:3001/api/categories/${name}`, {
                method: "GET",
@@ -57,7 +57,7 @@ const CategoryPage = ({ params }: CategoryPageProps) => {
       return (
          <div className="min-h-screen flex items-center justify-center bg-zinc-900 text-white">
             <div className="text-center p-8 bg-zinc-800 rounded-lg shadow-lg border border-zinc-600">
-               <h1 className="text-3xl font-bold mb-4">Keine Einträge in dieser Kategorie</h1>
+               <h1 className="text-3xl font-bold mb-4 text-red-400">Keine Einträge in dieser Kategorie</h1>
                <p className="text-zinc-400 mb-6">
                   Es wurden keine Einträge für die Kategorie gefunden.
                </p>
@@ -77,23 +77,23 @@ const CategoryPage = ({ params }: CategoryPageProps) => {
             <h1 className="text-4xl font-bold mb-8 text-center">
                Einträge in der Kategorie
             </h1>
-            <div className="space-y-4">
+            <div className="flex flex-col space-y-4 w-full text-center">
                {entries.map((entry) => (
-                  <div key={entry.id} className="p-4 bg-zinc-800 rounded-lg shadow-lg border border-zinc-600">
-                     <Link href={`/e/${entry.id}`} passHref>
+                  <Link key={entry.id} href={`/e/${entry.id}`} passHref>
+                     <div className="p-4 bg-zinc-800 rounded-lg shadow-lg border border-zinc-600 cursor-pointer transition-all transform hover:rounded-3xl hover:scale-[1.02] hover:bg-zinc-700">
                         <h2 className="text-2xl font-semibold mb-2 text-zinc-300 hover:text-zinc-100 transition">
                            {entry.entry}
                         </h2>
-                     </Link>
-                     <p className="text-sm text-zinc-400">
-                        {formatDistanceToNow(new Date(entry.timestamp), {
-                           includeSeconds: true,
-                           addSuffix: true,
-                           locale: de,
-                        })}{" "}
-                        erstellt.
-                     </p>
-                  </div>
+                        <p className="text-sm text-zinc-400">
+                           {formatDistanceToNow(new Date(entry.timestamp), {
+                              includeSeconds: true,
+                              addSuffix: true,
+                              locale: de,
+                           })}{" "}
+                           erstellt.
+                        </p>
+                     </div>
+                  </Link>
                ))}
             </div>
          </div>

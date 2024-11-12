@@ -30,7 +30,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, classNa
    const shadowClass = shadowSize ? `shadow-${shadowSize}` : '';
 
    return (
-      <div className={`fixed inset-0 px-2 flex items-center justify-center bg-neutral-900 bg-opacity-50 backdrop-blur-md z-50 ${isOpen ? 'modal-enter' : 'modal-exit'}`}>
+      <div className={`fixed inset-0 px-2 flex items-center justify-center bg-neutral-950 bg-opacity-60 backdrop-blur-xl z-50 ${isOpen ? 'modal-enter' : 'modal-exit'}`}>
          <div className={`p-4 rounded-xl ${shadowClass} w-fit relative transition-all duration-100 max-h-150 overflow-y-scroll border border-neutral-600 max-w-200 ${className}`}>
             <button onClick={onClose} className="absolute top-5 right-5 text-white p-0 border border-transparent hover:border-neutral-600 hover:scale-105 transition-all duration-200 rounded">
                <X />

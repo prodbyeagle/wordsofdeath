@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Dropdown from './Dropdown';
 import { User, Entry } from '@/types';
-import { Database, LogOut, Shield, User as UserIcon } from 'lucide-react';
+import { Database, LogOut, Shield, User as UserIcon, Home } from 'lucide-react';
 
 const Navbar = () => {
    const [user, setUser] = useState<User | null>(null);
@@ -29,8 +29,8 @@ const Navbar = () => {
             username: decoded.username,
             avatar: decoded.avatar,
             id: decoded.id,
-            joined_at: decoded.joined_at,
-            roles: decoded.roles,
+            joined_at: decoded.joined_at, // not in token
+            roles: decoded.roles, // not in token
          });
       }
    }, []);
@@ -77,16 +77,11 @@ const Navbar = () => {
       <nav className="p-2 bg-zinc-900 backdrop-blur-xl flex flex-col md:flex-row md:justify-between items-center space-y-2 md:space-y-0 ">
          <div className="flex items-center space-x-2">
             <Link href="/" className="rounded-md p-2 duration-100 transition-all">
-               <Image
-                  src="/skull.webp"
-                  alt="Skull Icon"
-                  width={40}
-                  height={40}
-                  className="border text-white bg-zinc-800 hover:bg-zinc-950 border-zinc-700 rounded-md p-2 duration-100 transition cursor-pointer"
-                  loading='lazy'
-                  unoptimized
-               />
+               <Home
+                  size={42}
+                  className="border text-white hover:scale-[1.08] bg-zinc-900 hover:bg-zinc-800 hover:border-zinc-600 border-zinc-900 rounded-md p-2 duration-100 transition cursor-pointer" />
             </Link>
+
             {user && (
                <div onClick={toggleDropdown} className="relative flex items-center space-x-3 border border-zinc-900 hover:bg-zinc-800 hover:border-zinc-700 rounded-md p-1 duration-100 transition-all">
                   <Image
@@ -103,7 +98,7 @@ const Navbar = () => {
                   </span>
                   <Dropdown isOpen={dropdownOpen} toggleDropdown={toggleDropdown}>
                      <div className="bg-zinc-800 rounded-md shadow-lg p-1 space-y-1 z-20">
-                        <Link href={`/dashboard`} className="flex items-center rounded-md px-4 py-2 text-base text-sky-200 hover:bg-sky-400/30 duration-100 transition-all">
+                        <Link href={`/admin`} className="flex items-center rounded-md px-4 py-2 text-base text-sky-200 hover:bg-sky-400/30 duration-100 transition-all">
                            <Shield className="mr-2 w-5 h-5" /> Admin
                         </Link>
                         <Link href={`/u/${user.username}`} className="flex items-center rounded-md px-4 py-2 text-base text-gray-200 hover:bg-zinc-600 duration-100 transition-all">
@@ -122,13 +117,13 @@ const Navbar = () => {
             )}
          </div>
 
-         <div className="relative w-full md:w-1/2 lg:w-1/3">
+         <div className="relative w-full md:w-1/2 lg:w-1/3 mr-2">
             <input
                type="text"
                value={searchTerm}
                onChange={handleSearchChange}
                placeholder="Suche..."
-               className="w-full p-2 rounded-md bg-zinc-800 text-white border border-zinc-600 focus:outline-none focus:border-amber-300 transition-all"
+               className="w-full p-2 rounded-md bg-zinc-800 text-white border border-zinc-600 focus:outline-none focus:outline-amber-300 transition-all"
             />
             {suggestions.length > 0 && (
                <div className="absolute left-0 right-0 bg-zinc-900 rounded-md shadow-lg font-light mt-1 z-10">

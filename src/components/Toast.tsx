@@ -101,21 +101,21 @@ const Toast: React.FC<ToastProps> = ({ type, message, position = 'top-right', du
    };
 
    return (
-       isVisible && (
-           <div
-               style={{
-                  ...getPositionStyle(),
-                  opacity: isVisible ? 1 : 0,
-                  transition: 'opacity 0.5s ease-out',
-               }}
-           >
-              <div
-                  className={`${getToastStyle()} p-4 mb-2 text-white rounded-md shadow-lg transition-all transform`}
-              >
-                 <span>{message}</span>
-              </div>
-           </div>
-       )
+      isVisible && (
+         <div
+            style={{
+               ...getPositionStyle(),
+               opacity: isVisible ? 1 : 0,
+               transition: 'opacity 0.5s ease-out',
+            }}
+         >
+            <div
+               className={`${getToastStyle()} p-4 mb-2 text-white rounded-md shadow-lg transition-all transform`}
+            >
+               <span>{message}</span>
+            </div>
+         </div>
+      )
    );
 };
 

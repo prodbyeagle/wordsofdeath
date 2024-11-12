@@ -121,7 +121,7 @@ const Admin: React.FC = () => {
          });
 
          if (!response.ok) throw new Error("Fehler beim Löschen des Eintrags.");
-         setEntries(prev => prev.filter(entry => entry._id !== entryId));
+         setEntries(prev => prev.filter(entry => entry.id !== entryId));
          addToast('info', "Eintrag erfolgreich gelöscht.");
       } catch {
          addToast('error', "Fehler beim Löschen des Eintrags.");
@@ -181,7 +181,7 @@ const Admin: React.FC = () => {
                         {entries.map(entry => (
                            <li key={entry._id} className="flex items-center justify-between p-2 bg-zinc-700 rounded-lg">
                               <span>{`${entry.entry} | ${entry.type}`}</span>
-                              <button onClick={() => deleteEntry(entry._id)} className="bg-red-500 hover:bg-red-600 py-1 px-3 rounded-lg transition">Entfernen</button>
+                              <button onClick={() => deleteEntry(entry.id)} className="bg-red-500 hover:bg-red-600 py-1 px-3 rounded-lg transition">Entfernen</button>
                            </li>
                         ))}
                      </ul>

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Dropdown from './Dropdown';
 import { User, Entry } from '@/types';
-import { Database, LogOut, Shield, User as UserIcon, Home } from 'lucide-react';
+import { LogOut, Shield, CircleUserRound, Home } from 'lucide-react';
 
 const Navbar = () => {
    const [user, setUser] = useState<User | null>(null);
@@ -35,7 +35,7 @@ const Navbar = () => {
       }
    }, []);
 
-   const toggleDropdown = () => setDropdownOpen(!dropdownOpen);
+   const toggleDropdown = () => setDropdownOpen((prev) => !prev);
 
    const handleLogout = () => {
       document.cookie = 'wordsofdeath=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;';
@@ -53,7 +53,7 @@ const Navbar = () => {
             const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
 
             if (!token) return;
-            const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/search?q=${value}`, {
+            const response = await fetch(`http://localhost:3001/api/search?q=${value}`, {
                method: "GET",
                headers: {
                   'Authorization': `Bearer ${token}`,
@@ -75,7 +75,7 @@ const Navbar = () => {
 
    return (
       <nav className="p-2 bg-zinc-900 backdrop-blur-xl flex flex-col md:flex-row md:justify-between items-center space-y-2 md:space-y-0 ">
-         <div className="flex items-center space-x-2">
+         <div className="flex items-center space-x-0">
             <Link href="/" className="rounded-md p-2 duration-100 transition-all">
                <Home
                   size={42}
@@ -83,34 +83,36 @@ const Navbar = () => {
             </Link>
 
             {user && (
-               <div onClick={toggleDropdown} className="relative flex items-center space-x-3 border border-zinc-900 hover:bg-zinc-800 hover:border-zinc-700 rounded-md p-1 duration-100 transition-all">
-                  <Image
-                     src={getAvatarUrl(user.id, user.avatar)}
-                     alt="User avatar"
-                     width={32}
-                     height={32}
-                     className="rounded-full cursor-pointer"
+               <div
+                  onClick={toggleDropdown}
+                  className="relative flex items-center space-x-1 border border-zinc-900 rounded-md p-1 duration-100 transition-all">
+
+                  <div className="flex items-center space-x-3 border hover:bg-zinc-800 hover:border-zinc-700 border-zinc-900 rounded-md p-1 duration-100 transition-all">
+                     <Image
+                        src={getAvatarUrl(user.id, user.avatar)}
+                        alt="User avatar"
+                        width={32}
+                        height={32}
+                        className="rounded-full cursor-pointer"
                      onClick={toggleDropdown}
                      loading='lazy'
-                  />
-                  <span className="text-white font-medium cursor-pointer">
-                     {user.username}
-                  </span>
+                     />
+                     <span className="text-white font-medium cursor-pointer">
+                        {user.username}
+                     </span>
+                  </div>
                   <Dropdown isOpen={dropdownOpen} toggleDropdown={toggleDropdown}>
-                     <div className="bg-zinc-800 rounded-md shadow-lg p-1 space-y-1 z-20">
-                        <Link href={`/admin`} className="flex items-center rounded-md px-4 py-2 text-base text-sky-200 hover:bg-sky-400/30 duration-100 transition-all">
-                           <Shield className="mr-2 w-5 h-5" /> Admin
+                     <div className="bg-zinc-800 rounded-2xl shadow-lg p-1 space-y-1">
+                        <Link href={`/u/${user.username}`} className="flex items-center rounded-xl px-4 py-2 text-base text-zinc-200 hover:bg-zinc-600 duration-100 transition-all">
+                           <CircleUserRound className="mr-2 w-5 h-5" /> Account
                         </Link>
-                        <Link href={`/u/${user.username}`} className="flex items-center rounded-md px-4 py-2 text-base text-gray-200 hover:bg-zinc-600 duration-100 transition-all">
-                           <UserIcon className="mr-2 w-5 h-5" /> Konto
-                        </Link>
-                        <hr className="border-zinc-600 border-t" />
-                        <Link href={`https://wordsofdeath-backend.vercel.app`} className="flex items-center rounded-md px-4 py-2 text-base text-amber-200 hover:bg-amber-600/30 duration-100 transition-all" onClick={handleLogout}>
-                           <Database className="mr-2 w-5 h-5" /> Backend
-                        </Link>
-                        <div onClick={toggleDropdown} className="flex items-center cursor-pointer rounded-md px-4 py-2 text-base text-red-400 hover:bg-red-400/30 duration-100 transition-all">
+                        <div onClick={handleLogout} className="flex items-center cursor-pointer rounded-xl px-4 py-2 text-base text-red-400 hover:bg-red-400/30 duration-100 transition-all">
                            <LogOut className="mr-2 w-5 h-5" /> Abmelden
                         </div>
+                        <hr className="border-zinc-600 border-t" />
+                        <Link href={`/admin`} className="flex items-center rounded-xl px-4 py-2 text-base text-zinc-200 hover:bg-zinc-600 duration-100 transition-all">
+                           <Shield className="mr-2 w-5 h-5" /> Admin
+                        </Link>
                      </div>
                   </Dropdown>
                </div>

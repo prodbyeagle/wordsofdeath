@@ -33,44 +33,43 @@
 
 ## Datenbank-Schema
 
-| Feldname      | Datentyp   | Beschreibung                       |
-|---------------|------------|------------------------------------|
-| `name`        | `string`   | Name des Benutzers                 |
-| `timestamp`   | `Date.now` | Zeitstempel des Zugriffs           |
-| `entry`       | `string`   | Gespeichertes Wort oder Satz       |
-| `categories`  | `array`    | Liste der Kategorien               |
-| `author`      | `string`   | Name des Erstellers                |
-| `variationen` | `array`    | Variationen vom `entry`            |
-| `audio?`      | `string`   | Audio vom Entry wie man es Spricht |
-
-## JSON-Demo-Format
+| Feldname      | Datentyp   | Beschreibung                 |
+|---------------|------------|------------------------------|
+| `name`        | `string`   | Name des Benutzers           |
+| `timestamp`   | `Date.now` | Zeitstempel des Zugriffs     |
+| `entry`       | `string`   | Gespeichertes Wort oder Satz |
+| `categories`  | `string[]` | Liste der Kategorien         |
+| `author`      | `string`   | Name des Erstellers          |
+| `variationen` | `string[]` | Variationen vom `entry`      |
 
 ### Beispiel für einen Benutzer
 ```json
 {
-  "name": "MaxMustermann",
-  "avatar": "https://example.com/avatar.png",
-  "joined_at": "2023-10-27T12:34:56Z"
+    "_id":"6732e69ef11016e40775ecf8",
+    "id":"1065030118491308082",
+    "name": "MaxMustermann",
+    "avatar":"a9f0b4b5434e6cd5031bd246fdabce40",
+    "joined_at": "2023-10-27T12:34:56Z"
 }
 ```
 
 ### Beispiel für gespeicherte Wörter/Sätze
 
 ```json
-[
-  {
-    "entry": "lamiruh",
-    "type": "word",
-    "categories": ["psychatrie", "prodbyeagle"],
-    "author": "prodbyeagle",
-    "timestamp": "2023-10-27T13:45:30Z"
-  },
-  {
-    "entry": "block mit rechte maustaste... -",
-    "type": "sentence",
-    "categories": ["Lebensweisheit", "gaming"],
-    "author": "dwhincandi",
-    "timestamp": "2023-10-27T14:15:22Z"
-  }
-]
+[{
+  "_id": {
+    "$oid": "6732e47363aa5cc0e6613d7c"
+  },
+  "id": "01JCFCRRW04PW5RZEWMPNA57H7",
+  "entry": "schebedebäpert",
+
+  "type": "word",
+  "categories": [
+    "discord"
+  ],
+  "author": "prodbyeagle",
+  "authorId": "893759402832699392",
+  "timestamp": "2024-10-28T20:42:08.572Z",
+  "variation": []
+  }]
 ```

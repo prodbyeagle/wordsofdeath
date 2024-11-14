@@ -1,5 +1,5 @@
+/* eslint-disable @next/next/no-img-element */
 import React from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { Entry, User } from "@/types";
 import { formatDistanceToNow } from "date-fns";
@@ -7,9 +7,7 @@ import { de } from "date-fns/locale";
 import { BadgeCheck, Clock, HeartHandshake, Server } from "lucide-react";
 
 interface EntryProps {
-    params: Promise<{
-        id: string;
-    }>;
+    params: Promise<{ id: string }>;
 }
 
 const EntryPage = async ({ params }: EntryProps) => {
@@ -18,46 +16,33 @@ const EntryPage = async ({ params }: EntryProps) => {
     const fetchEntryById = async (id: string, token: string | undefined): Promise<Entry | null> => {
         const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/entries/${id}`, {
             method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
         });
-        if (!response.ok) return null;
-        return await response.json();
+        return response.ok ? await response.json() : null;
     };
 
     const fetchAllEntries = async (token: string | undefined): Promise<Entry[]> => {
         const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/entries`, {
             method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
         });
-        if (!response.ok) return [];
-        return await response.json();
+        return response.ok ? await response.json() : [];
     };
 
     const getUserById = async (id: string, token: string | undefined): Promise<User | null> => {
         const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/user/i/${id}`, {
             method: "GET",
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
         });
-        if (!response.ok) return null;
-        return await response.json();
+        return response.ok ? await response.json() : null;
     };
 
     const { cookies } = await import("next/headers");
     const cookieStore = await cookies();
     const token = cookieStore.get("wordsofdeath")?.value;
 
-    const entry: Entry | null = await fetchEntryById(id, token);
-    let user: User | null = null;
-
-    if (entry && entry.authorId) {
-        user = await getUserById(entry.authorId, token);
-    }
+    const entry = await fetchEntryById(id, token);
+    const user = entry?.authorId ? await getUserById(entry.authorId, token) : null;
 
     if (!user || !entry) {
         return (
@@ -108,20 +93,18 @@ const EntryPage = async ({ params }: EntryProps) => {
     }
 
     const allEntries = await fetchAllEntries(token);
-    const relevantEntries = allEntries.filter(
-        (otherEntry) =>
+
+    const relevantEntries = allEntries
+        .filter((otherEntry) =>
             otherEntry.id !== entry.id &&
             otherEntry.categories.some((category) => entry.categories.includes(category))
-    ).slice(0, 3);
-
-    const getAvatarUrl = (id: string, avatar: string): string => {
-        return `https://cdn.discordapp.com/avatars/${id}/${avatar}.png`;
-    };
+        )
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3);
 
     return (
         <div className="min-h-screen bg-zinc-900 text-zinc-200 cursor-default flex items-center justify-center py-12 px-6">
             <div className="max-w-3xl w-full p-8 rounded-xl shadow-2xl bg-zinc-800">
-                {/* //TODO: add discord text "formatting for entry.entry (markdown support)" */}
                 <h2 className="text-3xl font-bold mb-4 break-words">{entry.entry}</h2>
                 <div className="text-sm text-zinc-400 mb-6 flex items-center space-x-1">
                     <Clock size={16} className="text-zinc-400" />
@@ -170,9 +153,8 @@ const EntryPage = async ({ params }: EntryProps) => {
                     <Link href={`/u/${user.username}`}>
                         <div
                             className="p-2 mt-8 w-fit flex items-center rounded-xl bg-zinc-800 hover:bg-zinc-600 border-2 border-zinc-800 transition-all transform hover:rounded-xl hover:scale-[1.04]">
-                            {/* //TODO: webp support */}
-                            <Image
-                                src={user.avatar ? getAvatarUrl(user.id, user.avatar) : "none"}
+                            <img
+                                src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`}
                                 alt={`${user.username}'s Avatar`}
                                 width={36}
                                 height={36}

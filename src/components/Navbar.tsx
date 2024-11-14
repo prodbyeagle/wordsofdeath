@@ -15,10 +15,6 @@ const Navbar = () => {
    const [categories, setCategories] = useState<string[]>([]);
    const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(null);
 
-   const getAvatarUrl = (id: string, avatar: string): string => {
-      return `https://cdn.discordapp.com/avatars/${id}/${avatar}.png`;
-   };
-
    useEffect(() => {
       const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='));
       if (token) {
@@ -88,9 +84,8 @@ const Navbar = () => {
                   className="relative flex items-center space-x-1 border border-zinc-900 rounded-md p-1 duration-100 transition-all">
 
                   <div className="flex items-center space-x-3 border hover:bg-zinc-800 hover:border-zinc-700 border-zinc-900 rounded-md p-1 duration-100 transition-all">
-                     {/* //TODO: webp support */}
                      <Image
-                        src={getAvatarUrl(user.id, user.avatar)}
+                        src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`}
                         alt="User avatar"
                         width={32}
                         height={32}

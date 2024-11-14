@@ -1,7 +1,7 @@
+/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import { User, Entry } from "@/types";
 import { Server, HeartHandshake, BadgeCheck } from "lucide-react";
 import Tooltip from "@/components/Tooltip";
@@ -61,10 +61,6 @@ const UserProfile = ({ params }: UserProfileProps) => {
       fetchData();
    }, [params]);
 
-   const getAvatarUrl = (id: string, avatar: string): string => {
-      return `https://cdn.discordapp.com/avatars/${id}/${avatar}.png`;
-   };
-
    if (loading) {
       return (
          <div className="min-h-screen bg-zinc-900 text-white p-4 flex flex-col md:flex-row gap-4">
@@ -102,14 +98,12 @@ const UserProfile = ({ params }: UserProfileProps) => {
          <div className="flex flex-col items-center md:items-start max-w-xs w-full p-6 rounded-xl shadow-md border border-zinc-700 bg-zinc-800">
             {user ? (
                <>
-                  {/* //TODO: webp support */}
-                  <Image
-                     src={user.avatar ? getAvatarUrl(user.id, user.avatar) : "/default-avatar.png"}
+                  <img
+                     src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`}
                      alt={``}
                      width={96}
                      height={96}
                      className="rounded-full mb-4 border border-zinc-600 shadow-sm"
-                     priority
                   />
                   <h2 className="text-2xl italic font-semibold mb-2 flex -space-x-1 items-center">
                      @{user.username}

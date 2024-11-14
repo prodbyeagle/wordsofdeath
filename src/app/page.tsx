@@ -66,7 +66,7 @@ const Homepage = () => {
             }
 
             const userData = await response.json();
-            const avatarUrl = `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}.png`;
+            const avatarUrl = `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}`;
 
             setAvatarCache((prevCache) => ({ ...prevCache, [author]: avatarUrl }));
             setUserRoles((prevRoles) => ({ ...prevRoles, [author]: userData.roles || [] }));
@@ -268,7 +268,7 @@ const Homepage = () => {
                                     <div className="flex items-center space-x-2">
                                         {/* //TODO: webp support */}
                                         {avatarCache[entry.author] ? (
-                                            <Image
+                                            <img
                                                 src={avatarCache[entry.author]}
                                                 alt={`${entry.author}'s avatar`}
                                                 className="w-6 h-6 rounded-full"

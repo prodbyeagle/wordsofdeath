@@ -1,31 +1,25 @@
-'use client';
+'use client'
 
-import React, { useEffect, useState } from "react";
-import { Entry, User } from "@/types";
-import Link from "next/link";
-import Toast from "@/components/Toast";
+import { useState, useEffect } from 'react';
+import { Entry, Whitelist } from '@/types';
+import { Trash, UserPlus, UserRoundCog } from 'lucide-react';
+import Modal from '@/components/Modal';
+import Tooltip from '@/components/Tooltip';
+import Link from 'next/link';
+import { formatDistanceToNow } from "date-fns";
+import { de } from "date-fns/locale";
 
-const SkeletonLoader: React.FC<{ count: number }> = ({ count }) => (
-   <div>
-      {[...Array(count)].map((_, index) => (
-         <div key={index} className="animate-pulse mb-2 bg-zinc-700 h-6 rounded-md"></div>
-      ))}
-   </div>
-);
-
-const Admin: React.FC = () => {
-   const [whitelistedUsers, setWhitelistedUsers] = useState<User[]>([]);
+const Admin = () => {
+   const [whitelistedUsers, setWhitelistedUsers] = useState<Whitelist[]>([]);
    const [entries, setEntries] = useState<Entry[]>([]);
-   const [newUser, setNewUser] = useState<string>("");
-   const [toasts, setToasts] = useState<{ type: 'info' | 'warning' | 'error'; message: string }[]>([]);
-   const [isAdmin, setIsAdmin] = useState<boolean>(false);
-   const [loading, setLoading] = useState<boolean>(true);
+   const [newUser, setNewUser] = useState('');
+   const [isAdmin, setIsAdmin] = useState(false);
+   const [loading, setLoading] = useState(false);
+   const [isModalOpen, setIsModalOpen] = useState(false);
 
    useEffect(() => {
       const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
-
       if (!token) {
-         addToast('error', "[SERVER]: Authentifizierung fehlgeschlagen: Kein Token gefunden.");
          return;
       }
 
@@ -39,10 +33,10 @@ const Admin: React.FC = () => {
             if (!response.ok) throw new Error("Fehler beim Überprüfen des Admin-Status.");
             const data = await response.json();
             setIsAdmin(data.isAdmin);
-            if (!data.isAdmin) addToast('warning', "Zugriff verweigert: Keine Administratorrechte.");
+            if (!data.isAdmin)
+               throw new Error("User is not admin!")
          } catch (error) {
             console.error("Fehler beim Überprüfen des Admin-Status:", error);
-            addToast('error', "Fehler beim Überprüfen des Admin-Status.");
          }
       };
 
@@ -50,8 +44,8 @@ const Admin: React.FC = () => {
          setLoading(true);
          try {
             const [usersResponse, entriesResponse] = await Promise.all([
-               fetch("https://wordsofdeath-backend.vercel.app/api/whitelist", { headers: { 'Authorization': `Bearer ${token}` } }),
-               fetch("https://wordsofdeath-backend.vercel.app/api/entries", { headers: { 'Authorization': `Bearer ${token}` } }),
+               fetch("https://wordsofdeath-backend.vercel.app/api/whitelist", { headers: { 'Authorization': `Bearer ${document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1]}` } }),
+               fetch("https://wordsofdeath-backend.vercel.app/api/entries", { headers: { 'Authorization': `Bearer ${document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1]}` } }),
             ]);
 
             if (!usersResponse.ok || !entriesResponse.ok) throw new Error("Fehler beim Abrufen der Daten.");
@@ -59,7 +53,6 @@ const Admin: React.FC = () => {
             setEntries(await entriesResponse.json());
          } catch (error) {
             console.error("Fehler beim Abrufen der Daten:", error);
-            addToast('error', "Fehler beim Abrufen der Daten.");
          } finally {
             setLoading(false);
          }
@@ -72,12 +65,8 @@ const Admin: React.FC = () => {
       }
    }, [isAdmin]);
 
-   const addToast = (type: 'info' | 'warning' | 'error', message: string) => {
-      setToasts(prevToasts => [...prevToasts, { type, message }]);
-   };
-
    const addUserToWhitelist = async () => {
-      if (!newUser.trim()) return addToast('warning', "Bitte geben Sie einen Benutzernamen ein.");
+      if (!newUser.trim()) return;
       const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
       try {
          const response = await fetch("https://wordsofdeath-backend.vercel.app/api/whitelist", {
@@ -90,9 +79,9 @@ const Admin: React.FC = () => {
          const newUserData = await response.json();
          setWhitelistedUsers(prev => [...prev, newUserData]);
          setNewUser("");
-         addToast('info', "Benutzer erfolgreich hinzugefügt.");
-      } catch {
-         addToast('error', "Fehler beim Hinzufügen des Benutzers.");
+         setIsModalOpen(false);
+      } catch (error) {
+         console.error("Fehler beim Hinzufügen des Benutzers:", error);
       }
    };
 
@@ -106,9 +95,8 @@ const Admin: React.FC = () => {
 
          if (!response.ok) throw new Error("Fehler beim Entfernen des Benutzers.");
          setWhitelistedUsers(prev => prev.filter(user => user.username !== username));
-         addToast('info', "Benutzer erfolgreich entfernt.");
-      } catch {
-         addToast('error', "Fehler beim Entfernen des Benutzers.");
+      } catch (error) {
+         console.error("Fehler beim Entfernen des Benutzers:", error);
       }
    };
 
@@ -122,73 +110,90 @@ const Admin: React.FC = () => {
 
          if (!response.ok) throw new Error("Fehler beim Löschen des Eintrags.");
          setEntries(prev => prev.filter(entry => entry.id !== entryId));
-         addToast('info', "Eintrag erfolgreich gelöscht.");
-      } catch {
-         addToast('error', "Fehler beim Löschen des Eintrags.");
+      } catch (error) {
+         console.error("Fehler beim Löschen des Eintrags:", error);
       }
    };
 
-   if (!isAdmin) return (
-      <div className="flex items-center justify-center min-h-screen bg-zinc-900 text-center p-4">
-         <div className="max-w-md bg-zinc-800 p-6 rounded-lg shadow-lg border border-zinc-700">
-            <h2 className="text-2xl font-semibold text-red-500 mb-4">Zugriff verweigert</h2>
-            <p className="text-zinc-300 mb-4">Sie haben keine Berechtigung, auf das Dashboard zuzugreifen.</p>
-            <Link href="/" passHref>
-               <button className="bg-red-500 hover:bg-red-600 py-2 px-4 rounded-md transition">Zurück zur Startseite</button>
-            </Link>
-         </div>
-      </div>
-   );
-
    return (
-      <div className="min-h-screen p-6 bg-zinc-900 text-white">
-         <div className="max-w-5xl mx-auto bg-zinc-800 p-8 rounded-lg shadow-md border border-zinc-700">
-            {toasts.map((toast, index) => (
-               <Toast key={index} type={toast.type} message={toast.message} position="bottom-left" />
-            ))}
-            <h2 className="text-2xl font-semibold mb-4">Admin-Dashboard</h2>
-            <div className="space-y-4">
-               <div>
-                  <h3 className="font-semibold mb-2">Benutzer hinzufügen</h3>
-                  <div className="flex space-x-2">
-                     <input
-                        type="text"
-                        value={newUser}
-                        onChange={(e) => setNewUser(e.target.value)}
-                        placeholder="Benutzername"
-                        className="w-full px-4 py-2 bg-zinc-700 rounded-lg border border-zinc-600 text-white"
-                     />
-                     <button onClick={addUserToWhitelist} className="bg-green-500 hover:bg-green-600 py-2 px-4 rounded-lg transition">Hinzufügen</button>
+      <div className="bg-zinc-800 min-h-screen text-white p-8">
+         <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-semibold">WordsOfDeath Admin Dashboard</h1>
+            <button
+               onClick={() => setIsModalOpen(true)} // Modal öffnen
+               className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg flex items-center space-x-2 transition"
+            >
+               <UserPlus className="w-5 h-5" />
+               <span>Benutzer Hinzufügen</span>
+            </button>
+         </div>
+
+         <h2 className="text-xl font-semibold mb-4">Whitelist Users</h2>
+         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {whitelistedUsers.map(user => (
+               <div key={user._id} className="bg-zinc-700 p-3 cursor-default rounded-md shadow-md hover:rounded-2xl hover:bg-zinc-800 duration-300 hover:shadow-4xl hover:scale-[1.03] transition-all border-2 border-zinc-700">
+                  <h4 className="text-lg font-semibold mb-2">{user.username}</h4>
+                  <div className="flex justify-between">
+                     <button
+                        onClick={() => removeUserFromWhitelist(user.username)}
+                        className="bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded-lg transition flex items-center space-x-2"
+                     >
+                        <Trash size={16} />
+                     </button>
+                     <Link
+                        href={`/u/${user.username}`}
+                        className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg transition flex items-center space-x-2"
+                     >
+                        <UserRoundCog size={16} />
+                     </Link>
                   </div>
                </div>
-               <div>
-                  <h3 className="font-semibold mb-2">Whitelisted Benutzer</h3>
-                  {loading ? <SkeletonLoader count={5} /> : (
-                     <ul className="space-y-2">
-                        {whitelistedUsers.map(user => (
-                           <li key={user.username} className="flex items-center justify-between p-2 bg-zinc-700 rounded-lg">
-                              <span>{user.username}</span>
-                              <button onClick={() => removeUserFromWhitelist(user.username)} className="bg-red-500 hover:bg-red-600 py-1 px-3 rounded-lg transition">Entfernen</button>
-                           </li>
-                        ))}
-                     </ul>
-                  )}
-               </div>
-               <div>
-                  <h3 className="font-semibold mb-2">Einträge</h3>
-                  {loading ? <SkeletonLoader count={5} /> : (
-                     <ul className="space-y-2">
-                        {entries.map(entry => (
-                           <li key={entry._id} className="flex items-center justify-between p-2 bg-zinc-700 rounded-lg">
-                              <span>{`${entry.entry} | ${entry.type}`}</span>
-                              <button onClick={() => deleteEntry(entry.id)} className="bg-red-500 hover:bg-red-600 py-1 px-3 rounded-lg transition">Entfernen</button>
-                           </li>
-                        ))}
-                     </ul>
-                  )}
-               </div>
+            ))}
+         </div>
+
+         {loading && <div>Loading...</div>}
+
+         <div className="mt-8">
+            <h2 className="text-xl font-semibold mb-4">Einträge</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+               {entries.map(entry => (
+                  <Tooltip delay={500} fontSize='text-base' position='top' key={entry._id} content={entry.entry}>
+                     <div key={entry.id} className="bg-zinc-700 cursor-default p-6 rounded-md shadow-md hover:rounded-2xl hover:bg-zinc-800 duration-300 hover:shadow-4xl hover:scale-[1.03] transition-all border-2 border-zinc-700">
+                        <h4 className="text-lg font-semibold mb-2 truncate">{entry.entry}</h4>
+                        <div className="text-sm text-zinc-400 mb-2">
+                           <p className='italic' >{formatDistanceToNow(new Date(entry.timestamp), { includeSeconds: true, addSuffix: true, locale: de })}{" "} erstellt.</p>
+                           <p>Von: @{entry.author}</p>
+                        </div>
+                        <button
+                           onClick={() => deleteEntry(entry.id)}
+                           className="bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded-lg transition flex items-center space-x-2"
+                        >
+                           <Trash size={16} />
+                        </button>
+                     </div>
+                  </Tooltip>
+               ))}
             </div>
          </div>
+
+         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Benutzer hinzufügen">
+            <div>
+               <input
+                  type="text"
+                  value={newUser}
+                  onChange={(e) => setNewUser(e.target.value)}
+                  placeholder="dwhincandi ..."
+                  className="w-full p-3 bg-zinc-700 border border-neutral-600 rounded-lg mb-4 placeholder-gray-400 text-white"
+               />
+               <button
+                  onClick={addUserToWhitelist}
+                  disabled={newUser.length < 3}
+                  className={`w-full py-3 ${newUser.length < 3 ? 'border border-zinc-600 bg-transparent cursor-default text-zinc-500' : 'bg-blue-500 hover:bg-blue-600 border border-blue-500 text-zinc-200'} rounded-lg font-medium transition-all duration-150`}
+               >
+                  Hinzufügen
+               </button>
+            </div>
+         </Modal>
       </div>
    );
 };

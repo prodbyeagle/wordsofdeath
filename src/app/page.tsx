@@ -11,7 +11,7 @@ import type { Entry, User } from "@/types";
 import Link from 'next/link';
 import Modal from "@/components/Modal";
 import { useRouter } from 'next/navigation';
-import { BadgeCheck, CircleUserRound, Clock, HeartHandshake, Server } from "lucide-react";
+import { BadgeCheck, CircleUserRound, Clock, HeartHandshake, Server, MessageCirclePlus } from "lucide-react";
 import { formatDistanceToNow } from 'date-fns';
 import { de } from 'date-fns/locale';
 
@@ -173,13 +173,13 @@ const Homepage = () => {
 
     if (!isLoggedIn) {
         return (
-            <div className="min-h-screen bg-zinc-800 text-white flex flex-col items-center justify-center">
-                <div className="bg-zinc-900 p-8 rounded-xl shadow-lg border border-zinc-600 text-center mb-10">
-                    <h1 className="text-4xl font-bold mb-4">Du bist nicht eingeloggt!</h1>
-                    <p className="text-lg text-zinc-400 mb-6">Bitte melde dich an, um die Plattform zu nutzen.</p>
+            <div className="min-h-screen bg-zinc-900 text-zinc-200 flex items-center justify-center py-12 px-6">
+                <div className="max-w-lg w-full p-8 rounded-xl shadow-2xl bg-zinc-800 text-center">
+                    <h1 className="text-3xl font-bold mb-4">Du bist nicht eingeloggt!</h1>
+                    <p className="text-base text-zinc-400 mb-6">Bitte melde dich an, um die Plattform zu nutzen.</p>
                     <Link href="/signin">
                         <button
-                            className="bg-[#d683ff] hover:bg-[#aa6dc9] border-2 border-[#d683ff] text-white font-semibold py-2 px-6 rounded-md shadow-md transition duration-200">
+                            className="px-5 py-2 bg-zinc-700 border-2 border-zinc-700 text-zinc-200 rounded-xl hover:bg-zinc-800 transition-all duration-300 shadow-lg">
                             Anmelden
                         </button>
                     </Link>
@@ -211,10 +211,10 @@ const Homepage = () => {
                 <button
                     onClick={() => setPage(page - 1)}
                     disabled={page === 1}
-                    className={`px-3 py-1 rounded-md border-2 border-[#d683ff] ${page === 1 ? 'bg-zinc-900 border-zinc-900 text-zinc-500' : 'bg-[#d683ff] hover:bg-[#aa6dc9] text-white'
-                        } transition-colors duration-200`}
+                    className={`px-4 py-2 rounded-xl border-2 ${page === 1 ? 'bg-transparent border-transparent text-zinc-500 cursor-default' : 'bg-zinc-700 border-zinc-600 text-zinc-200 hover:bg-zinc-800'
+                        } transition-all duration-300`}
                 >
-                    Previous
+                    Zurück
                 </button>
 
                 {pageNumbers.map((num, index) =>
@@ -224,8 +224,8 @@ const Homepage = () => {
                         <button
                             key={index}
                             onClick={() => handlePageChange(num as number)}
-                            className={`px-3 py-1 rounded-md border-2 border-[#d683ff] ${page === num ? 'bg-[#d683ff] text-white' : 'bg-zinc-700 hover:bg-zinc-700 border-zinc-700 text-zinc-300'
-                                } hover:bg-[#aa6dc9] transition-colors duration-200`}
+                            className={`px-4 py-2 rounded-xl border-2 ${page === num ? 'bg-zinc-600 border-zinc-500 text-white' : 'bg-zinc-700 border-zinc-600 text-zinc-200 hover:bg-zinc-800'
+                                } transition-all duration-300`}
                         >
                             {num}
                         </button>
@@ -235,10 +235,10 @@ const Homepage = () => {
                 <button
                     onClick={() => setPage(page + 1)}
                     disabled={page === totalPages}
-                    className={`px-3 py-1 rounded-md border-2 border-[#d683ff] ${page === totalPages ? 'bg-zinc-900 border-zinc-900 text-zinc-500' : 'bg-[#d683ff] hover:bg-[#aa6dc9] text-white'
-                        } transition-colors duration-200`}
+                    className={`px-4 py-2 rounded-xl border-2 ${page === totalPages ? 'bg-transparent border-transparent text-zinc-500 cursor-default' : 'bg-zinc-700 border-zinc-600 text-zinc-200 hover:bg-zinc-800'
+                        } transition-all duration-300`}
                 >
-                    Next
+                    Weiter
                 </button>
             </div>
         );
@@ -250,12 +250,12 @@ const Homepage = () => {
                 <h2 className="text-4xl font-bold mb-8 text-center">Feed</h2>
 
                 <div className="mb-4">{renderPagination()}</div>
-
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="mb-8 w-full bg-green-600 hover:bg-green-700 duration-100 transition-all border-2 border-green-600 rounded-lg shadow-lg text-white font-semibold py-3 px-8"
+                    className="mb-8 w-full flex items-center justify-center space-x-2 bg-green-600 hover:bg-green-700 duration-100 transition-all border-2 border-green-600 rounded-xl shadow-lg text-white font-semibold py-3 px-8"
                 >
-                    + Neuen Eintrag hinzufügen
+                    <MessageCirclePlus className="w-5 h-5" />
+                    <span>Neuen Eintrag hinzufügen</span>
                 </button>
 
 
@@ -266,6 +266,7 @@ const Homepage = () => {
                                 <div
                                     className="bg-zinc-700 p-6 rounded-md shadow-md hover:rounded-2xl hover:bg-zinc-800 duration-300 hover:shadow-4xl hover:scale-[1.03] hover:border-l-green-500 transition-all border-2 border-zinc-700 cursor-pointer">
                                     <div className="flex items-center space-x-2">
+                                        {/* //TODO: webp support */}
                                         {avatarCache[entry.author] ? (
                                             <Image
                                                 src={avatarCache[entry.author]}
@@ -286,17 +287,17 @@ const Homepage = () => {
                                             {userRoles[entry.author]?.includes('owner') && (
                                                 <BadgeCheck
                                                     className="text-red-400 cursor-default rounded-md duration-100 transition-all"
-                                                    size={20} aria-label="Admin Badge" />
+                                                    size={20} />
                                             )}
                                             {userRoles[entry.author]?.includes('admin') && (
                                                 <HeartHandshake
                                                     className="text-yellow-400 cursor-default rounded-md duration-100 transition-all"
-                                                    size={20} aria-label="Admin Badge" />
+                                                    size={20} />
                                             )}
                                             {userRoles[entry.author]?.includes('developer') && (
                                                 <Server
                                                     className="text-white cursor-default rounded-md duration-100 transition-all"
-                                                    size={18} aria-label="Admin Badge" />
+                                                    size={18} />
                                             )}
                                         </div>
                                     </div>

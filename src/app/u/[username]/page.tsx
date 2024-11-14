@@ -102,29 +102,30 @@ const UserProfile = ({ params }: UserProfileProps) => {
          <div className="flex flex-col items-center md:items-start max-w-xs w-full p-6 rounded-xl shadow-md border border-zinc-700 bg-zinc-800">
             {user ? (
                <>
+                  {/* //TODO: webp support */}
                   <Image
                      src={user.avatar ? getAvatarUrl(user.id, user.avatar) : "/default-avatar.png"}
-                     alt={`${user.username}'s Avatar`}
+                     alt={``}
                      width={96}
                      height={96}
                      className="rounded-full mb-4 border border-zinc-600 shadow-sm"
                      priority
                   />
-                  <h2 className="text-2xl italic font-semibold mb-2 flex space-x-1 items-center">
+                  <h2 className="text-2xl italic font-semibold mb-2 flex -space-x-1 items-center">
                      @{user.username}
                      {user.roles?.includes("owner") && (
                         <Tooltip delay={500} content="Owner">
-                           <BadgeCheck className="ml-1 p-1 hover:bg-zinc-600 hover:scale-110 text-red-400 rounded-md duration-100 transition-all" size={28} aria-label="Admin Badge" />
+                           <BadgeCheck className="mx-1 p-1 hover:bg-zinc-600 hover:scale-110 text-red-400 rounded-md duration-100 transition-all" size={28} aria-label="Admin Badge" />
                         </Tooltip>
                      )}
                      {user.roles?.includes("admin") && (
                         <Tooltip delay={500} content="Admin">
-                           <HeartHandshake className="p-1 hover:bg-zinc-600 hover:scale-110 text-yellow-400 rounded-md duration-100 transition-all" size={28} aria-label="Admin Badge" />
+                           <HeartHandshake className="mx-1 p-1 hover:bg-zinc-600 hover:scale-110 text-yellow-400 rounded-md duration-100 transition-all" size={28} aria-label="Admin Badge" />
                         </Tooltip>
                      )}
                      {user.roles?.includes("developer") && (
                         <Tooltip delay={500} content="Developer">
-                           <Server className="p-1 hover:bg-zinc-600 hover:scale-110 text-white rounded-md duration-100 transition-all" size={28} aria-label="Developer Badge" />
+                           <Server className="mx-1 p-1 hover:bg-zinc-600 hover:scale-110 text-white rounded-md duration-100 transition-all" size={28} aria-label="Developer Badge" />
                         </Tooltip>
                      )}
                   </h2>

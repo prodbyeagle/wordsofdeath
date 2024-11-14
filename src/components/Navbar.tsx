@@ -88,6 +88,7 @@ const Navbar = () => {
                   className="relative flex items-center space-x-1 border border-zinc-900 rounded-md p-1 duration-100 transition-all">
 
                   <div className="flex items-center space-x-3 border hover:bg-zinc-800 hover:border-zinc-700 border-zinc-900 rounded-md p-1 duration-100 transition-all">
+                     {/* //TODO: webp support */}
                      <Image
                         src={getAvatarUrl(user.id, user.avatar)}
                         alt="User avatar"
@@ -128,17 +129,17 @@ const Navbar = () => {
                className="w-full p-2 rounded-md bg-zinc-800 text-white border border-zinc-600 focus:outline-none focus:outline-amber-300 transition-all"
             />
             {suggestions.length > 0 && (
-               <div className="absolute left-0 right-0 bg-zinc-900 rounded-md shadow-lg font-light mt-1 z-10">
-                  <ul className="max-h-60 overflow-y-auto space-y-1">
+               <div className="absolute left-0 right-0 bg-zinc-900 border border-zinc-600 rounded-2xl shadow-lg font-light mt-4 transition-all">
+                  <ul className="max-h-64 overflow-y-auto space-y-1">
                      {suggestions.map((word) => (
                         <li
                            key={word._id}
-                           className="px-4 py-2 hover:bg-zinc-700 rounded-md cursor-pointer transition-colors duration-100"
+                           className="px-4 py-2 hover:border-green-400 border-b-2 border-transparent rounded-xl cursor-pointer transition-all duration-200"
                            onClick={() => window.location.href = `/e/${word.id}`}
                         >
                            <div className="flex flex-col">
                               <strong className="text-white text-lg">{word.entry}</strong>
-                              <div className="text-zinc-400 text-sm">
+                              <div className="text-zinc-400 italic text-xs">
                                  {word.categories.join(', ')}
                               </div>
                            </div>

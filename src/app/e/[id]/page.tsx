@@ -107,7 +107,6 @@ const EntryPage = async ({ params }: EntryProps) => {
         );
     }
 
-
     const allEntries = await fetchAllEntries(token);
     const relevantEntries = allEntries.filter(
         (otherEntry) =>
@@ -120,9 +119,10 @@ const EntryPage = async ({ params }: EntryProps) => {
     };
 
     return (
-        <div className="min-h-screen bg-zinc-900 text-zinc-200 flex items-center justify-center py-12 px-6">
+        <div className="min-h-screen bg-zinc-900 text-zinc-200 cursor-default flex items-center justify-center py-12 px-6">
             <div className="max-w-3xl w-full p-8 rounded-xl shadow-2xl bg-zinc-800">
-                <h2 className="text-3xl font-bold mb-4">{entry.entry}</h2>
+                {/* //TODO: add discord text "formatting for entry.entry (markdown support)" */}
+                <h2 className="text-3xl font-bold mb-4 break-words">{entry.entry}</h2>
                 <div className="text-sm text-zinc-400 mb-6 flex items-center space-x-1">
                     <Clock size={16} className="text-zinc-400" />
                     <span>
@@ -170,8 +170,9 @@ const EntryPage = async ({ params }: EntryProps) => {
                     <Link href={`/u/${user.username}`}>
                         <div
                             className="p-2 mt-8 w-fit flex items-center rounded-xl bg-zinc-800 hover:bg-zinc-600 border-2 border-zinc-800 transition-all transform hover:rounded-xl hover:scale-[1.04]">
+                            {/* //TODO: webp support */}
                             <Image
-                                src={user.avatar ? getAvatarUrl(user.id, user.avatar) : "/default-avatar.png"}
+                                src={user.avatar ? getAvatarUrl(user.id, user.avatar) : "none"}
                                 alt={`${user.username}'s Avatar`}
                                 width={36}
                                 height={36}
@@ -202,7 +203,7 @@ const EntryPage = async ({ params }: EntryProps) => {
                                         className="block p-4 rounded-xl bg-zinc-700 border-2 border-zinc-700 transition-all transform hover:rounded-3xl hover:scale-[1.02] hover:bg-zinc-800">
                                         <div>
                                             <button
-                                                className="text-zinc-300 text-lg font-medium transition-all hover:text-zinc-200">
+                                                className="text-zinc-300 text-lg font-medium">
                                                 {relevantEntry.entry}
                                             </button>
                                         </div>

@@ -9,13 +9,6 @@ export const metadata = {
   icons: {
     icon: '/skull.webp',
   },
-  title: "WordsOfDeath",
-  description: "Words of Death. Nothing more...",
-  openGraph: {
-    title: "WordsOfDeath",
-    description: "Words of Death. Nothing more...",
-    url: "https://wordsofdeath.vercel.app/",
-  },
 };
 
 export default function RootLayout({
@@ -26,11 +19,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        <meta name="description" content={metadata.description} />
-        <meta property="og:title" content={metadata.openGraph?.title} />
-        <meta property="og:description" content={metadata.openGraph?.description} />
-        <meta property="og:url" content={metadata.openGraph?.url} />
-        <meta property="og:type" content="website" />
         <link rel="icon" href={metadata.icons.icon} />
       </head>
       <body className={sg.className}>

@@ -35,7 +35,8 @@ export async function generateMetadata(
     parent: ResolvingMetadata
 ): Promise<Metadata> {
     const { id } = await params;
-    const entry = await fetcher<Entry>(`/entries/${id}`);
+
+    const entry = await fetcher<Entry>(`/entries/metadata/${id}`);
     if (!entry) {
         return {
             title: "Entry Not Found - Words of Death",
@@ -51,29 +52,20 @@ export async function generateMetadata(
 
     return {
         title: `${entry.entry} - Words of Death`,
-        description: `Entry by ${user?.username || "Unknown"}: ${entry.entry}`,
+        description: `Entry by ${entry?.author || "Unknown"}: ${entry.entry}`,
         openGraph: {
             title: `${entry.entry} - Words of Death`,
-            description: `Entry by ${user?.username || "Unknown"}: ${entry.entry}`,
+            description: `Entry by ${entry?.author || "Unknown"}: ${entry.entry}`,
             images: [
                 user?.avatar
-                    ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`
+                    ? `https://cdn.discordapp.com/avatars/${entry.authorId}/${entry.avatar}`
                     : "/default-avatar.png",
                 ...(parentMeta.openGraph?.images || []),
             ],
         },
-        twitter: {
-            card: "summary_large_image",
-            title: `${entry.entry} - Words of Death`,
-            description: `Entry by ${user?.username || "Unknown"}: ${entry.entry}`,
-            images: [
-                user?.avatar
-                    ? `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`
-                    : "/default-avatar.png",
-            ],
-        },
     };
 }
+
 
 const EntryPage = async ({ params }: EntryProps) => {
     const { id } = await params;

@@ -1,75 +1,74 @@
-## Übersicht
-**WordsofDeath** ist eine webbasierte Plattform, die es Nutzern ermöglicht, Wörter oder Sätze in verschiedenen Kategorien zu speichern und zu durchsuchen. Der Zugriff auf die Seite ist auf eine Whitelist von Discord-Nutzern beschränkt. Die Seite nutzt Next.js und TypeScript für das Frontend, MongoDB für die Datenbank und Tailwind CSS für das UI-Design.
+# WordsofDeath
 
-## Technologie-Stack
+## Overview
+**WordsofDeath** is a web-based platform that allows users to store and search for words or sentences across different categories. Access to the site is restricted to a whitelist of Discord users. The site uses Next.js and TypeScript for the frontend, MongoDB for the database, and Tailwind CSS for UI design.
+
+## Technology Stack
 - **Frontend**: Next.js + TypeScript
-- **Datenbank**: MongoDB (ohne Mongoose)
-- **UI-Design**: Tailwind CSS
+- **Database**: Native MongoDB
+- **UI Design**: Tailwind CSS
 - **Login**: Discord OAuth2
 
-## Funktionen
-1. **Benutzeranmeldung**:
-   - Die Anmeldung erfolgt über Discord OAuth2.
-   - Erfasste Benutzerdaten:
-     - **Username**: Name des Discord-Benutzers
-     - **Avatar**: Profilbild des Discord-Benutzers
-     - **ID**: Discord-Id Des Benutzers
-     - **Beitrittsdatum**: Zeit Stempel des ersten Zugriffs (erstellt mit `Date.now`)
+## Features
+1. **User Authentication**:
+   - Authentication is handled through Discord OAuth2
+   - Collected user data includes:
+     - **Username**: Discord username
+     - **Avatar**: Discord profile picture Hash
+     - **ID**: Discord user ID
+     - **Join Date**: Timestamp of first access (created using `Date.now`)
 
-2. **Wörter und Sätze speichern**:
-   - Nutzer können Wörter oder Sätze in der Datenbank speichern und kategorisieren.
-   - **Selectbar**-Funktion zur Auswahl, ob es sich um ein Wort oder einen Satz handelt.
-   - Angaben beim Speichern:
-     - **Word or Sentence**: Die gespeicherte Information (entweder Wort oder Satz).
-     - **Kategorien**: Ein oder mehrere Kategorien zur thematischen Einordnung.
-     - **Author**: Benutzername des Erstellers.
+2. **Word and Sentence Storage**:
+   - Users can store words or sentences in the database and categorize them
+   - **Selectbar** function to choose between word or sentence entry
+   - Information stored includes:
+     - **Word or Sentence**: The stored information (either word or sentence)
+     - **Categories**: One or more categories for thematic classification
+     - **Author**: Username of the creator
 
-3. **Suche und Filterung**:
-   - Benutzer können gespeicherte Wörter und Sätze anhand von Kategorien oder Stichwörtern durchsuchen.
+3. **Search and Filtering**:
+   - Users can search stored words and sentences using categories or keywords
 
-4. **Whitelist-Verwaltung**:
-   - Nur Benutzer, die sich auf der Whitelist befinden, dürfen die Website betreten.
-   - Whitelist beinhaltet Discord-Benutzer, die zur Nutzung der Plattform berechtigt sind. (datenbank whitelist.)
+4. **Whitelist Management**:
+   - Only whitelisted users are allowed to access the website
+   - Whitelist contains Discord users who are authorized to use the platform (database whitelist)
 
-## Datenbank-Schema
-
-| Feldname      | Datentyp   | Beschreibung                 |
+## Database Schema
+| Field Name    | Data Type  | Description                  |
 |---------------|------------|------------------------------|
-| `name`        | `string`   | Name des Benutzers           |
-| `timestamp`   | `Date.now` | Zeitstempel des Zugriffs     |
-| `entry`       | `string`   | Gespeichertes Wort oder Satz |
-| `categories`  | `string[]` | Liste der Kategorien         |
-| `author`      | `string`   | Name des Erstellers          |
-| `variationen` | `string[]` | Variationen vom `entry`      |
+| `name`        | `string`   | User name                    |
+| `timestamp`   | `Date.now` | Access timestamp             |
+| `entry`       | `string`   | Stored word or sentence      |
+| `categories`  | `string[]` | List of categories          |
+| `author`      | `string`   | Creator's name              |
+| `variations`  | `string[]` | Variations of the `entry`    |
 
-### Beispiel für einen Benutzer
+### Example User Entry
 ```json
 {
-    "_id":"6732e69ef11016e40775ecf8",
-    "id":"1065030118491308082",
+    "_id": "6732e69ef11016e40775ecf8",
+    "id": "1065030118491308082",
     "name": "MaxMustermann",
-    "avatar":"a9f0b4b5434e6cd5031bd246fdabce40",
+    "avatar": "a9f0b4b5434e6cd5031bd246fdabce40",
     "joined_at": "2023-10-27T12:34:56Z"
 }
 ```
 
-### Beispiel für gespeicherte Wörter/Sätze
-
+### Example Word/Sentence Entry
 ```json
 [{
-  "_id": {
-    "$oid": "6732e47363aa5cc0e6613d7c"
-  },
-  "id": "01JCFCRRW04PW5RZEWMPNA57H7",
-  "entry": "schebedebäpert",
-
-  "type": "word",
-  "categories": [
-    "discord"
-  ],
-  "author": "prodbyeagle",
-  "authorId": "893759402832699392",
-  "timestamp": "2024-10-28T20:42:08.572Z",
-  "variation": []
-  }]
+  "_id": {
+    "$oid": "6732e47363aa5cc0e6613d7c"
+  },
+  "id": "01JCFCRRW04PW5RZEWMPNA57H7",
+  "entry": "schebedebäpert",
+  "type": "word",
+  "categories": [
+    "discord"
+  ],
+  "author": "prodbyeagle",
+  "authorId": "893759402832699392",
+  "timestamp": "2024-10-28T20:42:08.572Z",
+  "variation": []
+}]
 ```

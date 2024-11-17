@@ -1,10 +1,10 @@
 /**
  * Represents a user in the application.
- * @property id - Unique Discord user ID. Example: `893759402832699392`.
- * @property username - The user's Discord username.
- * @property avatar - Hash representing the user's avatar image. Can be used to construct the full avatar URL.
- * @property joined_at - Timestamp when the user first joined the application, in ISO 8601 format.
- * @property roles - (Optional) Array of roles associated with the user, if any.
+ * @property `id` - Unique Discord user ID.
+ * @property `username` - The user's Discord username.
+ * @property `avatar` - Hash representing the user's avatar image. Can be used to construct the full avatar URL.
+ * @property `joined_at` - Timestamp when the user first joined the application, in ISO 8601 format.
+ * @property `roles` - (Optional) Array of roles associated with the user, if any.
  */
 export interface User {
    id: string;
@@ -16,15 +16,16 @@ export interface User {
 
 /**
  * Represents an entry in the application, such as a saved word or phrase.
- * @property _id - Unique identifier for the entry in the database.
- * @property id - Unique identifier for the entry within the application.
- * @property entry - Content of the entry, typically a word or phrase.
- * @property type - Specifies the entry type (e.g., "word", "sentence").
- * @property categories - Array of categories to which this entry belongs.
- * @property author - Username of the entry's creator.
- * @property authorId - Discord user ID of the entry's creator.
- * @property timestamp - Timestamp of entry creation, in ISO 8601 format.
- * @property variation - Array of variations for this entry, if any.
+ * @property `_id` - Unique identifier for the entry in the database.
+ * @property `id` - Unique identifier for the entry within the application.
+ * @property `entry` - Content of the entry, typically a word or phrase.
+ * @property `type` - Specifies the entry type (e.g., "word", "sentence").
+ * @property `categories` - Array of categories to which this entry belongs.
+ * @property `author` - Username of the entry's creator.
+ * @property `authorId` - Discord user ID of the entry's creator.
+ * @property `avatar` - ONLY FOR METADATA
+ * @property `timestamp` - Timestamp of entry creation, in ISO 8601 format.
+ * @property `variation` - Array of variations for this entry, if any.
  */
 export interface Entry {
    _id: string;
@@ -34,15 +35,16 @@ export interface Entry {
    categories: string[];
    author: string;
    authorId: string;
+   avatar?: string;
    timestamp: string;
    variation: string[];
 }
 
 /**
  * Represents a whitelist entry, which permits a specific user to access the application.
- * @property _id - Unique identifier for the whitelist entry in the database.
- * @property username - Username of the whitelisted user.
- * @property added_at - Timestamp when the user was added to the whitelist, in ISO 8601 format.
+ * @property `_id` - Unique identifier for the whitelist entry in the database.
+ * @property `username` - Username of the whitelisted user.
+ * @property `added_at` - Timestamp when the user was added to the whitelist, in ISO 8601 format.
  */
 export interface Whitelist {
    _id: string;

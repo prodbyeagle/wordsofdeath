@@ -334,7 +334,6 @@ const Homepage = () => {
                     placeholder="Gib hier deinen neuen Eintrag ein..."
                     className="w-full p-3 bg-zinc-700 border resize-none border-neutral-600 rounded-lg mb-4 placeholder-gray-400 text-white"
                     rows={1}
-                    maxLength={72}
                     minLength={3}
                 />
                 <select
@@ -351,7 +350,6 @@ const Homepage = () => {
                     onChange={(e) => setCategories(e.target.value)}
                     placeholder="Kategorien min. 1 (durch Komma getrennt)"
                     className="w-full p-3 bg-zinc-700 border border-neutral-600 rounded-lg mb-4 placeholder-gray-400 text-white"
-                    maxLength={32}
                     minLength={3}
                 />
                 <input
@@ -360,7 +358,6 @@ const Homepage = () => {
                     onChange={(e) => setVariation(e.target.value)}
                     placeholder="Variationen [nicht nötig] (durch Komma getrennt)"
                     className="w-full p-3 bg-zinc-700 border border-neutral-600 rounded-lg mb-4 placeholder-gray-400 text-white"
-                    maxLength={32}
                     minLength={3}
                 />
                 <button

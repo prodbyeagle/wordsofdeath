@@ -196,6 +196,7 @@ const EntryPage = async ({ params }: EntryProps) => {
                                 height={36}
                                 className="rounded-full mr-4"
                                 loading="lazy"
+                                unoptimized
                             />
                             <span className="text-lg font-medium">von @{user.username}</span>
                             {user.roles?.includes("owner") && (

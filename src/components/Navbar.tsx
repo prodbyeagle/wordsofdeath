@@ -92,6 +92,7 @@ const Navbar = () => {
                         className="rounded-full cursor-pointer"
                         onClick={toggleDropdown}
                         loading='lazy'
+                        unoptimized
                      />
                      <span className="text-white font-medium cursor-pointer">
                         {user.username}

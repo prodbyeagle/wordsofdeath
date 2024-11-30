@@ -61,7 +61,7 @@
     "$oid": "6732e47363aa5cc0e6613d7c"
   },
   "id": "01JCFCRRW04PW5RZEWMPNA57H7",
-  "entry": "schebedebäpert",
+  "entry": "testword123",
   "type": "word",
   "categories": [
     "discord"

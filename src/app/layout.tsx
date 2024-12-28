@@ -20,6 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <head>
         <link rel="icon" href={metadata.icons.icon} />
+        <meta name="google-site-verification" content="hzsS2qiDIdpqUiOcQrA-Dou7pxxilhW0INsyVueX7jY" />
       </head>
       <body className={sg.className}>
         <Navbar />

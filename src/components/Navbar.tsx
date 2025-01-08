@@ -49,7 +49,7 @@ const Navbar = () => {
             const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
 
             if (!token) return;
-            const response = await fetch(`http://localhost:3001/api/search?q=${value}`, {
+            const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/search?q=${value}`, {
                method: "GET",
                headers: {
                   'Authorization': `Bearer ${token}`,

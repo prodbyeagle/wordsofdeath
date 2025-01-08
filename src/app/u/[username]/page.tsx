@@ -23,7 +23,7 @@ const UserProfile = ({ params }: UserProfileProps) => {
          const { username } = await params;
 
          try {
-            const userResponse = await fetch(`http://localhost:3001/api/user/u/${username}`, {
+            const userResponse = await fetch(`https://wordsofdeath-backend.vercel.app/api/user/u/${username}`, {
                method: "GET",
                headers: {
                   Authorization: `Bearer ${document.cookie.split("=")[1]}`,
@@ -34,7 +34,7 @@ const UserProfile = ({ params }: UserProfileProps) => {
                const userData = await userResponse.json();
                setUser(userData);
 
-               const entriesResponse = await fetch(`http://localhost:3001/api/entries/u/${username}`, {
+               const entriesResponse = await fetch(`https://wordsofdeath-backend.vercel.app/api/entries/u/${username}`, {
                   method: "GET",
                   headers: {
                      Authorization: `Bearer ${document.cookie.split("=")[1]}`,

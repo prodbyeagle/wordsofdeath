@@ -1,19 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:ital,wght@0,100..900;1,100..900&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-:root {
-   font-family: 'Inter Tight', Tahoma, Geneva, Verdana, sans-serif;
-}
 
 @keyframes fade-in {
    from {
       opacity: 0;
       transform: scale(0.95);
    }
-   
+
    to {
       opacity: 1;
       transform: scale(1);

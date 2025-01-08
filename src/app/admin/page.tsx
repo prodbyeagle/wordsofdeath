@@ -25,7 +25,7 @@ const Admin = () => {
 
       const fetchUserStatus = async () => {
          try {
-            const response = await fetch("https://wordsofdeath-backend.vercel.app/auth/admin", {
+            const response = await fetch("http://localhost:3001/auth/admin", {
                method: 'GET',
                headers: { 'Authorization': `Bearer ${token}` },
             });
@@ -44,8 +44,8 @@ const Admin = () => {
          setLoading(true);
          try {
             const [usersResponse, entriesResponse] = await Promise.all([
-               fetch("https://wordsofdeath-backend.vercel.app/api/whitelist", { headers: { 'Authorization': `Bearer ${document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1]}` } }),
-               fetch("https://wordsofdeath-backend.vercel.app/api/entries", { headers: { 'Authorization': `Bearer ${document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1]}` } }),
+               fetch("http://localhost:3001/api/whitelist", { headers: { 'Authorization': `Bearer ${document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1]}` } }),
+               fetch("http://localhost:3001/api/entries", { headers: { 'Authorization': `Bearer ${document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1]}` } }),
             ]);
 
             if (!usersResponse.ok || !entriesResponse.ok) throw new Error("Fehler beim Abrufen der Daten.");
@@ -69,7 +69,7 @@ const Admin = () => {
       if (!newUser.trim()) return;
       const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
       try {
-         const response = await fetch("https://wordsofdeath-backend.vercel.app/api/whitelist", {
+         const response = await fetch("http://localhost:3001/api/whitelist", {
             method: "POST",
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: newUser }),
@@ -88,7 +88,7 @@ const Admin = () => {
    const removeUserFromWhitelist = async (username: string) => {
       const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
       try {
-         const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/whitelist/${username}`, {
+         const response = await fetch(`http://localhost:3001/api/whitelist/${username}`, {
             method: "DELETE",
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
          });
@@ -103,7 +103,7 @@ const Admin = () => {
    const deleteEntry = async (entryId: string) => {
       const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
       try {
-         const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/entries/${entryId}`, {
+         const response = await fetch(`http://localhost:3001/api/entries/${entryId}`, {
             method: "DELETE",
             headers: { 'Authorization': `Bearer ${token}` },
          });

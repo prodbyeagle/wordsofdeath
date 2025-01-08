@@ -10,7 +10,7 @@ const SignInPage: React.FC = () => {
    const handleMouseLeave = () => setHoverIndex(null);
 
    const handleSignIn = () => {
-      window.location.href = 'https://wordsofdeath-backend.vercel.app/auth/discord';
+      window.location.href = 'http://localhost:3001/auth/discord';
    };
 
    const renderWelcomeText = () => {

@@ -1,19 +1,14 @@
-/* eslint-disable @next/next/no-img-element */
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-unused-vars */
-// noinspection JSIgnoredPromiseFromCall
-
 'use client';
 
 import React, { useCallback, useEffect, useState } from "react";
-import Image from "next/image";
 import type { Entry, User } from "@/types";
-import Link from 'next/link';
 import Modal from "@/components/Modal";
 import { useRouter } from 'next/navigation';
-import { BadgeCheck, CircleUserRound, Clock, HeartHandshake, Server, MessageCirclePlus } from "lucide-react";
-import { formatDistanceToNow } from 'date-fns';
-import { de } from 'date-fns/locale';
+import { LoginPrompt } from "@/components/mainpage/LoginPrompt";
+import { Pagination } from "@/components/mainpage/Pagination";
+import { EntryCard } from "@/components/mainpage/EntryCard";
+import { MessageCirclePlus } from "lucide-react";
 
 const Homepage = () => {
     const router = useRouter();
@@ -28,14 +23,14 @@ const Homepage = () => {
     const [user] = useState<User | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState<number>(1);
-    const entriesPerPage = 10;
+    const entriesPerPage = 25;
     const [avatarCache, setAvatarCache] = useState<{ [username: string]: string }>({});
     const [userRoles, setUserRoles] = useState<{ [username: string]: string[] }>({});
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const pageParam = urlParams.get('page');
-        setPage(pageParam ? parseInt(pageParam, 10) : 1);
+        setPage(pageParam ? parseInt(pageParam, 25) : 1);
     }, []);
 
     useEffect(() => {
@@ -53,7 +48,7 @@ const Homepage = () => {
         if (avatarCache[author]) return null;
 
         try {
-            const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/user/u/${author}`, {
+            const response = await fetch(`http://localhost:3001/api/user/u/${author}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${document.cookie.split('=')[1]}`,
@@ -93,7 +88,7 @@ const Homepage = () => {
 
     const fetchEntries = async () => {
         try {
-            const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/entries`, {
+            const response = await fetch(`http://localhost:3001/api/entries`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${document.cookie.split('=')[1]}`,
@@ -141,7 +136,7 @@ const Homepage = () => {
         }
 
         try {
-            const response = await fetch('https://wordsofdeath-backend.vercel.app/api/entries', {
+            const response = await fetch('http://localhost:3001/api/entries', {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -172,154 +167,60 @@ const Homepage = () => {
     };
 
     if (!isLoggedIn) {
-        return (
-            <div className="min-h-screen bg-zinc-900 text-zinc-200 flex items-center justify-center py-12 px-6">
-                <div className="max-w-lg w-full p-8 rounded-xl shadow-2xl bg-zinc-800 text-center">
-                    <h1 className="text-3xl font-bold mb-4">Du bist nicht eingeloggt!</h1>
-                    <p className="text-base text-zinc-400 mb-6">Bitte melde dich an, um die Plattform zu nutzen.</p>
-                    <Link href="/signin">
-                        <button
-                            className="px-5 py-2 bg-zinc-700 border-2 border-zinc-700 text-zinc-200 rounded-xl hover:bg-zinc-800 transition-all duration-300 shadow-lg">
-                            Anmelden
-                        </button>
-                    </Link>
-                </div>
-            </div>
-        );
+        return <LoginPrompt />;
     }
 
     const totalPages = Math.ceil(entries.length / entriesPerPage);
 
-    const renderPagination = () => {
-        const maxPagesToShow = 3;
-
-        let pageNumbers: (string | number)[] = [];
-        if (totalPages <= maxPagesToShow + 2) {
-            pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
-        } else {
-            if (page <= maxPagesToShow) {
-                pageNumbers = [...Array.from({ length: maxPagesToShow }, (_, i) => i + 1), '...', totalPages];
-            } else if (page > totalPages - maxPagesToShow) {
-                pageNumbers = [1, '...', ...Array.from({ length: maxPagesToShow }, (_, i) => totalPages - maxPagesToShow + i + 1)];
-            } else {
-                pageNumbers = [1, '...', page, '...', totalPages];
-            }
-        }
-
-        return (
-            <div className="flex justify-center items-center space-x-2 mt-8">
-                <button
-                    onClick={() => setPage(page - 1)}
-                    disabled={page === 1}
-                    className={`px-4 py-2 rounded-xl border-2 ${page === 1 ? 'bg-transparent border-transparent text-zinc-500 cursor-default' : 'bg-zinc-700 border-zinc-600 text-zinc-200 hover:bg-zinc-800'
-                        } transition-all duration-300`}
-                >
-                    Zurück
-                </button>
-
-                {pageNumbers.map((num, index) =>
-                    num === '...' ? (
-                        <span key={index} className="px-3 py-1 text-zinc-400">...</span>
-                    ) : (
-                        <button
-                            key={index}
-                            onClick={() => handlePageChange(num as number)}
-                            className={`px-4 py-2 rounded-xl border-2 ${page === num ? 'bg-zinc-600 border-zinc-500 text-white' : 'bg-zinc-700 border-zinc-600 text-zinc-200 hover:bg-zinc-800'
-                                } transition-all duration-300`}
-                        >
-                            {num}
-                        </button>
-                    )
-                )}
-
-                <button
-                    onClick={() => setPage(page + 1)}
-                    disabled={page === totalPages}
-                    className={`px-4 py-2 rounded-xl border-2 ${page === totalPages ? 'bg-transparent border-transparent text-zinc-500 cursor-default' : 'bg-zinc-700 border-zinc-600 text-zinc-200 hover:bg-zinc-800'
-                        } transition-all duration-300`}
-                >
-                    Weiter
-                </button>
-            </div>
-        );
-    };
-
     return (
-        <div className="min-h-screen bg-zinc-900 text-white flex flex-col items-center py-10">
-            <div className="max-w-2xl w-full px-2">
-                <h2 className="text-4xl font-bold mb-8 text-center">Feed</h2>
+        <div className="min-h-screen bg-zinc-900 text-white">
+            <div className="max-w-2xl mx-auto px-4 py-10">
+                <header className="mb-8">
+                    <h1 className="text-4xl font-bold text-center">Feed</h1>
+                </header>
 
-                <div className="mb-4">{renderPagination()}</div>
+                <div className="sticky top-4 z-10 space-y-4 backdrop-blur-lg bg-zinc-900/80 p-4 rounded-xl">
+                    <Pagination
+                        currentPage={page}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                    />
+                </div>
+
                 <button
                     onClick={() => setIsModalOpen(true)}
-                    className="mb-8 w-full flex items-center justify-center space-x-2 bg-green-600 hover:bg-green-700 duration-100 transition-all border-2 border-green-600 rounded-xl shadow-lg text-white font-semibold py-3 px-8"
+                    className="w-full flex items-center justify-center space-x-2 bg-green-600 hover:bg-green-700 duration-100 transition-all border-2 border-green-600 rounded-xl shadow-lg text-white font-semibold py-3 px-8"
                 >
                     <MessageCirclePlus className="w-5 h-5" />
                     <span>Neuen Eintrag hinzufügen</span>
                 </button>
 
+                <main className="mt-8">
+                    <div className="space-y-4">
+                        {uniqueEntries.length > 0 ? (
+                            uniqueEntries.map((entry) => (
+                                <EntryCard
+                                    key={entry.id}
+                                    entry={entry}
+                                    avatarUrl={avatarCache[entry.author]}
+                                    userRoles={userRoles[entry.author]}
+                                />
+                            ))
+                        ) : (
+                            <p className="text-center text-zinc-500">
+                                Noch keine Einträge vorhanden.
+                            </p>
+                        )}
+                    </div>
+                </main>
 
-                <div className="flex flex-col space-y-4">
-                    {uniqueEntries.length > 0 ? (
-                        uniqueEntries.map((entry) => (
-                            <Link key={entry.id} href={`/e/${entry.id}`} passHref>
-                                <div
-                                    className="bg-zinc-700 p-6 rounded-md shadow-md hover:rounded-2xl hover:bg-zinc-800 duration-300 hover:shadow-4xl hover:scale-[1.03] hover:border-l-green-500 transition-all border-2 border-zinc-700 cursor-pointer">
-                                    <div className="flex items-center space-x-2">
-                                        {/* //TODO: webp support */}
-                                        {avatarCache[entry.author] ? (
-                                            <img
-                                                src={avatarCache[entry.author]}
-                                                alt={`${entry.author}'s avatar`}
-                                                className="w-6 h-6 rounded-full"
-                                                width={28}
-                                                height={28}
-                                                onError={(e) => {
-                                                    e.currentTarget.onerror = null;
-                                                    e.currentTarget.src = "";
-                                                }}
-                                            />
-                                        ) : (
-                                            <CircleUserRound size={28} className="text-zinc-400" />
-                                        )}
-                                        <span className="text-zinc-300 font-medium">@{entry.author}</span>
-                                        <div className="space-x-2 flex flex-row items-center">
-                                            {userRoles[entry.author]?.includes('owner') && (
-                                                <BadgeCheck
-                                                    className="text-red-400 cursor-default rounded-md duration-100 transition-all"
-                                                    size={20} />
-                                            )}
-                                            {userRoles[entry.author]?.includes('admin') && (
-                                                <HeartHandshake
-                                                    className="text-yellow-400 cursor-default rounded-md duration-100 transition-all"
-                                                    size={20} />
-                                            )}
-                                            {userRoles[entry.author]?.includes('developer') && (
-                                                <Server
-                                                    className="text-white cursor-default rounded-md duration-100 transition-all"
-                                                    size={18} />
-                                            )}
-                                        </div>
-                                    </div>
-                                    <p className="text-lg font-medium mb-2">{entry.entry}</p>
-                                    <div className="text-sm text-zinc-400 flex items-center space-x-1">
-                                        <Clock size={14} className="text-zinc-400" />
-                                        <p className="text-sm text-zinc-400">
-                                            {formatDistanceToNow(new Date(entry.timestamp), {
-                                                includeSeconds: true,
-                                                addSuffix: true,
-                                                locale: de
-                                            })} erstellt.
-                                        </p>
-                                    </div>
-                                </div>
-                            </Link>
-                        ))
-                    ) : (
-                        <p className="text-center text-zinc-500">Noch keine Einträge vorhanden.</p>
-                    )}
-                </div>
-                {renderPagination()}
+                <footer className="mt-8">
+                    <Pagination
+                        currentPage={page}
+                        totalPages={totalPages}
+                        onPageChange={handlePageChange}
+                    />
+                </footer>
             </div>
 
             <Modal

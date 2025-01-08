@@ -49,7 +49,7 @@ const Navbar = () => {
             const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
 
             if (!token) return;
-            const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/search?q=${value}`, {
+            const response = await fetch(`http://localhost:3001/api/search?q=${value}`, {
                method: "GET",
                headers: {
                   'Authorization': `Bearer ${token}`,
@@ -70,20 +70,20 @@ const Navbar = () => {
    };
 
    return (
-      <nav className="p-2 bg-zinc-900 backdrop-blur-xl flex flex-col md:flex-row md:justify-between items-center space-y-2 md:space-y-0 ">
+      <nav className="p-2 bg-zinc-900 backdrop-blur-xl sticky top-0 flex flex-col md:flex-row md:justify-between items-center space-y-2 md:space-y-0 z-20">
          <div className="flex items-center space-x-0">
             <Link href="/" className="rounded-md p-2 duration-100 transition-all">
                <Home
                   size={42}
-                  className="border text-white hover:scale-[1.08] bg-zinc-900 hover:bg-zinc-800 hover:border-zinc-600 border-zinc-900 rounded-md p-2 duration-100 transition cursor-pointer" />
+                  className="border text-white bg-transparent hover:bg-zinc-800 hover:border-zinc-600 border-transparent rounded-md p-2 duration-100 transition cursor-pointer" />
             </Link>
 
             {user && (
                <div
                   onClick={toggleDropdown}
-                  className="relative flex items-center space-x-1 border border-zinc-900 rounded-md p-1 duration-100 transition-all">
+                  className="relative flex items-center space-x-1 border border-transparent rounded-md p-1 duration-100 transition-all">
 
-                  <div className="flex items-center space-x-3 border hover:bg-zinc-800 hover:border-zinc-700 border-zinc-900 rounded-md p-1 duration-100 transition-all">
+                  <div className="flex items-center space-x-3 border hover:bg-zinc-800 hover:border-zinc-700 border-transparent rounded-md p-1 duration-100 transition-all">
                      <Image
                         src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`}
                         alt="User avatar"

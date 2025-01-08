@@ -1,18 +1,17 @@
 /* eslint-disable @next/next/no-img-element */
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Entry, User } from "@/types";
-import { formatDistanceToNow } from "date-fns";
-import { de } from "date-fns/locale";
-import { BadgeCheck, Clock, HeartHandshake, Server } from "lucide-react";
 import type { Metadata, ResolvingMetadata } from "next";
+import { UserRoleBadges } from "@/components/UserRoleBadges";
+import { TimeStamp } from "@/components/Timestamp";
+import { UserAvatar } from "@/components/Useravatar";
 
 interface EntryProps {
     params: Promise<{ id: string }>;
 }
 
-const API_BASE_URL = "https://wordsofdeath-backend.vercel.app/api";
+const API_BASE_URL = "http://localhost:3001/api";
 // const API_DEV_URL = "http://localhost:3001/api";
 
 const fetcher = async <T,>(
@@ -51,11 +50,11 @@ export async function generateMetadata(
     const parentMeta = await parent;
 
     return {
-        title: `${entry.entry} - Words of Death`,
-        description: `Entry by ${entry?.author || "Unknown"}: ${entry.entry}`,
+        title: `${entry.entry}`,
+        description: `Entry von ${entry?.author || "Unbekannt"}: ${entry.entry}`,
         openGraph: {
-            title: `${entry.entry} - Words of Death`,
-            description: `Entry by ${entry?.author || "Unknown"}: ${entry.entry}`,
+            title: `${entry.entry}`,
+            description: `Entry von ${entry?.author || "Unbekannt"}: ${entry.entry}`,
             images: [
                 user?.avatar
                     ? `https://cdn.discordapp.com/avatars/${entry.authorId}/${entry.avatar}`
@@ -65,7 +64,6 @@ export async function generateMetadata(
         },
     };
 }
-
 
 const EntryPage = async ({ params }: EntryProps) => {
     const { id } = await params;
@@ -143,15 +141,7 @@ const EntryPage = async ({ params }: EntryProps) => {
             <div className="max-w-3xl w-full p-8 rounded-xl shadow-2xl bg-zinc-800">
                 <h2 className="text-3xl font-bold mb-4 break-words">{entry.entry}</h2>
                 <div className="text-sm text-zinc-400 mb-6 flex items-center space-x-1">
-                    <Clock size={16} className="text-zinc-400" />
-                    <span>
-                        {formatDistanceToNow(new Date(entry.timestamp), {
-                            includeSeconds: true,
-                            addSuffix: true,
-                            locale: de,
-                        })}{" "}
-                        erstellt.
-                    </span>
+                    <TimeStamp timestamp={entry.timestamp} />
                 </div>
 
                 {entry.variation.length > 0 && (
@@ -188,26 +178,10 @@ const EntryPage = async ({ params }: EntryProps) => {
                 {user && (
                     <Link href={`/u/${user.username}`}>
                         <div
-                            className="p-2 mt-8 w-fit flex items-center rounded-xl bg-zinc-800 hover:bg-zinc-600 border-2 border-zinc-800 transition-all transform hover:rounded-xl hover:scale-[1.04]">
-                            <Image
-                                src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.webp`}
-                                alt={`${user.username}'s Avatar`}
-                                width={36}
-                                height={36}
-                                className="rounded-full mr-4"
-                                loading="lazy"
-                                unoptimized
-                            />
+                            className="p-2 mt-8 w-fit flex items-center space-x-2 rounded-xl bg-zinc-800 hover:bg-zinc-600 border-2 border-zinc-800 transition-all transform hover:rounded-xl hover:scale-[1.04]">
+                            <UserAvatar avatarUrl={user.avatar} id={user.id} username={user.username} />
                             <span className="text-lg font-medium">von @{user.username}</span>
-                            {user.roles?.includes("owner") && (
-                                <BadgeCheck className="ml-1 p-1 text-red-400" size={24} aria-label="Admin Badge" />
-                            )}
-                            {user.roles?.includes("admin") && (
-                                <HeartHandshake className="p-1 text-yellow-400" size={26} aria-label="Admin Badge" />
-                            )}
-                            {user.roles?.includes("developer") && (
-                                <Server className="p-1 text-white" size={26} aria-label="Developer Badge" />
-                            )}
+                            {user.roles && <UserRoleBadges roles={user.roles} />}
                         </div>
                     </Link>
                 )}
@@ -227,11 +201,7 @@ const EntryPage = async ({ params }: EntryProps) => {
                                             </button>
                                         </div>
                                         <p className="text-zinc-400 text-sm mt-1">
-                                            {formatDistanceToNow(new Date(relevantEntry.timestamp), {
-                                                includeSeconds: true,
-                                                addSuffix: true,
-                                                locale: de,
-                                            })}
+                                            <TimeStamp timestamp={relevantEntry.timestamp} />
                                         </p>
                                     </span>
                                 </Link>

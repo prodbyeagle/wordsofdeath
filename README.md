@@ -41,7 +41,6 @@
 | `entry`       | `string`   | Stored word or sentence      |
 | `categories`  | `string[]` | List of categories          |
 | `author`      | `string`   | Creator's name              |
-| `variations`  | `string[]` | Variations of the `entry`    |
 
 ### Example User Entry
 ```json
@@ -62,13 +61,11 @@
   },
   "id": "01JCFCRRW04PW5RZEWMPNA57H7",
   "entry": "testword123",
-  "type": "word",
   "categories": [
     "discord"
   ],
   "author": "prodbyeagle",
   "authorId": "893759402832699392",
   "timestamp": "2024-10-28T20:42:08.572Z",
-  "variation": []
 }]
 ```

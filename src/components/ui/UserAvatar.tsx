@@ -1,7 +1,6 @@
 // components/entry/UserAvatar.tsx
 "use client";
 import Image from "next/image";
-import { useEffect } from "react";
 
 interface UserAvatarProps {
     avatarUrl?: string;
@@ -11,10 +10,6 @@ interface UserAvatarProps {
 }
 
 export const UserAvatar = ({ avatarUrl, id, username, size = 'md' }: UserAvatarProps) => {
-    useEffect(() => {
-        console.log("Props:", { avatarUrl });
-    }, [avatarUrl]);
-
     const sizeClasses = {
         sm: 'w-8 h-8',
         md: 'w-10 h-10',
@@ -36,7 +31,6 @@ export const UserAvatar = ({ avatarUrl, id, username, size = 'md' }: UserAvatarP
                     className="w-full h-full object-cover"
                     width={sizeDimensions[size].width}
                     height={sizeDimensions[size].height}
-                    unoptimized
                     priority
                 />
             </div>

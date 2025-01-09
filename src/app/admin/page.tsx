@@ -2,12 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { Entry, Whitelist } from '@/types';
-import { Trash, UserPlus, UserRoundCog } from 'lucide-react';
-import Modal from '@/components/Modal';
+import { Trash, UserPlus, UserRoundCog, Users, BookText, Loader2 } from 'lucide-react';
+import Modal from '@/components/ui/Modal';
 import Tooltip from '@/components/Tooltip';
 import Link from 'next/link';
 import { formatDistanceToNow } from "date-fns";
 import { de } from "date-fns/locale";
+import { Button } from '@/components/ui/Button';
 
 const Admin = () => {
    const [whitelistedUsers, setWhitelistedUsers] = useState<Whitelist[]>([]);
@@ -16,16 +17,15 @@ const Admin = () => {
    const [isAdmin, setIsAdmin] = useState(false);
    const [loading, setLoading] = useState(false);
    const [isModalOpen, setIsModalOpen] = useState(false);
+   const [activeTab, setActiveTab] = useState<'users' | 'entries'>('users');
 
    useEffect(() => {
       const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
-      if (!token) {
-         return;
-      }
+      if (!token) return;
 
       const fetchUserStatus = async () => {
          try {
-            const response = await fetch("https://wordsofdeath-backend.vercel.app/auth/admin", {
+            const response = await fetch("http://localhost:3001/auth/admin", {
                method: 'GET',
                headers: { 'Authorization': `Bearer ${token}` },
             });
@@ -33,8 +33,7 @@ const Admin = () => {
             if (!response.ok) throw new Error("Fehler beim Überprüfen des Admin-Status.");
             const data = await response.json();
             setIsAdmin(data.isAdmin);
-            if (!data.isAdmin)
-               throw new Error("User is not admin!")
+            if (!data.isAdmin) throw new Error("User is not admin!");
          } catch (error) {
             console.error("Fehler beim Überprüfen des Admin-Status:", error);
          }
@@ -44,8 +43,8 @@ const Admin = () => {
          setLoading(true);
          try {
             const [usersResponse, entriesResponse] = await Promise.all([
-               fetch("https://wordsofdeath-backend.vercel.app/api/whitelist", { headers: { 'Authorization': `Bearer ${document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1]}` } }),
-               fetch("https://wordsofdeath-backend.vercel.app/api/entries", { headers: { 'Authorization': `Bearer ${document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1]}` } }),
+               fetch("http://localhost:3001/api/whitelist", { headers: { 'Authorization': `Bearer ${token}` } }),
+               fetch("http://localhost:3001/api/entries", { headers: { 'Authorization': `Bearer ${token}` } }),
             ]);
 
             if (!usersResponse.ok || !entriesResponse.ok) throw new Error("Fehler beim Abrufen der Daten.");
@@ -69,7 +68,7 @@ const Admin = () => {
       if (!newUser.trim()) return;
       const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
       try {
-         const response = await fetch("https://wordsofdeath-backend.vercel.app/api/whitelist", {
+         const response = await fetch("http://localhost:3001/api/whitelist", {
             method: "POST",
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: newUser }),
@@ -88,9 +87,9 @@ const Admin = () => {
    const removeUserFromWhitelist = async (username: string) => {
       const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
       try {
-         const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/whitelist/${username}`, {
+         const response = await fetch(`http://localhost:3001/api/whitelist/${username}`, {
             method: "DELETE",
-            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+            headers: { 'Authorization': `Bearer ${token}` },
          });
 
          if (!response.ok) throw new Error("Fehler beim Entfernen des Benutzers.");
@@ -103,7 +102,7 @@ const Admin = () => {
    const deleteEntry = async (entryId: string) => {
       const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
       try {
-         const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/entries/${entryId}`, {
+         const response = await fetch(`http://localhost:3001/api/entries/${entryId}`, {
             method: "DELETE",
             headers: { 'Authorization': `Bearer ${token}` },
          });
@@ -114,84 +113,157 @@ const Admin = () => {
          console.error("Fehler beim Löschen des Eintrags:", error);
       }
    };
+   if (loading) {
+      return (
+         <div className="min-h-screen bg-neutral-900 flex items-center justify-center">
+            <div className="flex items-center gap-3">
+               <Loader2 className="w-6 h-6 animate-spin" />
+               <span className="text-neutral-300">Lade Dashboard...</span>
+            </div>
+         </div>
+      );
+   }
+
+   function goToPage(username: string): void {
+      window.location.href = `/u/${username}`;
+   }
 
    return (
-      <div className="bg-zinc-800 min-h-screen text-white p-8">
-         <div className="flex justify-between items-center mb-6">
-            <h1 className="text-3xl font-semibold">WordsOfDeath Admin Dashboard</h1>
-            <button
-               onClick={() => setIsModalOpen(true)} // Modal öffnen
-               className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg flex items-center space-x-2 transition"
-            >
-               <UserPlus className="w-5 h-5" />
-               <span>Benutzer Hinzufügen</span>
-            </button>
-         </div>
-
-         <h2 className="text-xl font-semibold mb-4">Whitelist Users</h2>
-         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {whitelistedUsers.map(user => (
-               <div key={user._id} className="bg-zinc-700 p-3 cursor-default rounded-md shadow-md hover:rounded-2xl hover:bg-zinc-800 duration-300 hover:shadow-4xl hover:scale-[1.03] transition-all border-2 border-zinc-700">
-                  <h4 className="text-lg font-semibold mb-2">{user.username}</h4>
-                  <div className="flex justify-between">
-                     <button
-                        onClick={() => removeUserFromWhitelist(user.username)}
-                        className="bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded-lg transition flex items-center space-x-2"
-                     >
-                        <Trash size={16} />
-                     </button>
-                     <Link
-                        href={`/u/${user.username}`}
-                        className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-3 rounded-lg transition flex items-center space-x-2"
-                     >
-                        <UserRoundCog size={16} />
-                     </Link>
-                  </div>
+      <div className="min-h-screen bg-neutral-900 p-6 pt-24">
+         <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+               <div>
+                  <h1 className="text-4xl font-bold text-white">
+                     Admin Dashboard
+                  </h1>
+                  <p className="text-neutral-400 mt-2">
+                     Verwalte Benutzer und Einträge
+                  </p>
                </div>
-            ))}
-         </div>
+               <button
+                  onClick={() => setIsModalOpen(true)}
+                  className="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 rounded-lg flex items-center gap-2.5 transition-all duration-200 text-white font-medium"
+               >
+                  <UserPlus className="w-5 h-5" />
+                  Benutzer Hinzufügen
+               </button>
+            </div>
 
-         {loading && <div>Loading...</div>}
+            {/* Tabs */}
+            <div className="flex gap-4 mb-6">
+               <button
+                  onClick={() => setActiveTab('users')}
+                  className={`flex items-center gap-2.5 px-5 py-2.5 rounded-lg transition-all duration-200
+                     ${activeTab === 'users'
+                        ? 'bg-neutral-700 text-white'
+                        : 'text-neutral-400 hover:text-white hover:bg-neutral-800'}`}
+               >
+                  <Users className="w-5 h-5" />
+                  Benutzer ({whitelistedUsers.length})
+               </button>
+               <button
+                  onClick={() => setActiveTab('entries')}
+                  className={`flex items-center gap-2.5 px-5 py-2.5 rounded-lg transition-all duration-200
+                     ${activeTab === 'entries'
+                        ? 'bg-neutral-700 text-white'
+                        : 'text-neutral-400 hover:text-white hover:bg-neutral-800'}`}
+               >
+                  <BookText className="w-5 h-5" />
+                  Einträge ({entries.length})
+               </button>
+            </div>
 
-         <div className="mt-8">
-            <h2 className="text-xl font-semibold mb-4">Einträge</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-               {entries.map(entry => (
-                  <Tooltip delay={500} fontSize='text-base' position='top' key={entry._id} content={entry.entry}>
-                     <div key={entry.id} className="bg-zinc-700 cursor-default p-6 rounded-md shadow-md hover:rounded-2xl hover:bg-zinc-800 duration-300 hover:shadow-4xl hover:scale-[1.03] transition-all border-2 border-zinc-700">
-                        <h4 className="text-lg font-semibold mb-2 truncate">{entry.entry}</h4>
-                        <div className="text-sm text-zinc-400 mb-2">
-                           <p className='italic' >{formatDistanceToNow(new Date(entry.timestamp), { includeSeconds: true, addSuffix: true, locale: de })}{" "} erstellt.</p>
-                           <p>Von: @{entry.author}</p>
+            {/* Content */}
+            <div className="bg-neutral-800 rounded-xl p-6 border border-neutral-700">
+               {activeTab === 'users' && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                     {whitelistedUsers.map(user => (
+                        <div key={user._id}
+                           className="bg-neutral-900 rounded-xl p-5 border border-neutral-800 hover:border-neutral-700 transition-all duration-300">
+                           <div className="flex justify-between items-center">
+                              <h4 className="text-lg font-semibold text-white">
+                                 {user.username}
+                              </h4>
+                              <div className="flex gap-3">
+                                 <Tooltip delay={500} content="Zum User">
+                                    <button
+                                       onClick={() => goToPage(user.username)}
+                                       className="p-2.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-all duration-200"
+                                    >
+                                       <UserRoundCog size={18} />
+                                    </button>
+                                 </Tooltip>
+                                 <Tooltip delay={500} content="Entfernen">
+                                    <button
+                                       onClick={() => removeUserFromWhitelist(user.username)}
+                                       className="p-2.5 rounded-lg bg-neutral-800 hover:bg-red-500/20 text-neutral-300 hover:text-red-400 transition-all duration-200"
+                                    >
+                                       <Trash size={18} />
+                                    </button>
+                                 </Tooltip>
+                              </div>
+                           </div>
                         </div>
-                        <button
-                           onClick={() => deleteEntry(entry.id)}
-                           className="bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded-lg transition flex items-center space-x-2"
-                        >
-                           <Trash size={16} />
-                        </button>
-                     </div>
-                  </Tooltip>
-               ))}
+                     ))}
+                  </div>
+               )}
+
+               {activeTab === 'entries' && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                     {entries.map(entry => (
+                        <div key={entry._id}
+                           className="bg-neutral-900 rounded-xl p-5 border border-neutral-800 hover:border-neutral-700 transition-all duration-300">
+                           <div className="mb-4">
+                              <h4 className="text-lg font-semibold text-white truncate">
+                                 {entry.entry}
+                              </h4>
+                              <div className="flex flex-col gap-1.5 mt-3">
+                                 <p className="text-sm text-neutral-400">
+                                    Von: <Link href={`/u/${entry.author}`} className="hover:text-blue-400 transition-colors">@{entry.author}</Link>
+                                 </p>
+                                 <p className="text-sm text-neutral-500 italic">
+                                    {formatDistanceToNow(new Date(entry.timestamp), {
+                                       addSuffix: true,
+                                       locale: de
+                                    })}
+                                 </p>
+                              </div>
+                           </div>
+                           <div className="flex justify-end">
+                              <Tooltip delay={500} content="Löschen">
+                                 <button
+                                    onClick={() => deleteEntry(entry.id)}
+                                    className="p-2.5 rounded-lg bg-neutral-800 hover:bg-red-500/20 text-neutral-300 hover:text-red-400 transition-all duration-200"
+                                 >
+                                    <Trash size={18} />
+                                 </button>
+                              </Tooltip>
+                           </div>
+                        </div>
+                     ))}
+                  </div>
+               )}
             </div>
          </div>
 
          <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Benutzer hinzufügen">
-            <div>
+            <div className="p-4">
                <input
                   type="text"
                   value={newUser}
                   onChange={(e) => setNewUser(e.target.value)}
-                  placeholder="dwhincandi ..."
-                  className="w-full p-3 bg-zinc-700 border border-neutral-600 rounded-lg mb-4 placeholder-gray-400 text-white"
+                  placeholder="Benutzernamen eingeben..."
+                  className="w-full p-3 bg-neutral-800 border border-neutral-700 rounded-lg mb-4 
+                     placeholder:text-neutral-500 text-white focus:outline-none focus:border-neutral-400"
                />
-               <button
+               <Button
                   onClick={addUserToWhitelist}
                   disabled={newUser.length < 3}
-                  className={`w-full py-3 ${newUser.length < 3 ? 'border border-zinc-600 bg-transparent cursor-default text-zinc-500' : 'bg-blue-500 hover:bg-blue-600 border border-blue-500 text-zinc-200'} rounded-lg font-medium transition-all duration-150`}
+                  className={`w-full py-3`}
                >
                   Hinzufügen
-               </button>
+               </Button>
             </div>
          </Modal>
       </div>

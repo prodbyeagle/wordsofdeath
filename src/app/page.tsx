@@ -1,10 +1,13 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+// Homepage.tsx
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
-
 import React, { useCallback, useEffect, useState } from "react";
+import { AvatarCacheManager } from "@/lib/avatarCache";
+import { fetchEntries as fetchEntriesFromAPI, fetchUserData } from "@/lib/api";
 import type { Entry, User } from "@/types";
-import Modal from "@/components/Modal";
-import { useRouter } from 'next/navigation';
+import Modal from "@/components/ui/Modal";
+import { useRouter } from "next/navigation";
 import { LoginPrompt } from "@/components/mainpage/LoginPrompt";
 import { Pagination } from "@/components/mainpage/Pagination";
 import { EntryCard } from "@/components/mainpage/EntryCard";
@@ -16,102 +19,52 @@ const Homepage = () => {
     const [entries, setEntries] = useState<Entry[]>([]);
     const [uniqueEntries, setUniqueEntries] = useState<Entry[]>([]);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-    const [newEntry, setNewEntry] = useState<string>('');
-    const [entryType, setEntryType] = useState<string>('word');
-    const [categories, setCategories] = useState<string>('');
-    const [variation, setVariation] = useState<string>('');
-    const [user] = useState<User | null>(null);
+    const [newEntry, setNewEntry] = useState<string>("");
+    const [categories, setCategories] = useState<string>("");
+    const [user, setUser] = useState<User | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState<number>(1);
     const entriesPerPage = 25;
-    const [avatarCache, setAvatarCache] = useState<{ [username: string]: string }>({});
-    const [userRoles, setUserRoles] = useState<{ [username: string]: string[] }>({});
+    const [avatarCacheManager, setAvatarCacheManager] = useState<AvatarCacheManager | null>(null);
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
-        const pageParam = urlParams.get('page');
+        const pageParam = urlParams.get("page");
         setPage(pageParam ? parseInt(pageParam, 25) : 1);
     }, []);
 
     useEffect(() => {
-        const cookies = document.cookie.split('; ');
-        const token = cookies.find(row => row.startsWith('wordsofdeath='));
+        const cookies = document.cookie.split("; ");
+        const token = cookies.find((row) => row.startsWith("wordsofdeath="));
         if (token) {
             setIsLoggedIn(true);
-            fetchEntries();
+            loadEntries(token.split("=")[1]);
+            setAvatarCacheManager(new AvatarCacheManager(fetchUserDataFromCache));
         } else {
             console.warn("No token found.");
         }
     }, []);
 
-    const fetchUserData = useCallback(async (author: string): Promise<User | null> => {
-        if (avatarCache[author]) return null;
-
-        try {
-            const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/user/u/${author}`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${document.cookie.split('=')[1]}`,
-                },
-            });
-
-            if (!response.ok) {
-                console.error(`Failed to fetch user data for ${author}`);
-                throw new Error('Failed to fetch user data');
-            }
-
-            const userData = await response.json();
-            const avatarUrl = `https://cdn.discordapp.com/avatars/${userData.id}/${userData.avatar}`;
-
-            setAvatarCache((prevCache) => ({ ...prevCache, [author]: avatarUrl }));
-            setUserRoles((prevRoles) => ({ ...prevRoles, [author]: userData.roles || [] }));
-
-            return userData;
-        } catch (error) {
-            console.error('Error fetching avatar:', error);
-            return null;
-        }
-    }, [avatarCache, setUserRoles]);
+    const fetchUserDataFromCache = useCallback(async (author: string): Promise<string | null> => {
+        return await fetchUserData(author, avatarCacheManager);
+    }, [avatarCacheManager]);
 
     useEffect(() => {
         const loadAvatars = async () => {
-            const authors = [...new Set(entries.map(entry => entry.author))];
-            const avatarsToLoad = authors.filter(author => !avatarCache[author]);
-
-            for (const author of avatarsToLoad) {
-                await fetchUserData(author);
+            const authors = [...new Set(entries.map((entry) => entry.author))];
+            for (const author of authors) {
+                await avatarCacheManager?.getAvatarUrl(author);
             }
         };
-        loadAvatars();
-    }, [entries, avatarCache, fetchUserData]);
-
-
-    const fetchEntries = async () => {
-        try {
-            const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/entries`, {
-                method: 'GET',
-                headers: {
-                    'Authorization': `Bearer ${document.cookie.split('=')[1]}`,
-                },
-            });
-
-            if (!response.ok) throw new Error('Failed to fetch entries');
-
-            const data: Entry[] = await response.json();
-
-            if (Array.isArray(data)) {
-                const unique = data.filter(
-                    (entry, index, self) =>
-                        index === self.findIndex((e) => e.id === entry.id)
-                );
-                setEntries(unique);
-                setUniqueEntries(unique.slice(0, entriesPerPage));
-            } else {
-                throw new Error('Invalid entries data format');
-            }
-        } catch (error) {
-            console.error('Error fetching entries:', error);
+        if (avatarCacheManager) {
+            loadAvatars();
         }
+    }, [entries, avatarCacheManager]);
+
+    const loadEntries = async (token: string): Promise<Entry[]> => {
+        const fetchedEntries = await fetchEntriesFromAPI(token);
+        setEntries(fetchedEntries);
+        return fetchedEntries;
     };
 
     useEffect(() => {
@@ -122,42 +75,36 @@ const Homepage = () => {
 
     const handlePageChange = (newPage: number) => {
         setPage(newPage);
-        router.push(
-            `/?page=${newPage}`,
-            undefined
-        );
+        router.push(`/?page=${newPage}`, undefined);
     };
 
     const handleNewEntrySubmit = async () => {
-        const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
+        const token = document.cookie.split("; ").find((row) => row.startsWith("wordsofdeath="))?.split("=")[1];
         if (!token || !newEntry.trim()) {
             setError("Kein Token oder leerer Eintrag.");
             return;
         }
 
         try {
-            const response = await fetch('https://wordsofdeath-backend.vercel.app/api/entries', {
-                method: 'POST',
+            const response = await fetch("http://localhost:3001/api/entries", {
+                method: "POST",
                 headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     entry: newEntry,
-                    type: entryType,
                     timestamp: new Date().toISOString(),
-                    categories: categories.split(',').map(cat => cat.trim()).filter(Boolean),
+                    categories: categories.split(",").map((cat) => cat.trim()).filter(Boolean),
                     author: user?.username,
-                    variation: variation.trim() ? variation.split(',').map(var1 => var1.trim()).filter(Boolean) : [],
                 }),
             });
 
             if (response.ok) {
-                setNewEntry('');
-                setCategories('');
-                setVariation('');
+                setNewEntry("");
+                setCategories("");
                 setIsModalOpen(false);
-                fetchEntries();
+                loadEntries(token);
             } else {
                 setError(`Fehler beim Erstellen des Eintrags: ${response.statusText}`);
             }
@@ -202,14 +149,13 @@ const Homepage = () => {
                                 <EntryCard
                                     key={entry.id}
                                     entry={entry}
-                                    avatarUrl={avatarCache[entry.author]}
-                                    userRoles={userRoles[entry.author]}
+                                    user={user}
+                                    avatarUrl={avatarCacheManager?.getAvatarCache()?.[entry.author] || ""}
+                                    userRoles={avatarCacheManager?.getRoles(entry.author) || []}
                                 />
                             ))
                         ) : (
-                            <p className="text-center text-zinc-500">
-                                Noch keine Einträge vorhanden.
-                            </p>
+                            <p className="text-center text-zinc-500">Noch keine Einträge vorhanden.</p>
                         )}
                     </div>
                 </main>
@@ -237,38 +183,22 @@ const Homepage = () => {
                     rows={1}
                     minLength={3}
                 />
-                <select
-                    value={entryType}
-                    onChange={(e) => setEntryType(e.target.value)}
-                    className="w-full p-3 h-12 bg-zinc-700 border border-neutral-600 rounded-lg mb-4 text-white focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:border-zinc-600 transition-all duration-200 ease-in-out"
-                >
-                    <option value="word" className="bg-zinc-700 hover:bg-zinc-600 p-2 rounded-lg">Wort</option>
-                    <option value="sentence" className="bg-zinc-700 hover:bg-zinc-600 p-2 rounded-lg">Satz</option>
-                </select>
+
                 <input
                     type="text"
                     value={categories}
                     onChange={(e) => setCategories(e.target.value)}
-                    placeholder="Kategorien min. 1 (durch Komma getrennt)"
-                    className="w-full p-3 bg-zinc-700 border border-neutral-600 rounded-lg mb-4 placeholder-gray-400 text-white"
-                    minLength={3}
+                    placeholder="Füge Kategorien hinzu (kommagetrennt)"
+                    className="w-full p-3 h-12 bg-zinc-700 border border-neutral-600 rounded-lg mb-4 placeholder-gray-400 text-white"
                 />
-                <input
-                    type="text"
-                    value={variation}
-                    onChange={(e) => setVariation(e.target.value)}
-                    placeholder="Variationen [nicht nötig] (durch Komma getrennt)"
-                    className="w-full p-3 bg-zinc-700 border border-neutral-600 rounded-lg mb-4 placeholder-gray-400 text-white"
-                    minLength={3}
-                />
+
                 <button
                     onClick={handleNewEntrySubmit}
-                    disabled={newEntry.trim() === '' || categories.trim() === ''}
-                    className={`w-full py-3 ${newEntry.trim() === '' || categories.trim() === '' ? 'border border-zinc-600 bg-transparent cursor-default text-zinc-500' : 'bg-blue-500 hover:bg-blue-600 border border-blue-500 text-zinc-200'} rounded-lg font-medium transition-all duration-150`}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-xl"
                 >
-                    Eintrag erstellen
+                    Eintrag hinzufügen
                 </button>
-                {error && <div className="text-red-500 text-center mt-4">{error}</div>}
+                {error && <p className="text-red-500 text-center mt-4">{error}</p>}
             </Modal>
         </div>
     );

@@ -19,25 +19,21 @@ export interface User {
  * @property `_id` - Unique identifier for the entry in the database.
  * @property `id` - Unique identifier for the entry within the application.
  * @property `entry` - Content of the entry, typically a word or phrase.
- * @property `type` - Specifies the entry type (e.g., "word", "sentence").
  * @property `categories` - Array of categories to which this entry belongs.
  * @property `author` - Username of the entry's creator.
  * @property `authorId` - Discord user ID of the entry's creator.
  * @property `avatar` - ONLY FOR METADATA
  * @property `timestamp` - Timestamp of entry creation, in ISO 8601 format.
- * @property `variation` - Array of variations for this entry, if any.
  */
 export interface Entry {
    _id: string;
    id: string;
    entry: string;
-   type: string;
    categories: string[];
    author: string;
    authorId: string;
    avatar?: string;
    timestamp: string;
-   variation: string[];
 }
 
 /**

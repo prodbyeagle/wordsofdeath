@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BadgeCheck, Server, HeartHandshake, UserCheck, UserPlus } from "lucide-react";
+import { Tooltip } from "./Tooltip";
 
 interface UserRoleBadgesProps {
     roles: string[];
@@ -42,12 +43,14 @@ export const UserRoleBadges = ({ roles }: UserRoleBadgesProps) => {
                 const Icon = badge.icon;
 
                 return (
-                    <div
-                        key={role}
-                        className="group relative"
-                    >
-                        <Icon className={`w-4 h-4 cursor-default ${badge.color}`} />
-                    </div>
+                    <Tooltip key={role} content={role} position="top">
+                        <div
+                            key={role}
+                            className="group relative"
+                        >
+                            <Icon className={`h-5 w-5 cursor-default ${badge.color}`} />
+                        </div>
+                    </Tooltip>
                 );
             })}
         </div>

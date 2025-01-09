@@ -94,8 +94,8 @@ const UserProfile = ({ params }: UserProfileProps) => {
    return (
       <div className="min-h-screen bg-neutral-900 p-6 pt-20">
          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col lg:flex-row gap-8">
-               <div className="w-full lg:w-80 bg-neutral-800/50 rounded-2xl p-6 backdrop-blur-sm border border-neutral-700/50">
+            <div className="flex flex-col lg:flex-row gap-4">
+               <div className="lg:w-80 h-fit bg-neutral-800/50 rounded-2xl p-6 border border-neutral-700/50">
                   {user ? (
                      <div className="flex flex-col items-center">
                         <div className="relative">
@@ -126,7 +126,7 @@ const UserProfile = ({ params }: UserProfileProps) => {
                   )}
                </div>
 
-               <div className="flex-1 bg-neutral-800/50 rounded-2xl p-6 backdrop-blur-sm border border-neutral-700/50">
+               <div className="flex-1 bg-neutral-800/50 rounded-2xl p-6 border border-neutral-700/50">
                   <h3 className="text-2xl font-bold mb-6 bg-clip-text text-neutral-100">
                      {entries.length} {entries.length === 1 ? 'Eintrag' : 'Einträge'}
                   </h3>

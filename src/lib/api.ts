@@ -1,7 +1,12 @@
 // lib/api.ts
 import type { Entry } from "@/types";
-import { AvatarCacheManager } from "./avatarCache";
+import { CacheManager } from "./avatarCache";
 
+/**
+ * Fetches a list of entries from the API.
+ * @param token The authentication token.
+ * @returns A list of entries or an empty array if the request fails.
+ */
 export const fetchEntries = async (token: string): Promise<Entry[]> => {
     try {
         const response = await fetch("http://localhost:3001/api/entries", {
@@ -29,9 +34,15 @@ export const fetchEntries = async (token: string): Promise<Entry[]> => {
     }
 };
 
+/**
+ * Fetches user data, including the avatar URL if the cache manager is provided.
+ * @param author The username of the author.
+ * @param avatarCacheManager An optional CacheManager instance to retrieve the avatar URL.
+ * @returns The avatar URL or `null` if the avatar data is not found.
+ */
 export const fetchUserData = async (
     author: string,
-    avatarCacheManager: AvatarCacheManager | null
+    avatarCacheManager: CacheManager | null
 ): Promise<string | null> => {
     if (avatarCacheManager) {
         return await avatarCacheManager.getAvatarUrl(author);

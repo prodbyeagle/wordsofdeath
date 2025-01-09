@@ -55,7 +55,7 @@ const Navbar = () => {
       if (!token) return;
 
       try {
-         const response = await fetch(`http://localhost:3001/api/search?q=${value}`, {
+         const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/search?q=${value}`, {
             headers: { 'Authorization': `Bearer ${token}` },
          });
          const data = await response.json();

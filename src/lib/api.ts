@@ -9,7 +9,7 @@ import { CacheManager } from "./avatarCache";
  */
 export const fetchEntries = async (token: string): Promise<Entry[]> => {
     try {
-        const response = await fetch("http://localhost:3001/api/entries", {
+        const response = await fetch("https://wordsofdeath-backend.vercel.app/api/entries", {
             method: "GET",
             headers: {
                 Authorization: `Bearer ${token}`,

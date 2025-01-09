@@ -46,7 +46,7 @@ const Homepage = () => {
             console.warn("No token found.");
         }
     }, []);
-    
+
     useEffect(() => {
         const loadAvatars = async () => {
             const authors = [...new Set(entries.map((entry) => entry.author))];
@@ -84,7 +84,7 @@ const Homepage = () => {
         }
 
         try {
-            const response = await fetch("http://localhost:3001/api/entries", {
+            const response = await fetch("https://wordsofdeath-backend.vercel.app/api/entries", {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`,

@@ -34,7 +34,7 @@ export class CacheManager {
         }
 
         try {
-            const response = await fetch(`http://localhost:3001/api/user/u/${author}`, {
+            const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/user/u/${author}`, {
                 method: "GET",
                 headers: {
                     Authorization: `Bearer ${token}`,

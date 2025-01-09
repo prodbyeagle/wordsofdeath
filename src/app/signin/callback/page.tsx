@@ -33,10 +33,10 @@ const DiscordCallback = () => {
 
    if (error) {
       return (
-         <div className="flex h-screen items-center justify-center bg-zinc-900 text-center p-4">
-            <div className="w-full max-w-md bg-zinc-800 p-8 rounded-xl shadow-lg border border-zinc-600">
+         <div className="flex h-screen items-center justify-center bg-neutral-900 text-center p-4">
+            <div className="w-full max-w-md bg-neutral-800 p-8 rounded-xl shadow-lg border border-neutral-600">
                <h2 className="text-3xl font-bold text-red-500 mb-4">Fehler!</h2>
-               <p className="text-zinc-300 mb-6">{error}</p>
+               <p className="text-neutral-300 mb-6">{error}</p>
                <Button
                   onClick={() => window.location.reload()}
                   variant="destructive"
@@ -50,11 +50,11 @@ const DiscordCallback = () => {
    }
 
    return (
-      <div className="flex h-screen items-center justify-center bg-zinc-900 text-center p-4">
-         <div className="w-full max-w-md bg-zinc-800 p-8 rounded-xl shadow-lg border border-zinc-600">
-            <h2 className="text-3xl font-bold text-zinc-100 mb-4">Authentifizierung wird verarbeitet...</h2>
-            <Spinner className="h-12 w-12 text-green-500 mx-auto mb-6" />
-            <p className="text-zinc-300">Bitte warten Sie einen Moment...</p>
+      <div className="flex h-screen items-center justify-center bg-neutral-900 text-center p-4">
+         <div className="w-full max-w-md bg-neutral-800 p-8 rounded-xl shadow-lg border border-neutral-600">
+            <h2 className="text-3xl font-bold text-neutral-100 mb-4">Authentifizierung wird verarbeitet...</h2>
+            <Spinner className="h-12 w-12 text-neutral-500 mx-auto mb-6" />
+            <p className="text-neutral-300">Bitte warten Sie einen Moment...</p>
          </div>
       </div>
    );

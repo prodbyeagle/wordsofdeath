@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { Entry, Whitelist } from '@/types';
 import { Trash, UserPlus, UserRoundCog, Users, BookText, Loader2 } from 'lucide-react';
-import Modal from '@/components/ui/Modal';
-import Tooltip from '@/components/Tooltip';
+import { Modal } from '@/components/ui/Modal';
+import { Tooltip } from '@/components/Tooltip';
 import Link from 'next/link';
 import { formatDistanceToNow } from "date-fns";
 import { de } from "date-fns/locale";
@@ -131,7 +131,6 @@ const Admin = () => {
    return (
       <div className="min-h-screen bg-neutral-900 p-6 pt-24">
          <div className="max-w-7xl mx-auto">
-            {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                <div>
                   <h1 className="text-4xl font-bold text-white">
@@ -150,7 +149,6 @@ const Admin = () => {
                </button>
             </div>
 
-            {/* Tabs */}
             <div className="flex gap-4 mb-6">
                <button
                   onClick={() => setActiveTab('users')}
@@ -174,7 +172,6 @@ const Admin = () => {
                </button>
             </div>
 
-            {/* Content */}
             <div className="bg-neutral-800 rounded-xl p-6 border border-neutral-700">
                {activeTab === 'users' && (
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -220,7 +217,7 @@ const Admin = () => {
                               </h4>
                               <div className="flex flex-col gap-1.5 mt-3">
                                  <p className="text-sm text-neutral-400">
-                                    Von: <Link href={`/u/${entry.author}`} className="hover:text-blue-400 transition-colors">@{entry.author}</Link>
+                                    Von: <Link href={`/u/${entry.author}`} className="hover:text-neutral-100 transition-colors">@{entry.author}</Link>
                                  </p>
                                  <p className="text-sm text-neutral-500 italic">
                                     {formatDistanceToNow(new Date(entry.timestamp), {

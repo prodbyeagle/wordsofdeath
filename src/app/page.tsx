@@ -6,12 +6,13 @@ import React, { useCallback, useEffect, useState } from "react";
 import { AvatarCacheManager } from "@/lib/avatarCache";
 import { fetchEntries as fetchEntriesFromAPI, fetchUserData } from "@/lib/api";
 import type { Entry, User } from "@/types";
-import Modal from "@/components/ui/Modal";
+import { Modal } from "@/components/ui/Modal";
 import { useRouter } from "next/navigation";
 import { LoginPrompt } from "@/components/mainpage/LoginPrompt";
 import { Pagination } from "@/components/mainpage/Pagination";
 import { EntryCard } from "@/components/mainpage/EntryCard";
 import { MessageCirclePlus } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 
 const Homepage = () => {
     const router = useRouter();
@@ -120,13 +121,13 @@ const Homepage = () => {
     const totalPages = Math.ceil(entries.length / entriesPerPage);
 
     return (
-        <div className="min-h-screen bg-zinc-900 text-white">
+        <div className="min-h-screen pt-16 bg-neutral-900 text-neutral-100">
             <div className="max-w-2xl mx-auto px-4 py-10">
                 <header className="mb-8">
                     <h1 className="text-4xl font-bold text-center">Feed</h1>
                 </header>
 
-                <div className="sticky top-4 z-10 space-y-4 backdrop-blur-lg bg-zinc-900/80 p-4 rounded-xl">
+                <div className="mb-8">
                     <Pagination
                         currentPage={page}
                         totalPages={totalPages}
@@ -134,13 +135,14 @@ const Homepage = () => {
                     />
                 </div>
 
-                <button
+                <Button
                     onClick={() => setIsModalOpen(true)}
-                    className="w-full flex items-center justify-center space-x-2 bg-green-600 hover:bg-green-700 duration-100 transition-all border-2 border-green-600 rounded-xl shadow-lg text-white font-semibold py-3 px-8"
+                    className="w-full py-3 px-8"
+                    variant="primary"
                 >
-                    <MessageCirclePlus className="w-5 h-5" />
+                    <MessageCirclePlus size={18} className="mr-2" />
                     <span>Neuen Eintrag hinzufügen</span>
-                </button>
+                </Button>
 
                 <main className="mt-8">
                     <div className="space-y-4">
@@ -155,7 +157,7 @@ const Homepage = () => {
                                 />
                             ))
                         ) : (
-                            <p className="text-center text-zinc-500">Noch keine Einträge vorhanden.</p>
+                            <p className="text-center text-neutral-500">Noch keine Einträge vorhanden.</p>
                         )}
                     </div>
                 </main>
@@ -173,13 +175,13 @@ const Homepage = () => {
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 title="Neuen Eintrag erstellen"
-                className="w-full bg-zinc-800/80 md:max-w-md"
+                className="w-full bg-neutral-800/80 md:max-w-md"
             >
                 <textarea
                     value={newEntry}
                     onChange={(e) => setNewEntry(e.target.value)}
                     placeholder="Gib hier deinen neuen Eintrag ein..."
-                    className="w-full p-3 bg-zinc-700 border resize-none border-neutral-600 rounded-lg mb-4 placeholder-gray-400 text-white"
+                    className="w-full p-3 bg-neutral-700 border resize-none border-neutral-600 rounded-lg mb-4 placeholder-gray-400 text-neutral-100"
                     rows={1}
                     minLength={3}
                 />
@@ -189,15 +191,16 @@ const Homepage = () => {
                     value={categories}
                     onChange={(e) => setCategories(e.target.value)}
                     placeholder="Füge Kategorien hinzu (kommagetrennt)"
-                    className="w-full p-3 h-12 bg-zinc-700 border border-neutral-600 rounded-lg mb-4 placeholder-gray-400 text-white"
+                    className="w-full p-3 h-12 bg-neutral-700 border border-neutral-600 rounded-lg mb-4 placeholder-gray-400 text-neutral-100"
                 />
 
-                <button
+                <Button
                     onClick={handleNewEntrySubmit}
-                    className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-xl"
+                    className="w-full bg-neutral-600 hover:bg-neutral-700 text-neutral-100 font-semibold py-3 px-8 rounded-xl"
+                    disabled={!newEntry.trim() || !categories.trim()}
                 >
                     Eintrag hinzufügen
-                </button>
+                </Button>
                 {error && <p className="text-red-500 text-center mt-4">{error}</p>}
             </Modal>
         </div>

@@ -2,16 +2,16 @@
 // Homepage.tsx
 /* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
-import React, { useCallback, useEffect, useState } from "react";
-import { AvatarCacheManager } from "@/lib/avatarCache";
-import { fetchEntries as fetchEntriesFromAPI, fetchUserData } from "@/lib/api";
+import React, { useEffect, useState } from "react";
+import { CacheManager } from "@/lib/avatarCache";
+import { fetchEntries as fetchEntriesFromAPI } from "@/lib/api";
 import type { Entry, User } from "@/types";
 import { Modal } from "@/components/ui/Modal";
 import { useRouter } from "next/navigation";
 import { LoginPrompt } from "@/components/mainpage/LoginPrompt";
 import { Pagination } from "@/components/mainpage/Pagination";
 import { EntryCard } from "@/components/mainpage/EntryCard";
-import { MessageCirclePlus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 const Homepage = () => {
@@ -22,11 +22,12 @@ const Homepage = () => {
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [newEntry, setNewEntry] = useState<string>("");
     const [categories, setCategories] = useState<string>("");
-    const [user, setUser] = useState<User | null>(null);
+    const [user] = useState<User | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState<number>(1);
-    const entriesPerPage = 25;
-    const [avatarCacheManager, setAvatarCacheManager] = useState<AvatarCacheManager | null>(null);
+    const entriesPerPage = 10;
+    const [cacheManager, setCacheManager] = useState<CacheManager | null>(null);
+    const [avatarUrls, setAvatarUrls] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -40,27 +41,23 @@ const Homepage = () => {
         if (token) {
             setIsLoggedIn(true);
             loadEntries(token.split("=")[1]);
-            setAvatarCacheManager(new AvatarCacheManager(fetchUserDataFromCache));
+            setCacheManager(new CacheManager());
         } else {
             console.warn("No token found.");
         }
     }, []);
-
-    const fetchUserDataFromCache = useCallback(async (author: string): Promise<string | null> => {
-        return await fetchUserData(author, avatarCacheManager);
-    }, [avatarCacheManager]);
-
+    
     useEffect(() => {
         const loadAvatars = async () => {
             const authors = [...new Set(entries.map((entry) => entry.author))];
             for (const author of authors) {
-                await avatarCacheManager?.getAvatarUrl(author);
+                await cacheManager?.getAvatarUrl(author);
             }
         };
-        if (avatarCacheManager) {
+        if (cacheManager) {
             loadAvatars();
         }
-    }, [entries, avatarCacheManager]);
+    }, [entries, cacheManager]);
 
     const loadEntries = async (token: string): Promise<Entry[]> => {
         const fetchedEntries = await fetchEntriesFromAPI(token);
@@ -114,6 +111,23 @@ const Homepage = () => {
         }
     };
 
+    useEffect(() => {
+        const loadAvatars = async () => {
+            const authors = [...new Set(entries.map((entry) => entry.author))];
+            const newAvatarUrls: { [key: string]: string } = {};
+            for (const author of authors) {
+                const avatarUrl = await cacheManager?.getAvatarUrl(author);
+                if (avatarUrl) {
+                    newAvatarUrls[author] = avatarUrl;
+                }
+            }
+            setAvatarUrls(newAvatarUrls);
+        };
+        if (cacheManager && entries.length > 0) {
+            loadAvatars();
+        }
+    }, [entries, cacheManager]);
+
     if (!isLoggedIn) {
         return <LoginPrompt />;
     }
@@ -140,7 +154,7 @@ const Homepage = () => {
                     className="w-full py-3 px-8"
                     variant="primary"
                 >
-                    <MessageCirclePlus size={18} className="mr-2" />
+                    <Plus size={18} className="mr-2" />
                     <span>Neuen Eintrag hinzufügen</span>
                 </Button>
 
@@ -151,9 +165,8 @@ const Homepage = () => {
                                 <EntryCard
                                     key={entry.id}
                                     entry={entry}
-                                    user={user}
-                                    avatarUrl={avatarCacheManager?.getAvatarCache()?.[entry.author] || ""}
-                                    userRoles={avatarCacheManager?.getRoles(entry.author) || []}
+                                    avatarUrl={avatarUrls[entry.author] || ""}
+                                    badges={false}
                                 />
                             ))
                         ) : (

@@ -3,9 +3,9 @@ import React from "react";
 import Link from "next/link";
 import { Entry, User } from "@/types";
 import type { Metadata, ResolvingMetadata } from "next";
-import { UserRoleBadges } from "@/components/UserRoleBadges";
-import { TimeStamp } from "@/components/Timestamp";
-import { UserAvatar } from "@/components/Useravatar";
+import { UserRoleBadges } from "@/components/ui/UserRoleBadges";
+import { TimeStamp } from "@/components/ui/Timestamp";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 import { Button } from "@/components/ui/Button";
 
 interface EntryProps {
@@ -107,21 +107,21 @@ const EntryPage = async ({ params }: EntryProps) => {
         .slice(0, 3);
 
     return (
-        <div className="min-h-screen bg-neutral-900 text-neutral-200 cursor-default flex items-center justify-center py-12 px-6">
-            <div className="max-w-3xl w-full p-8 rounded-xl shadow-2xl bg-neutral-800">
+        <div className="min-h-screen bg-neutral-900 text-neutral-100 cursor-default flex items-center justify-center py-12 px-6">
+            <div className="max-w-3xl w-fit p-6 rounded-xl shadow-2xl bg-neutral-800">
                 <h2 className="text-3xl font-bold mb-4 break-words">{entry.entry}</h2>
-                <div className="text-sm text-neutral-400 mb-6 flex items-center space-x-1">
+                <div className="text-sm text-neutral-400 text-center mb-6 items-center space-x-1">
                     <TimeStamp timestamp={entry.timestamp} />
                 </div>
 
                 {entry.categories.length > 0 && (
-                    <div className="mt-6">
+                    <div className="mt-1">
                         <h3 className="text-xl font-semibold mb-3 text-neutral-200">Kategorien</h3>
                         <div className="flex flex-wrap gap-2">
                             {entry.categories.map((category, index) => (
                                 <span
                                     key={index}
-                                    className="px-3 py-1 bg-neutral-700 border-2 border-neutral-700 text-neutral-200 rounded-full text-sm">
+                                    className="px-3 py-1 bg-neutral-700 border-2 border-neutral-700 text-neutral-200 rounded text-sm">
                                     {category}
                                 </span>
                             ))}
@@ -133,7 +133,7 @@ const EntryPage = async ({ params }: EntryProps) => {
                 {user && (
                     <Link href={`/u/${user.username}`}>
                         <div
-                            className="p-2 mt-8 w-fit flex items-center space-x-2 rounded-xl bg-neutral-800 hover:bg-neutral-600 border-2 border-neutral-800 transition-all transform hover:rounded-xl hover:scale-[1.04]">
+                            className="p-2 mt-8 w-full flex items-center space-x-2 rounded-xl bg-neutral-800 hover:bg-neutral-600 border-2 border-neutral-800 transition-all transform hover:rounded-xl">
                             <UserAvatar avatarUrl={user.avatar} id={user.id} username={user.username} />
                             <span className="text-lg font-medium">von @{user.username}</span>
                             {user.roles && <UserRoleBadges roles={user.roles} />}
@@ -148,12 +148,12 @@ const EntryPage = async ({ params }: EntryProps) => {
                             {relevantEntries.map((relevantEntry) => (
                                 <Link key={relevantEntry.id} href={`/e/${relevantEntry.id}`} passHref>
                                     <span
-                                        className="block p-4 rounded-xl bg-neutral-700 border-2 border-neutral-700 transition-all transform hover:rounded-3xl hover:scale-[1.02] hover:bg-neutral-800">
+                                        className="block p-4 rounded-xl bg-neutral-700 border border-neutral-800 transition-all transform hover:scale-[1.02] hover:bg-neutral-600">
                                         <div>
-                                            <button
-                                                className="text-neutral-300 text-lg font-medium">
+                                            <span
+                                                className="text-neutral-300 text-lg font-semibold">
                                                 {relevantEntry.entry}
-                                            </button>
+                                            </span>
                                         </div>
                                         <p className="text-neutral-400 text-sm mt-1">
                                             <TimeStamp timestamp={relevantEntry.timestamp} />

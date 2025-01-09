@@ -4,11 +4,10 @@ import { useState, useEffect } from 'react';
 import { Entry, Whitelist } from '@/types';
 import { Trash, UserPlus, UserRoundCog, Users, BookText, Loader2 } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
-import { Tooltip } from '@/components/Tooltip';
+import { Tooltip } from '@/components/ui/Tooltip';
 import Link from 'next/link';
-import { formatDistanceToNow } from "date-fns";
-import { de } from "date-fns/locale";
 import { Button } from '@/components/ui/Button';
+import { TimeStamp } from '@/components/ui/Timestamp';
 
 const Admin = () => {
    const [whitelistedUsers, setWhitelistedUsers] = useState<Whitelist[]>([]);
@@ -140,16 +139,17 @@ const Admin = () => {
                      Verwalte Benutzer und Einträge
                   </p>
                </div>
-               <button
+               <Button
                   onClick={() => setIsModalOpen(true)}
-                  className="px-5 py-2.5 bg-blue-500 hover:bg-blue-600 rounded-lg flex items-center gap-2.5 transition-all duration-200 text-white font-medium"
+                  className="px-5 py-2.5"
+                  variant='secondary'
                >
-                  <UserPlus className="w-5 h-5" />
+                  <UserPlus size={18} className="mr-2" />
                   Benutzer Hinzufügen
-               </button>
+               </Button>
             </div>
 
-            <div className="flex gap-4 mb-6">
+            <div className="flex gap-2 mb-6">
                <button
                   onClick={() => setActiveTab('users')}
                   className={`flex items-center gap-2.5 px-5 py-2.5 rounded-lg transition-all duration-200
@@ -184,20 +184,20 @@ const Admin = () => {
                               </h4>
                               <div className="flex gap-3">
                                  <Tooltip delay={500} content="Zum User">
-                                    <button
+                                    <Button
                                        onClick={() => goToPage(user.username)}
-                                       className="p-2.5 rounded-lg bg-neutral-800 hover:bg-neutral-700 text-neutral-300 hover:text-white transition-all duration-200"
+                                       variant='primary'
                                     >
                                        <UserRoundCog size={18} />
-                                    </button>
+                                    </Button>
                                  </Tooltip>
                                  <Tooltip delay={500} content="Entfernen">
-                                    <button
+                                    <Button
                                        onClick={() => removeUserFromWhitelist(user.username)}
-                                       className="p-2.5 rounded-lg bg-neutral-800 hover:bg-red-500/20 text-neutral-300 hover:text-red-400 transition-all duration-200"
+                                       variant='destructive'
                                     >
                                        <Trash size={18} />
-                                    </button>
+                                    </Button>
                                  </Tooltip>
                               </div>
                            </div>
@@ -210,7 +210,7 @@ const Admin = () => {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                      {entries.map(entry => (
                         <div key={entry._id}
-                           className="bg-neutral-900 rounded-xl p-5 border border-neutral-800 hover:border-neutral-700 transition-all duration-300">
+                           className="bg-neutral-900 rounded-xl p-4 border border-neutral-800 hover:border-neutral-700 transition-all duration-300">
                            <div className="mb-4">
                               <h4 className="text-lg font-semibold text-white truncate">
                                  {entry.entry}
@@ -219,22 +219,17 @@ const Admin = () => {
                                  <p className="text-sm text-neutral-400">
                                     Von: <Link href={`/u/${entry.author}`} className="hover:text-neutral-100 transition-colors">@{entry.author}</Link>
                                  </p>
-                                 <p className="text-sm text-neutral-500 italic">
-                                    {formatDistanceToNow(new Date(entry.timestamp), {
-                                       addSuffix: true,
-                                       locale: de
-                                    })}
-                                 </p>
+                                 <TimeStamp timestamp={entry.timestamp} />
                               </div>
                            </div>
                            <div className="flex justify-end">
                               <Tooltip delay={500} content="Löschen">
-                                 <button
+                                 <Button
                                     onClick={() => deleteEntry(entry.id)}
-                                    className="p-2.5 rounded-lg bg-neutral-800 hover:bg-red-500/20 text-neutral-300 hover:text-red-400 transition-all duration-200"
+                                    variant='destructive'
                                  >
                                     <Trash size={18} />
-                                 </button>
+                                 </Button>
                               </Tooltip>
                            </div>
                         </div>

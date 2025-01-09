@@ -1,19 +1,20 @@
 import { Entry, User } from "@/types";
 import Link from "next/link";
-import { UserRoleBadges } from "../UserRoleBadges";
-import { TimeStamp } from "../Timestamp";
-import { UserAvatar } from "../Useravatar";
+import { UserRoleBadges } from "../ui/UserRoleBadges";
+import { TimeStamp } from "../ui/Timestamp";
+import { UserAvatar } from "../ui/UserAvatar";
 import { Tag } from "lucide-react";
 
 interface EntryCardProps {
     entry: Entry;
-    user: User | null;
-    avatarUrl?: string;
+    user?: User | null;
+    avatarUrl: string;
     userRoles?: string[];
-
+    badges?: boolean;
 }
 
-export const EntryCard = ({ entry, user, userRoles = [] }: EntryCardProps) => {
+export const EntryCard = ({ entry, user, userRoles = [], badges = true }: EntryCardProps) => {
+
     return (
         <Link href={`/e/${entry.id}`} className="block group">
             <article className="h-full bg-neutral-800/50 backdrop-blur-sm rounded-xl border border-neutral-700/50 overflow-hidden hover:border-neutral-500/50 transition-all duration-300">
@@ -25,7 +26,7 @@ export const EntryCard = ({ entry, user, userRoles = [] }: EntryCardProps) => {
                                 <span className="text-sm font-medium text-neutral-200 truncate">
                                     @{entry.author}
                                 </span>
-                                <UserRoleBadges roles={userRoles} />
+                                {badges && <UserRoleBadges roles={userRoles} />}
                             </div>
                             <TimeStamp timestamp={entry.timestamp} />
                         </div>

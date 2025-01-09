@@ -1,7 +1,7 @@
 # WordsofDeath
 
 ## Overview
-**WordsofDeath** is a web-based platform that allows users to store and search for words or sentences across different categories. Access to the site is restricted to a whitelist of Discord users. The site uses Next.js and TypeScript for the frontend, MongoDB for the database, and Tailwind CSS for UI design.
+**WordsofDeath** is a web-based platform that allows users to store and search for words or sentences across different categories. Access to the site is restricted to a whitelist of Discord users.
 
 ## Technology Stack
 - **Frontend**: Next.js + TypeScript
@@ -20,7 +20,6 @@
 
 2. **Word and Sentence Storage**:
    - Users can store words or sentences in the database and categorize them
-   - **Selectbar** function to choose between word or sentence entry
    - Information stored includes:
      - **Word or Sentence**: The stored information (either word or sentence)
      - **Categories**: One or more categories for thematic classification

@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BadgeCheck, Server, HeartHandshake } from "lucide-react";
+import { BadgeCheck, Server, HeartHandshake, UserCheck, UserPlus } from "lucide-react";
 
-// UserRoleBadges.tsx
 interface UserRoleBadgesProps {
     roles: string[];
 }
 
-type Role = 'owner' | 'admin' | 'developer';
+type Role = 'owner' | 'admin' | 'developer' | 'moderator' | 'contributor';
 
 export const UserRoleBadges = ({ roles }: UserRoleBadgesProps) => {
     if (!roles?.length) return null;
@@ -14,7 +13,7 @@ export const UserRoleBadges = ({ roles }: UserRoleBadgesProps) => {
     const badges: { [key in Role]: { icon: React.ForwardRefExoticComponent<any>; color: string; } } = {
         owner: {
             icon: BadgeCheck,
-            color: 'text-blue-400',
+            color: 'text-red-400',
         },
         admin: {
             icon: HeartHandshake,
@@ -22,13 +21,21 @@ export const UserRoleBadges = ({ roles }: UserRoleBadgesProps) => {
         },
         developer: {
             icon: Server,
-            color: 'text-white',
-        }
+            color: 'text-neutral-100',
+        },
+        moderator: {
+            icon: UserCheck,
+            color: 'text-green-400',
+        },
+        contributor: {
+            icon: UserPlus,
+            color: 'text-purple-400',
+        },
     };
 
     return (
         <div className="flex items-center gap-1">
-            {roles.filter((role): role is Role => ['owner', 'admin', 'developer'].includes(role)).map((role: Role) => {
+            {roles.filter((role): role is Role => ['owner', 'admin', 'developer', 'moderator', 'contributor'].includes(role)).map((role: Role) => {
                 const badge = badges[role];
                 if (!badge) return null;
 

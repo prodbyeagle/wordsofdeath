@@ -1,5 +1,7 @@
 // components/entry/UserAvatar.tsx
+"use client";
 import Image from "next/image";
+import { useEffect } from "react";
 
 interface UserAvatarProps {
     avatarUrl?: string;
@@ -9,6 +11,10 @@ interface UserAvatarProps {
 }
 
 export const UserAvatar = ({ avatarUrl, id, username, size = 'md' }: UserAvatarProps) => {
+    useEffect(() => {
+        console.log("Props:", { avatarUrl });
+    }, [avatarUrl]);
+
     const sizeClasses = {
         sm: 'w-8 h-8',
         md: 'w-10 h-10',
@@ -23,7 +29,7 @@ export const UserAvatar = ({ avatarUrl, id, username, size = 'md' }: UserAvatarP
 
     if (avatarUrl) {
         return (
-            <div className={`${sizeClasses[size]} rounded-full overflow-hidden bg-zinc-700`}>
+            <div className={`${sizeClasses[size]} rounded-full overflow-hidden bg-neutral-700`}>
                 <Image
                     src={`https://cdn.discordapp.com/avatars/${id}/${avatarUrl}.png`}
                     alt={`${username}'s avatar`}
@@ -31,14 +37,15 @@ export const UserAvatar = ({ avatarUrl, id, username, size = 'md' }: UserAvatarP
                     width={sizeDimensions[size].width}
                     height={sizeDimensions[size].height}
                     unoptimized
+                    priority
                 />
             </div>
         );
     }
 
     return (
-        <div className={`${sizeClasses[size]} rounded-full bg-zinc-700 flex items-center justify-center`}>
-            <span className="text-zinc-400">
+        <div className={`${sizeClasses[size]} rounded-full bg-neutral-700 flex items-center justify-center`}>
+            <span className="text-neutral-400">
                 {username.charAt(0).toUpperCase()}
             </span>
         </div>

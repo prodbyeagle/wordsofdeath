@@ -1,158 +1,314 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import Dropdown from './Dropdown';
 import { User, Entry } from '@/types';
-import { LogOut, Shield, CircleUserRound, Home } from 'lucide-react';
+import { LogOut, Shield, CircleUserRound, Home, Search, X, Menu } from 'lucide-react';
 
 const Navbar = () => {
    const [user, setUser] = useState<User | null>(null);
-   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
-   const [searchTerm, setSearchTerm] = useState<string>('');
+   const [isMenuOpen, setIsMenuOpen] = useState(false);
+   const [isSearchActive, setIsSearchActive] = useState(false);
+   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+   const [searchTerm, setSearchTerm] = useState('');
    const [suggestions, setSuggestions] = useState<Entry[]>([]);
-   const [categories, setCategories] = useState<string[]>([]);
-   const [debounceTimer, setDebounceTimer] = useState<NodeJS.Timeout | null>(null);
+   const [isLoading, setIsLoading] = useState(false);
+
+   const searchRef = useRef<HTMLDivElement>(null);
+   const menuRef = useRef<HTMLDivElement>(null);
+   const searchInputRef = useRef<HTMLInputElement>(null);
 
    useEffect(() => {
       const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='));
       if (token) {
          const tokenValue = token.split('=')[1];
          const decoded = JSON.parse(atob(tokenValue.split('.')[1])) as User;
-
-         setUser({
-            username: decoded.username,
-            avatar: decoded.avatar,
-            id: decoded.id,
-            joined_at: decoded.joined_at, // not in token
-            roles: decoded.roles, // not in token
-         });
+         setUser(decoded);
       }
+
+      const handleClickOutside = (event: MouseEvent) => {
+         if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+            setIsSearchActive(false);
+         }
+         if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+            setIsMenuOpen(false);
+         }
+      };
+
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
    }, []);
 
-   const toggleDropdown = () => setDropdownOpen((prev) => !prev);
+   const handleSearch = async (value: string) => {
+      if (value.length <= 2) {
+         setSuggestions([]);
+         return;
+      }
+
+      setIsLoading(true);
+      const token = document.cookie
+         .split('; ')
+         .find(row => row.startsWith('wordsofdeath='))
+         ?.split('=')[1];
+
+      if (!token) return;
+
+      try {
+         const response = await fetch(`http://localhost:3001/api/search?q=${value}`, {
+            headers: { 'Authorization': `Bearer ${token}` },
+         });
+         const data = await response.json();
+         setSuggestions(data.words || []);
+      } catch (error) {
+         console.error('Search error:', error);
+      } finally {
+         setIsLoading(false);
+      }
+   };
+
+   const handleSearchFocus = () => {
+      setIsSearchActive(true);
+      if (searchInputRef.current) {
+         searchInputRef.current.focus();
+      }
+   };
+
+   const handleSearchSelect = (word: Entry) => {
+      setSearchTerm(word.entry);
+      setIsSearchActive(false);
+      setIsMobileMenuOpen(false);
+   };
 
    const handleLogout = () => {
       document.cookie = 'wordsofdeath=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;';
       window.location.href = '/signin';
    };
 
-   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = e.target.value;
-      setSearchTerm(value);
-
-      if (debounceTimer) clearTimeout(debounceTimer);
-
-      if (value.length > 2) {
-         const timer = setTimeout(async () => {
-            const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
-
-            if (!token) return;
-            const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/search?q=${value}`, {
-               method: "GET",
-               headers: {
-                  'Authorization': `Bearer ${token}`,
-               },
-            });
-
-            const data = await response.json();
-
-            setSuggestions(data.words || []);
-            setCategories(data.categories || []);
-         }, 750);
-
-         setDebounceTimer(timer);
-      } else {
-         setSuggestions([]);
-         setCategories([]);
-      }
+   const handleMenuSelect = () => {
+      setIsMenuOpen(false);
+      setIsMobileMenuOpen(false);
    };
 
    return (
-      <nav className="p-2 bg-zinc-900 backdrop-blur-xl sticky top-0 flex flex-col md:flex-row md:justify-between items-center space-y-2 md:space-y-0 z-20">
-         <div className="flex items-center space-x-0">
-            <Link href="/" className="rounded-md p-2 duration-100 transition-all">
-               <Home
-                  size={42}
-                  className="border text-white bg-transparent hover:bg-zinc-800 hover:border-zinc-600 border-transparent rounded-md p-2 duration-100 transition cursor-pointer" />
-            </Link>
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-neutral-900/80 backdrop-blur-lg border-b border-neutral-800">
+         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16">
+               <div className="flex items-center">
+                  <Link href="/" className="p-2 rounded-lg hover:bg-neutral-800 transition-colors">
+                     <Home className="w-6 h-6 text-neutral-100" />
+                  </Link>
 
-            {user && (
-               <div
-                  onClick={toggleDropdown}
-                  className="relative flex items-center space-x-1 border border-transparent rounded-md p-1 duration-100 transition-all">
-
-                  <div className="flex items-center space-x-3 border hover:bg-zinc-800 hover:border-zinc-700 border-transparent rounded-md p-1 duration-100 transition-all">
-                     <Image
-                        src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`}
-                        alt="User avatar"
-                        width={32}
-                        height={32}
-                        className="rounded-full cursor-pointer"
-                        onClick={toggleDropdown}
-                        loading='lazy'
-                        unoptimized
-                     />
-                     <span className="text-white font-medium cursor-pointer">
-                        {user.username}
-                     </span>
-                  </div>
-                  <Dropdown isOpen={dropdownOpen} toggleDropdown={toggleDropdown}>
-                     <div className="bg-zinc-800 rounded-2xl shadow-lg p-1 space-y-1">
-                        <Link href={`/u/${user.username}`} className="flex items-center rounded-xl px-4 py-2 text-base text-zinc-200 hover:bg-zinc-600 duration-100 transition-all">
-                           <CircleUserRound className="mr-2 w-5 h-5" /> Account
-                        </Link>
-                        <div onClick={handleLogout} className="flex items-center cursor-pointer rounded-xl px-4 py-2 text-base text-red-400 hover:bg-red-400/30 duration-100 transition-all">
-                           <LogOut className="mr-2 w-5 h-5" /> Abmelden
-                        </div>
-                        <hr className="border-zinc-600 border-t" />
-                        <Link href={`/admin`} className="flex items-center rounded-xl px-4 py-2 text-base text-zinc-200 hover:bg-zinc-600 duration-100 transition-all">
-                           <Shield className="mr-2 w-5 h-5" /> Admin
-                        </Link>
-                     </div>
-                  </Dropdown>
-               </div>
-            )}
-         </div>
-
-         <div className="relative w-full md:w-1/2 lg:w-1/3 mr-2">
-            <input
-               type="text"
-               value={searchTerm}
-               onChange={handleSearchChange}
-               placeholder="Suche..."
-               className="w-full p-2 rounded-md bg-zinc-800 text-white border border-zinc-600 focus:outline-none focus:outline-amber-300 transition-all"
-            />
-            {suggestions.length > 0 && (
-               <div className="absolute left-0 right-0 bg-zinc-900 border border-zinc-600 rounded-2xl shadow-lg font-light mt-4 transition-all">
-                  <ul className="max-h-64 overflow-y-auto space-y-1">
-                     {suggestions.map((word) => (
-                        <li
-                           key={word._id}
-                           className="px-4 py-2 hover:border-green-400 border-b-2 border-transparent rounded-xl cursor-pointer transition-all duration-200"
-                           onClick={() => window.location.href = `/e/${word.id}`}
+                  <div className="hidden md:block ml-4">
+                     <div ref={searchRef} className="relative">
+                        <div
+                           className={`flex items-center bg-neutral-800 rounded-lg transition-all duration-200 ${isSearchActive ? 'w-[300px]' : 'w-[200px]'}`}
                         >
-                           <div className="flex flex-col">
-                              <strong className="text-white text-lg">{word.entry}</strong>
-                              <div className="text-zinc-400 italic text-xs">
-                                 {word.categories.join(', ')}
-                              </div>
+                           <Search className="w-5 h-5 text-neutral-400 ml-3" />
+                           <input
+                              ref={searchInputRef}
+                              type="text"
+                              value={searchTerm}
+                              onChange={(e) => {
+                                 setSearchTerm(e.target.value);
+                                 handleSearch(e.target.value);
+                              }}
+                              onFocus={handleSearchFocus}
+                              placeholder="Suche..."
+                              className="w-full px-3 py-2 bg-transparent text-neutral-100 placeholder-neutral-400 focus:outline-none"
+                           />
+                           {searchTerm && (
+                              <button
+                                 onClick={() => {
+                                    setSearchTerm('');
+                                    setSuggestions([]);
+                                 }}
+                                 className="p-2 hover:bg-neutral-700 rounded-lg transition-colors mr-1"
+                              >
+                                 <X className="w-4 h-4 text-neutral-400" />
+                              </button>
+                           )}
+                        </div>
+
+
+                        {isSearchActive && (searchTerm.length > 2 || suggestions.length > 0) && (
+                           <div className="absolute top-full left-0 w-full mt-2 bg-neutral-800 rounded-lg shadow-xl border border-neutral-700 overflow-hidden">
+                              {isLoading ? (
+                                 <div className="p-4 text-center text-neutral-400">Suche...</div>
+                              ) : suggestions.length > 0 ? (
+                                 <div className="max-h-[400px] overflow-y-auto">
+                                    {suggestions.map((word) => (
+                                       <Link
+                                          href={`/e/${word.id}`}
+                                          key={word._id}
+                                          className="block px-4 py-3 hover:bg-neutral-700 transition-colors border-b border-neutral-700 last:border-none"
+                                          onClick={() => handleSearchSelect(word)}
+                                       >
+                                          <div className="font-medium text-neutral-100">{word.entry}</div>
+                                          <div className="text-sm text-neutral-400 mt-1">
+                                             {word.categories.join(', ')}
+                                          </div>
+                                       </Link>
+                                    ))}
+                                 </div>
+                              ) : searchTerm.length > 2 && (
+                                 <div className="p-4 text-center text-neutral-400">
+                                    Keine Ergebnisse gefunden
+                                 </div>
+                              )}
                            </div>
-                        </li>
-                     ))}
-                  </ul>
+                        )}
+                     </div>
+                  </div>
                </div>
-            )}
-            {categories.length > 0 && (
-               <div className="mt-2">
-                  <hr className="border-zinc-600 border-t" />
-                  <h3 className="text-sm font-semibold text-white">Kategorien:</h3>
-                  <ul className="text-zinc-400">
-                     {categories.map((category, index) => (
-                        <li key={index} className="py-1">{category}</li>
-                     ))}
-                  </ul>
+
+               <div className="flex items-center">
+                  <button
+                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                     className="md:hidden p-2 rounded-lg hover:bg-neutral-800 transition-colors"
+                  >
+                     <Menu className="w-6 h-6 text-neutral-100" />
+                  </button>
+
+                  {user && (
+                     <div className="hidden md:block">
+                        <div ref={menuRef} className="relative">
+                           <button
+                              onClick={() => setIsMenuOpen(!isMenuOpen)}
+                              className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors"
+                           >
+                              <Image
+                                 src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`}
+                                 alt={user.username}
+                                 width={32}
+                                 height={32}
+                                 className="rounded-full"
+                                 unoptimized
+                              />
+                              <span className="text-neutral-100 font-medium">{user.username}</span>
+                           </button>
+
+                           {isMenuOpen && (
+                              <div className="absolute right-0 mt-2 w-48 bg-neutral-800 rounded-lg shadow-xl border border-neutral-700 overflow-hidden">
+                                 <Link
+                                    href={`/u/${user.username}`}
+                                    className="flex items-center px-4 py-3 text-neutral-100 hover:bg-neutral-700 transition-colors"
+                                    onClick={handleMenuSelect}
+                                 >
+                                    <CircleUserRound className="w-5 h-5 mr-3" />
+                                    Account
+                                 </Link>
+                                 <Link
+                                    href="/admin"
+                                    className="flex items-center px-4 py-3 text-neutral-100 hover:bg-neutral-700 transition-colors border-t border-neutral-700"
+                                    onClick={handleMenuSelect}
+                                 >
+                                    <Shield className="w-5 h-5 mr-3" />
+                                    Admin
+                                 </Link>
+                                 <button
+                                    onClick={handleLogout}
+                                    className="flex items-center w-full px-4 py-3 text-red-400 hover:bg-red-400/20 transition-colors border-t border-neutral-700"
+                                 >
+                                    <LogOut className="w-5 h-5 mr-3" />
+                                    Abmelden
+                                 </button>
+                              </div>
+                           )}
+                        </div>
+                     </div>
+                  )}
+               </div>
+            </div>
+
+            {isMobileMenuOpen && (
+               <div className="md:hidden border-t border-neutral-700">
+                  <div className="p-4">
+                     <div className="relative">
+                        <div className="flex items-center bg-neutral-800 rounded-lg">
+                           <Search className="w-5 h-5 text-neutral-400 ml-3" />
+                           <input
+                              type="text"
+                              value={searchTerm}
+                              onChange={(e) => {
+                                 setSearchTerm(e.target.value);
+                                 handleSearch(e.target.value);
+                              }}
+                              placeholder="Suche..."
+                              className="w-full px-3 py-2 bg-transparent text-neutral-100 placeholder-neutral-400 focus:outline-none"
+                           />
+                           {searchTerm && (
+                              <button
+                                 onClick={() => {
+                                    setSearchTerm('');
+                                    setSuggestions([]);
+                                 }}
+                                 className="p-2 hover:bg-neutral-700 rounded-lg transition-colors"
+                              >
+                                 <X className="w-4 h-4 text-neutral-400" />
+                              </button>
+                           )}
+                        </div>
+
+                        {(searchTerm.length > 2 || suggestions.length > 0) && (
+                           <div className="absolute left-0 right-0 mt-2 bg-neutral-800 rounded-lg shadow-xl border border-neutral-700 overflow-hidden">
+                              {isLoading ? (
+                                 <div className="p-4 text-center text-neutral-400">Suche...</div>
+                              ) : suggestions.length > 0 ? (
+                                 <div className="max-h-[300px] overflow-y-auto">
+                                    {suggestions.map((word) => (
+                                       <Link
+                                          href={`/e/${word.id}`}
+                                          key={word._id}
+                                          className="block px-4 py-3 hover:bg-neutral-700 transition-colors border-b border-neutral-700 last:border-none"
+                                          onClick={() => handleSearchSelect(word)}
+                                       >
+                                          <div className="font-medium text-neutral-100">{word.entry}</div>
+                                          <div className="text-sm text-neutral-400 mt-1">
+                                             {word.categories.join(', ')}
+                                          </div>
+                                       </Link>
+                                    ))}
+                                 </div>
+                              ) : searchTerm.length > 2 && (
+                                 <div className="p-4 text-center text-neutral-400">
+                                    Keine Ergebnisse gefunden
+                                 </div>
+                              )}
+                           </div>
+                        )}
+                     </div>
+                  </div>
+
+                  {user && (
+                     <div className="pb-4 px-4">
+                        <div className="space-y-1">
+                           <Link
+                              href={`/u/${user.username}`}
+                              className="flex items-center px-4 py-3 text-neutral-100 hover:bg-neutral-700 rounded-lg transition-colors"
+                              onClick={handleMenuSelect}
+                           >
+                              <CircleUserRound className="w-5 h-5 mr-3" />
+                              Account
+                           </Link>
+                           <Link
+                              href="/admin"
+                              className="flex items-center px-4 py-3 text-neutral-100 hover:bg-neutral-700 rounded-lg transition-colors"
+                              onClick={handleMenuSelect}
+                           >
+                              <Shield className="w-5 h-5 mr-3" />
+                              Admin
+                           </Link>
+                           <button
+                              onClick={handleLogout}
+                              className="flex items-center w-full px-4 py-3 text-red-400 hover:bg-red-400/20 rounded-lg transition-colors"
+                           >
+                              <LogOut className="w-5 h-5 mr-3" />
+                              Abmelden
+                           </button>
+                        </div>
+                     </div>
+                  )}
                </div>
             )}
          </div>

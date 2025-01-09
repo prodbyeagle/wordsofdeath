@@ -38,7 +38,7 @@ type ToastProps = {
  * A Toast component that displays a temporary message with an animation.
  * The toast fades in and out based on the provided duration, type, and position.
  */
-const Toast: React.FC<ToastProps> = ({ type, message, position = 'top-right', duration = 3000 }) => {
+export const Toast: React.FC<ToastProps> = ({ type, message, position = 'top-right', duration = 3000 }) => {
    const [isVisible, setIsVisible] = useState(true);
 
    useEffect(() => {
@@ -110,7 +110,7 @@ const Toast: React.FC<ToastProps> = ({ type, message, position = 'top-right', du
             }}
          >
             <div
-               className={`${getToastStyle()} p-4 mb-2 text-white rounded-md shadow-lg transition-all transform`}
+               className={`${getToastStyle()} p-4 mb-2 text-neutral-100 rounded-md shadow-lg transition-all transform`}
             >
                <span>{message}</span>
             </div>
@@ -118,5 +118,3 @@ const Toast: React.FC<ToastProps> = ({ type, message, position = 'top-right', du
       )
    );
 };
-
-export default Toast;

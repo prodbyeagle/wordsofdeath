@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     /**
      * The variant of the button, which determines its style.
-     * - `primary`: A green button for primary actions.
+     * - `primary`: A neutral button for primary actions.
      * - `secondary`: A neutral dark button.
      * - `outline`: A transparent button with a border.
      * - `destructive`: A red button for dangerous actions.
@@ -46,16 +46,16 @@ export const Button: React.FC<ButtonProps> = ({
     ...props
 }) => {
     const baseStyles =
-        "inline-flex items-center justify-center font-medium transition-colors duration-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-default";
+        "inline-flex items-center justify-center font-medium transition-all duration-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-default";
 
     const variants = {
-        primary: "bg-green-600 text-white hover:bg-green-700 focus:ring-green-500",
+        primary: "bg-neutral-600 text-neutral-100 hover:bg-neutral-700 focus:ring-neutral-500",
         secondary:
-            "bg-zinc-700 text-zinc-100 hover:bg-zinc-800 focus:ring-zinc-500",
+            "bg-neutral-700 text-neutral-100 hover:bg-neutral-800 focus:ring-neutral-500",
         outline:
-            "border border-zinc-400 text-zinc-100 hover:bg-zinc-700 focus:ring-zinc-500",
+            "border-2 border-neutral-400 text-neutral-100 hover:bg-neutral-700 focus:ring-neutral-500",
         destructive:
-            "bg-red-600 text-white hover:bg-red-700 focus:ring-red-500",
+            "bg-red-600 text-neutral-100 hover:bg-red-700 focus:ring-red-500",
     };
 
     const sizes = {

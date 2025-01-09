@@ -21,7 +21,7 @@ export const PaginationButton = ({
         return (
             <button
                 disabled
-                className={`${baseStyles} text-zinc-600 cursor-not-allowed`}
+                className={`${baseStyles} text-neutral-600 cursor-not-allowed`}
                 aria-label={ariaLabel}
             >
                 {children}
@@ -30,8 +30,8 @@ export const PaginationButton = ({
     }
 
     const styles = active
-        ? `${baseStyles} bg-green-600 text-white`
-        : `${baseStyles} text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800`;
+        ? `${baseStyles} bg-neutral-600 text-neutral-100`
+        : `${baseStyles} text-neutral-400 hover:text-neutral-100 hover:bg-neutral-800`;
 
     return (
         <button

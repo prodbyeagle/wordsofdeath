@@ -23,7 +23,7 @@ export const Pagination = ({ currentPage, totalPages, onPageChange }: Pagination
         }
 
         return [1, '...', currentPage, '...', totalPages];
-    };  
+    };
 
     const pageNumbers = getPageNumbers();
 
@@ -39,7 +39,7 @@ export const Pagination = ({ currentPage, totalPages, onPageChange }: Pagination
 
             {pageNumbers.map((num, index) =>
                 num === '...' ? (
-                    <span key={index} className="px-3 py-1 text-zinc-400">...</span>
+                    <span key={index} className="px-3 py-1 text-neutral-400">...</span>
                 ) : (
                     <PaginationButton
                         key={index}

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, ReactNode } from 'react';
 import { X } from 'lucide-react';
-import '../styles/Modal.css';
+import '../styles/modal.css';
 
 interface ModalProps {
    isOpen: boolean;
@@ -13,7 +13,7 @@ interface ModalProps {
    shadowSize?: string;
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, className, shadowSize }) => {
+export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, className, shadowSize }) => {
    const [show, setShow] = useState(isOpen);
 
    useEffect(() => {
@@ -62,5 +62,3 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, classNa
       </div>
    );
 };
-
-export default Modal;

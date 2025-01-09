@@ -10,7 +10,7 @@ export const TimeStamp = ({ timestamp }: TimeStampProps) => {
     return (
         <time
             dateTime={timestamp}
-            className="flex items-center gap-1.5 text-sm text-zinc-400"
+            className="flex items-center gap-1.5 text-sm text-neutral-400"
         >
             <Clock className="w-3.5 h-3.5" />
             {formatDistanceToNow(new Date(timestamp), {

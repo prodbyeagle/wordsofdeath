@@ -1,8 +1,8 @@
 import "./globals.css";
-import Navbar from '../components/Navbar';
+import Navbar from '../components/ui/Navbar';
 
 import { DM_Sans } from 'next/font/google'
-const sg = DM_Sans({ fallback: ["system-ui"], subsets: ['latin'] })
+const font = DM_Sans({ fallback: ["system-ui"], subsets: ['latin-ext'] })
 
 export const metadata = {
   icons: {
@@ -21,7 +21,7 @@ export default function RootLayout({
         <link rel="icon" href={metadata.icons.icon} />
         <meta name="google-site-verification" content="hzsS2qiDIdpqUiOcQrA-Dou7pxxilhW0INsyVueX7jY" />
       </head>
-      <body className={sg.className}>
+      <body className={font.className}>
         <Navbar />
         {children}
       </body>

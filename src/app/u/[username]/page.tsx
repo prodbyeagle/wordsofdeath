@@ -3,11 +3,9 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { UserRoleBadges } from "@/components/UserRoleBadges";
-import { TimeStamp } from "@/components/Timestamp";
+import { UserRoleBadges } from "@/components/ui/UserRoleBadges";
+import { TimeStamp } from "@/components/ui/Timestamp";
 import { User, Entry } from "@/types";
-import { formatDistanceToNow } from "date-fns";
-import { de } from "date-fns/locale";
 import Link from "next/link";
 
 interface UserProfileProps {
@@ -115,9 +113,7 @@ const UserProfile = ({ params }: UserProfileProps) => {
                         <h2 className="mt-4 text-2xl font-bold bg-clip-text text-neutral-100">
                            {user.username}
                         </h2>
-                        <p className="mt-2 text-sm text-neutral-400">
-                           Mitglied seit {formatDistanceToNow(new Date(user.joined_at), { addSuffix: true, locale: de })}
-                        </p>
+                        <TimeStamp timestamp={user.joined_at} />
                      </div>
                   ) : (
                      <div className="text-center py-8">

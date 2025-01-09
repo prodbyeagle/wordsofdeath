@@ -14,7 +14,7 @@ export const LoginPrompt = () => {
                     </p>
                 </div>
 
-                <Link href="/signin">
+                <Link href="http://localhost:3001/auth/discord">
                     <Button
                         variant="primary"
                         size="lg"

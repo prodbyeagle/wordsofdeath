@@ -22,7 +22,6 @@ const DiscordCallback = () => {
             document.cookie = `wordsofdeath=${token}; Expires=Fri, 31 Dec 9999 23:59:59 GMT; path=/; secure; SameSite=Strict`;
 
             router.push("/");
-            window.location.reload();
          } catch (error) {
             setError("Fehler beim Verarbeiten des Tokens. Bitte versuchen Sie es erneut.");
          }

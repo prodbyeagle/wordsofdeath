@@ -1,9 +1,8 @@
 import "./globals.css";
 import Navbar from '../components/Navbar';
 
-//! UNCOMMENT THIS WHEN COMMITING...
-import { Inter_Tight } from 'next/font/google'
-const sg = Inter_Tight({ fallback: ["inter-tight, system-ui"], subsets: ['latin'] })
+import { DM_Sans } from 'next/font/google'
+const sg = DM_Sans({ fallback: ["system-ui"], subsets: ['latin'] })
 
 export const metadata = {
   icons: {

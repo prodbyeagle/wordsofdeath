@@ -1,5 +1,4 @@
 import { Entry } from "@/types";
-import Link from "next/link";
 import { UserRoleBadges } from "../ui/UserRoleBadges";
 import { TimeStamp } from "../ui/Timestamp";
 import { UserAvatar } from "../ui/UserAvatar";
@@ -9,14 +8,14 @@ interface EntryCardProps {
     entry: Entry;
     avatarUrl?: string;
     avatar?: string;
-    userRoles?: string[];
-    badges?: boolean;
+    userRoles: string[];
+    tooltip?: boolean;
 }
 
-export const EntryCard = ({ entry, avatar, userRoles = [], badges = true }: EntryCardProps) => {
+export const EntryCard = ({ entry, avatar, userRoles = [], tooltip = true }: EntryCardProps) => {
 
     return (
-        <Link href={`/e/${entry.id}`} className="block group">
+        <span className="block group">
             <article className="h-full bg-neutral-800/50 backdrop-blur-sm rounded-xl border border-neutral-700/50 overflow-hidden hover:border-neutral-500/50 transition-all duration-300">
                 <div className="p-4">
                     <header className="flex items-center space-x-3 mb-3">
@@ -26,7 +25,7 @@ export const EntryCard = ({ entry, avatar, userRoles = [], badges = true }: Entr
                                 <span className="text-sm font-medium text-neutral-200 truncate">
                                     @{entry.author}
                                 </span>
-                                {badges && <UserRoleBadges roles={userRoles} />}
+                                <UserRoleBadges roles={userRoles} tooltip={tooltip} />
                             </div>
                             <TimeStamp timestamp={entry.timestamp} />
                         </div>
@@ -58,6 +57,6 @@ export const EntryCard = ({ entry, avatar, userRoles = [], badges = true }: Entr
                     </footer>
                 )}
             </article>
-        </Link>
+        </span>
     );
 };

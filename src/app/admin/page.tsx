@@ -183,7 +183,7 @@ const Admin = () => {
                                  {user.username}
                               </h4>
                               <div className="flex gap-3">
-                                 <Tooltip delay={500} content="Zum User">
+                                 <Tooltip content="Zum User">
                                     <Button
                                        onClick={() => goToPage(user.username)}
                                        variant='primary'
@@ -191,7 +191,7 @@ const Admin = () => {
                                        <UserRoundCog size={18} />
                                     </Button>
                                  </Tooltip>
-                                 <Tooltip delay={500} content="Entfernen">
+                                 <Tooltip content="Entfernen">
                                     <Button
                                        onClick={() => removeUserFromWhitelist(user.username)}
                                        variant='destructive'
@@ -223,7 +223,7 @@ const Admin = () => {
                               </div>
                            </div>
                            <div className="flex justify-end">
-                              <Tooltip delay={500} content="Löschen">
+                              <Tooltip content="Löschen">
                                  <Button
                                     onClick={() => deleteEntry(entry.id)}
                                     variant='destructive'

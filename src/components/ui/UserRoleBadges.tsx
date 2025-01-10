@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BadgeCheck, Server, HeartHandshake, UserCheck, UserPlus } from "lucide-react";
+import { BadgeCheck, HeartHandshake, UserCheck, UserPlus, Wrench } from "lucide-react";
 import { Tooltip } from "./Tooltip";
 
 interface UserRoleBadgesProps {
     roles: string[];
+    tooltip?: boolean;
 }
 
 type Role = 'owner' | 'admin' | 'developer' | 'moderator' | 'contributor';
 
-export const UserRoleBadges = ({ roles }: UserRoleBadgesProps) => {
+export const UserRoleBadges = ({ roles, tooltip = true }: UserRoleBadgesProps) => {
     if (!roles?.length) return null;
 
     const badges: { [key in Role]: { icon: React.ForwardRefExoticComponent<any>; color: string; } } = {
@@ -21,7 +22,7 @@ export const UserRoleBadges = ({ roles }: UserRoleBadgesProps) => {
             color: 'text-yellow-400',
         },
         developer: {
-            icon: Server,
+            icon: Wrench,
             color: 'text-neutral-100',
         },
         moderator: {
@@ -43,14 +44,23 @@ export const UserRoleBadges = ({ roles }: UserRoleBadgesProps) => {
                 const Icon = badge.icon;
 
                 return (
-                    <Tooltip key={role} content={role} position="top">
+                    tooltip ? (
+                        <Tooltip key={role} content={role} position="top">
+                            <div
+                                key={role}
+                                className="group relative"
+                            >
+                                <Icon className={`h-5 w-5 cursor-default ${badge.color}`} />
+                            </div>
+                        </Tooltip>
+                    ) : (
                         <div
                             key={role}
                             className="group relative"
                         >
-                            <Icon className={`h-5 w-5 cursor-default ${badge.color}`} />
+                            <Icon className={`h-4 w-4 cursor-default ${badge.color}`} />
                         </div>
-                    </Tooltip>
+                    )
                 );
             })}
         </div>

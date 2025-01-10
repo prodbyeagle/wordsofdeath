@@ -154,7 +154,8 @@ const Homepage = () => {
                                     key={entry.id}
                                     entry={entry}
                                     avatar={avatarUrls[entry.author] || ''}
-                                    badges={false}
+                                    userRoles={cacheManager?.getRoles(entry.author) || []}
+                                    tooltip={false}
                                 />
                             ))
                         ) : (

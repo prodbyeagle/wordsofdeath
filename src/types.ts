@@ -22,7 +22,6 @@ export interface User {
  * @property `categories` - Array of categories to which this entry belongs.
  * @property `author` - Username of the entry's creator.
  * @property `authorId` - Discord user ID of the entry's creator.
- * @property `avatar` - ONLY FOR METADATA
  * @property `timestamp` - Timestamp of entry creation, in ISO 8601 format.
  */
 export interface Entry {
@@ -32,7 +31,6 @@ export interface Entry {
    categories: string[];
    author: string;
    authorId: string;
-   avatar?: string;
    timestamp: string;
 }
 

@@ -1,5 +1,5 @@
 import "./globals.css";
-import Navbar from '../components/ui/Navbar';
+import Navbar from '@/components/ui/Navbar';
 
 import { DM_Sans } from 'next/font/google'
 const font = DM_Sans({ fallback: ["system-ui"], subsets: ['latin-ext'] })

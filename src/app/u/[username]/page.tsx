@@ -6,7 +6,6 @@ import React, { useEffect, useState } from "react";
 import { UserRoleBadges } from "@/components/ui/UserRoleBadges";
 import { TimeStamp } from "@/components/ui/Timestamp";
 import { User, Entry } from "@/types";
-import Link from "next/link";
 
 interface UserProfileProps {
    params: Promise<{ username: string }>;
@@ -129,7 +128,7 @@ const UserProfile = ({ params }: UserProfileProps) => {
                   {entries.length > 0 ? (
                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                         {entries.map((entry) => (
-                           <Link key={entry._id} href={`/e/${entry.id}`}>
+                           <span key={entry._id}>
                               <div className="group bg-neutral-900/50 rounded-xl p-4 border border-neutral-800 hover:border-neutral-600 transition-all duration-300 hover:scale-[1.02]">
                                  <h4 className="font-semibold text-lg text-neutral-100 group-hover:text-neutral-100 mb-2 truncate">
                                     {entry.entry}
@@ -145,7 +144,7 @@ const UserProfile = ({ params }: UserProfileProps) => {
                                  )}
                                  <TimeStamp timestamp={entry.timestamp} />
                               </div>
-                           </Link>
+                           </span>
                         ))}
                      </div>
                   ) : (

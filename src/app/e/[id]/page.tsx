@@ -134,7 +134,7 @@ const EntryPage = async ({ params }: EntryProps) => {
                     <Link href={`/u/${user.username}`}>
                         <div
                             className="p-2 mt-8 w-full flex items-center space-x-2 rounded-xl bg-neutral-800 hover:bg-neutral-600 border-2 border-neutral-800 transition-all transform hover:rounded-xl">
-                            <UserAvatar avatarUrl={user.avatar} id={user.id} username={user.username} />
+                            <UserAvatar avatar={user.avatar} id={user.id} username={user.username} />
                             <span className="text-lg font-medium">von @{user.username}</span>
                             {user.roles && <UserRoleBadges roles={user.roles} />}
                         </div>

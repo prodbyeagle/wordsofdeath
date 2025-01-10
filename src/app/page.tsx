@@ -48,13 +48,18 @@ const Homepage = () => {
     }, []);
 
     useEffect(() => {
-        const loadAvatars = async () => {
-            const authors = [...new Set(entries.map((entry) => entry.author))];
-            for (const author of authors) {
-                await cacheManager?.getAvatarUrl(author);
-            }
-        };
-        if (cacheManager) {
+        if (cacheManager && entries.length > 0) {
+            const loadAvatars = async () => {
+                const authors = [...new Set(entries.map((entry) => entry.author))];
+                const newAvatarUrls: { [key: string]: string } = {};
+                for (const author of authors) {
+                    const avatarUrl = await cacheManager.getAvatarUrl(author);
+                    if (avatarUrl) {
+                        newAvatarUrls[author] = avatarUrl;
+                    }
+                }
+                setAvatarUrls(newAvatarUrls);
+            };
             loadAvatars();
         }
     }, [entries, cacheManager]);
@@ -111,23 +116,6 @@ const Homepage = () => {
         }
     };
 
-    useEffect(() => {
-        const loadAvatars = async () => {
-            const authors = [...new Set(entries.map((entry) => entry.author))];
-            const newAvatarUrls: { [key: string]: string } = {};
-            for (const author of authors) {
-                const avatarUrl = await cacheManager?.getAvatarUrl(author);
-                if (avatarUrl) {
-                    newAvatarUrls[author] = avatarUrl;
-                }
-            }
-            setAvatarUrls(newAvatarUrls);
-        };
-        if (cacheManager && entries.length > 0) {
-            loadAvatars();
-        }
-    }, [entries, cacheManager]);
-
     if (!isLoggedIn) {
         return <LoginPrompt />;
     }
@@ -165,7 +153,7 @@ const Homepage = () => {
                                 <EntryCard
                                     key={entry.id}
                                     entry={entry}
-                                    avatarUrl={avatarUrls[entry.author] || ""}
+                                    avatar={avatarUrls[entry.author] || ''}
                                     badges={false}
                                 />
                             ))

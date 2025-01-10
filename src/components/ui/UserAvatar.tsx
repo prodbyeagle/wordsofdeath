@@ -3,13 +3,13 @@
 import Image from "next/image";
 
 interface UserAvatarProps {
-    avatarUrl?: string;
+    avatar?: string;
     username: string;
     id: string;
     size?: 'sm' | 'md' | 'lg';
 }
 
-export const UserAvatar = ({ avatarUrl, id, username, size = 'md' }: UserAvatarProps) => {
+export const UserAvatar = ({ avatar, id, username, size = 'md' }: UserAvatarProps) => {
     const sizeClasses = {
         sm: 'w-8 h-8',
         md: 'w-10 h-10',
@@ -22,16 +22,17 @@ export const UserAvatar = ({ avatarUrl, id, username, size = 'md' }: UserAvatarP
         lg: { width: 48, height: 48 }
     };
 
-    if (avatarUrl) {
+    if (avatar) {
         return (
             <div className={`${sizeClasses[size]} rounded-full overflow-hidden bg-neutral-700`}>
                 <Image
-                    src={`https://cdn.discordapp.com/avatars/${id}/${avatarUrl}.png`}
+                    src={`https://cdn.discordapp.com/avatars/${id}/${avatar}`}
                     alt={`${username}'s avatar`}
                     className="w-full h-full object-cover"
                     width={sizeDimensions[size].width}
                     height={sizeDimensions[size].height}
                     priority
+                    unoptimized
                 />
             </div>
         );

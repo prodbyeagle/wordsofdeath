@@ -53,7 +53,7 @@ export class CacheManager {
                 return null;
             }
 
-            const avatarUrl = `https://cdn.discordapp.com/avatars/${data.id}/${data.avatar}.png`;
+            const avatarUrl = `/${data.avatar}.png`;
             this.avatarCache[author] = avatarUrl;
 
             if (Array.isArray(data.roles)) {

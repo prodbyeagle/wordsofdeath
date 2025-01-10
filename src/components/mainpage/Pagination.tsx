@@ -27,14 +27,20 @@ export const Pagination = ({ currentPage, totalPages, onPageChange }: Pagination
 
     const pageNumbers = getPageNumbers();
 
+    const handlePageChange = (page: number) => {
+        if (page >= 1 && page <= totalPages) {
+            onPageChange(page);
+        }
+    };
+
     return (
         <div className="flex justify-center items-center space-x-2">
             <PaginationButton
-                onClick={() => onPageChange(currentPage - 1)}
+                onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
                 type="navigation"
             >
-                Zurück
+                -
             </PaginationButton>
 
             {pageNumbers.map((num, index) =>
@@ -43,7 +49,7 @@ export const Pagination = ({ currentPage, totalPages, onPageChange }: Pagination
                 ) : (
                     <PaginationButton
                         key={index}
-                        onClick={() => onPageChange(num as number)}
+                        onClick={() => handlePageChange(num as number)}
                         active={currentPage === num}
                         type="page"
                     >
@@ -53,11 +59,11 @@ export const Pagination = ({ currentPage, totalPages, onPageChange }: Pagination
             )}
 
             <PaginationButton
-                onClick={() => onPageChange(currentPage + 1)}
+                onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 type="navigation"
             >
-                Weiter
+                +
             </PaginationButton>
         </div>
     );

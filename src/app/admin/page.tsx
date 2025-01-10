@@ -24,7 +24,7 @@ const Admin = () => {
 
       const fetchUserStatus = async () => {
          try {
-            const response = await fetch("ttps://wordsofdeath-backend.vercel.app/auth/admin", {
+            const response = await fetch("https://wordsofdeath-backend.vercel.app/auth/admin", {
                method: 'GET',
                headers: { 'Authorization': `Bearer ${token}` },
             });

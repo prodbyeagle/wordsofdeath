@@ -47,7 +47,7 @@ export const EntryCard = ({ entry, avatar, userRoles = [], tooltip = true }: Ent
                                 {entry.categories.map((category, index) => (
                                     <span
                                         key={index}
-                                        className="px-2 py-1 rounded-md bg-neutral-700/50 text-neutral-300 cursor-default"
+                                        className="px-2 py-1 rounded-md bg-neutral-700/50 text-neutral-300"
                                     >
                                         {category}
                                     </span>

@@ -50,7 +50,7 @@ export const UserRoleBadges = ({ roles, tooltip = true }: UserRoleBadgesProps) =
                                 key={role}
                                 className="group relative"
                             >
-                                <Icon className={`h-5 w-5 cursor-default ${badge.color}`} />
+                                <Icon className={`h-5 w-5 ${badge.color}`} />
                             </div>
                         </Tooltip>
                     ) : (
@@ -58,7 +58,7 @@ export const UserRoleBadges = ({ roles, tooltip = true }: UserRoleBadgesProps) =
                             key={role}
                             className="group relative"
                         >
-                            <Icon className={`h-4 w-4 cursor-default ${badge.color}`} />
+                            <Icon className={`h-4 w-4 ${badge.color}`} />
                         </div>
                     )
                 );

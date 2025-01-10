@@ -72,7 +72,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
       >
          <div
             ref={tooltipRef}
-            className={`absolute z-10 px-2 py-1 bg-neutral-700 border border-neutral-600 text-neutral-100 rounded-md whitespace-nowrap cursor-default transition-opacity duration-300 ease-in-out ${fontSize} 
+            className={`absolute z-10 px-2 py-1 bg-neutral-700 border border-neutral-600 text-neutral-100 rounded-md whitespace-nowrap transition-opacity duration-300 ease-in-out ${fontSize} 
             ${isVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} 
             ${position === 'bottom' ? 'top-full mt-2 left-1/2 transform -translate-x-1/2'
                   : position === 'top' ? 'bottom-full mb-2 left-1/2 transform -translate-x-1/2'

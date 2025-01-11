@@ -4,12 +4,11 @@
 'use client';
 import React, { useEffect, useState } from "react";
 import { CacheManager } from "@/lib/avatarCache";
-import { fetchEntries as fetchEntriesFromAPI } from "@/lib/api";
+import { createEntry, fetchEntries as fetchEntriesFromAPI, fetchSomeEntries, getAuthToken } from "@/lib/api";
 import type { Entry, User } from "@/types";
 import { Modal } from "@/components/ui/Modal";
 import { useRouter } from "next/navigation";
 import { LoginPrompt } from "@/components/mainpage/LoginPrompt";
-import { Pagination } from "@/components/mainpage/Pagination";
 import { EntryCard } from "@/components/mainpage/EntryCard";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -24,23 +23,16 @@ const Homepage = () => {
     const [categories, setCategories] = useState<string>("");
     const [user] = useState<User | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [page, setPage] = useState<number>(1);
+    const [loading, setLoading] = useState<boolean>(false);
     const entriesPerPage = 10;
     const [cacheManager, setCacheManager] = useState<CacheManager | null>(null);
     const [avatarUrls, setAvatarUrls] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const pageParam = urlParams.get("page");
-        setPage(pageParam ? parseInt(pageParam, 25) : 1);
-    }, []);
-
-    useEffect(() => {
-        const cookies = document.cookie.split("; ");
-        const token = cookies.find((row) => row.startsWith("wordsofdeath="));
+        const token = getAuthToken();
         if (token) {
             setIsLoggedIn(true);
-            loadEntries(token.split("=")[1]);
+            loadEntries(token);
             setCacheManager(new CacheManager());
         } else {
             console.warn("No token found.");
@@ -67,52 +59,78 @@ const Homepage = () => {
     const loadEntries = async (token: string): Promise<Entry[]> => {
         const fetchedEntries = await fetchEntriesFromAPI(token);
         setEntries(fetchedEntries);
+        setUniqueEntries(fetchedEntries);
         return fetchedEntries;
     };
 
-    useEffect(() => {
-        const startIdx = (page - 1) * entriesPerPage;
-        const endIdx = startIdx + entriesPerPage;
-        setUniqueEntries(entries.slice(startIdx, endIdx));
-    }, [page, entries]);
-
-    const handlePageChange = (newPage: number) => {
-        setPage(newPage);
-        router.push(`/?page=${newPage}`, undefined);
+    const handleScroll = () => {
+        const bottom =
+            window.innerHeight + document.documentElement.scrollTop ===
+            document.documentElement.offsetHeight;
+        if (bottom && !loading) {
+            setLoading(true);
+            loadMoreEntries();
+        }
     };
 
-    const handleNewEntrySubmit = async () => {
-        const token = document.cookie.split("; ").find((row) => row.startsWith("wordsofdeath="))?.split("=")[1];
-        if (!token || !newEntry.trim()) {
-            setError("Kein Token oder leerer Eintrag.");
+
+    const loadMoreEntries = async () => {
+        const token = getAuthToken();
+
+        if (!token) {
+            console.error("Kein Token gefunden.");
             return;
         }
 
         try {
-            const response = await fetch("https://wordsofdeath-backend.vercel.app/api/entries", {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    entry: newEntry,
-                    timestamp: new Date().toISOString(),
-                    categories: categories.split(",").map((cat) => cat.trim()).filter(Boolean),
-                    author: user?.username,
-                }),
-            });
+            setLoading(true);
+            const newEntries = await fetchSomeEntries(token, entriesPerPage);
 
-            if (response.ok) {
-                setNewEntry("");
-                setCategories("");
-                setIsModalOpen(false);
-                loadEntries(token);
+            console.log("Neue Einträge:", newEntries);
+
+            if (newEntries.length > 0) {
+                setEntries((prevEntries) => {
+                    const updatedEntries = [...prevEntries, ...newEntries];
+                    setUniqueEntries(updatedEntries);
+                    return updatedEntries;
+                });
             } else {
-                setError(`Fehler beim Erstellen des Eintrags: ${response.statusText}`);
+                console.log("Keine neuen Einträge.");
             }
         } catch (error) {
-            setError("Fehler beim Erstellen des Eintrags.");
+            console.error("Fehler beim Abrufen von Einträgen:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll);
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+        };
+    }, [loading]);
+
+    useEffect(() => {
+        setUniqueEntries(entries.slice(0, entriesPerPage));
+    }, [entries]);
+
+    const handleNewEntrySubmit = async () => {
+        if (!newEntry.trim()) {
+            setError("Entry cannot be empty.");
+            return;
+        }
+
+        const errorMessage = await createEntry(newEntry, categories, user);
+
+        if (errorMessage) {
+            setError(errorMessage);
+        } else {
+            setNewEntry("");
+            setCategories("");
+            setIsModalOpen(false);
+            loadEntries(document.cookie.split("; ").find((row) => row.startsWith("wordsofdeath="))?.split("=")[1] || "");
         }
     };
 
@@ -120,22 +138,12 @@ const Homepage = () => {
         return <LoginPrompt modal={false} />;
     }
 
-    const totalPages = Math.ceil(entries.length / entriesPerPage);
-
     return (
         <div className="min-h-screen pt-16 bg-neutral-900 text-neutral-100">
             <div className="max-w-2xl mx-auto px-4 py-10">
                 <header className="mb-8">
                     <h1 className="text-4xl font-bold text-center">Feed</h1>
                 </header>
-
-                <div className="mb-8">
-                    <Pagination
-                        currentPage={page}
-                        totalPages={totalPages}
-                        onPageChange={handlePageChange}
-                    />
-                </div>
 
                 <Button
                     onClick={() => setIsModalOpen(true)}
@@ -149,9 +157,9 @@ const Homepage = () => {
                 <main className="mt-8">
                     <div className="space-y-4">
                         {uniqueEntries.length > 0 ? (
-                            uniqueEntries.map((entry) => (
+                            uniqueEntries.map((entry, index) => (
                                 <EntryCard
-                                    key={entry.id}
+                                    key={`${entry.id}-${index}`}
                                     entry={entry}
                                     avatar={avatarUrls[entry.author] || ''}
                                     userRoles={cacheManager?.getRoles(entry.author) || []}
@@ -161,16 +169,10 @@ const Homepage = () => {
                         ) : (
                             <p className="text-center text-neutral-500">Noch keine Einträge vorhanden.</p>
                         )}
+
+                        {loading && <p className="text-center text-neutral-500">Lade mehr Einträge...</p>}
                     </div>
                 </main>
-
-                <footer className="mt-8">
-                    <Pagination
-                        currentPage={page}
-                        totalPages={totalPages}
-                        onPageChange={handlePageChange}
-                    />
-                </footer>
             </div>
 
             <Modal

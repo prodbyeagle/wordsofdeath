@@ -7,6 +7,7 @@ import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { TimeStamp } from '@/components/ui/Timestamp';
 import { LoginPrompt } from '@/components/mainpage/LoginPrompt';
+import { addUserToWhitelist, fetchAdminStatus, fetchWhitelistedUsers, getAuthToken, removeUserFromWhitelist } from '@/lib/api';
 
 const Admin = () => {
    const [whitelistedUsers, setWhitelistedUsers] = useState<Whitelist[]>([]);
@@ -19,86 +20,64 @@ const Admin = () => {
    const [isAdmin, setIsAdmin] = useState(false);
 
    useEffect(() => {
-      const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
+      const token = getAuthToken();
       if (!token) return;
 
-      const fetchUserStatus = async () => {
+      const init = async () => {
          try {
-            const response = await fetch("https://wordsofdeath-backend.vercel.app/api/auth/admin", {
-               method: 'GET',
-               headers: { 'Authorization': `Bearer ${token}` },
-            });
+            const isAdminStatus = await fetchAdminStatus(token);
+            setIsAdmin(isAdminStatus);
+            if (!isAdminStatus) throw new Error("User is not an admin!");
 
-            if (!response.ok) throw new Error("Fehler beim Überprüfen des Admin-Status.");
-            const data = await response.json();
-            setIsAdmin(data.isAdmin);
-            if (!data.isAdmin) throw new Error("User is not admin!");
+            const whitelist = await fetchWhitelistedUsers(token);
+            setWhitelistedUsers(whitelist);
          } catch (error) {
-            console.error("Fehler beim Überprüfen des Admin-Status:", error);
-         }
-      };
-
-      fetchUserStatus();
-
-      const fetchWhitelistedUsers = async () => {
-         setLoading(true);
-         try {
-            const response = await fetch("https://wordsofdeath-backend.vercel.app/api/whitelist", {
-               headers: { 'Authorization': `Bearer ${token}` },
-            });
-
-            if (!response.ok) throw new Error("Fehler beim Abrufen der Whitelist-Daten.");
-            setWhitelistedUsers(await response.json());
-         } catch (error) {
-            console.error("Fehler beim Abrufen der Whitelist-Daten:", error);
+            console.error(error);
          } finally {
             setLoading(false);
          }
       };
 
-      fetchWhitelistedUsers();
+      init();
    }, []);
 
-   const addUserToWhitelist = async () => {
-      if (!newUser.trim()) return;
-      if (!isAdmin) return;
+   const handleAddUser = async () => {
+      if (!newUser.trim() || !isAdmin) return;
 
-      const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
+      const token = getAuthToken();
+      if (!token) return;
+
       try {
-         const response = await fetch("https://wordsofdeath-backend.vercel.app/api/whitelist", {
-            method: "POST",
-            headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: newUser }),
-         });
-
-         if (!response.ok) throw new Error("Fehler beim Hinzufügen des Benutzers.");
-         const newUserData = await response.json();
-         setWhitelistedUsers(prev => [...prev, newUserData]);
-         setNewUser("");
-         setIsAddUserModalOpen(false);
+         const addedUser = await addUserToWhitelist(token, newUser);
+         if (addedUser) {
+            setWhitelistedUsers((prev) => [...prev, addedUser]);
+            setNewUser("");
+            setIsAddUserModalOpen(false);
+         }
       } catch (error) {
-         console.error("Fehler beim Hinzufügen des Benutzers:", error);
+         console.error(error);
       }
    };
 
-   const removeUserFromWhitelist = async (username: string) => {
+   const handleRemoveUser = async (username: string) => {
       if (!username || !isAdmin) return;
 
-      const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
-      try {
-         const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/whitelist/${username}`, {
-            method: "DELETE",
-            headers: { 'Authorization': `Bearer ${token}` },
-         });
+      const token = getAuthToken();
+      if (!token) return;
 
-         if (!response.ok) throw new Error("Fehler beim Entfernen des Benutzers.");
-         setWhitelistedUsers(prev => prev.filter(user => user.username !== username));
-         setIsRemoveUserModalOpen(false);
+      try {
+         const success = await removeUserFromWhitelist(token, username);
+         if (success) {
+            setWhitelistedUsers((prev) =>
+               prev.filter((user) => user.username !== username)
+            );
+            setIsRemoveUserModalOpen(false);
+         }
       } catch (error) {
-         console.error("Fehler beim Entfernen des Benutzers:", error);
+         console.error(error);
       }
    };
-
+   
    const filteredUsers = whitelistedUsers.filter(user =>
       user.username.toLowerCase().includes(searchQuery.toLowerCase())
    );
@@ -162,7 +141,7 @@ const Admin = () => {
                                        {user.username}
                                     </span>
                                  </div>
-                                 <TimeStamp timestamp={user.added_at} showIcon={true} />
+                                 <TimeStamp timestamp={user.added_at} />
                               </div>
                               {isAdmin && (
                                  <Button
@@ -194,7 +173,7 @@ const Admin = () => {
                      placeholder:text-neutral-500 text-white focus:outline-none focus:border-neutral-400"
                />
                <Button
-                  onClick={addUserToWhitelist}
+                  onClick={() => handleAddUser()}
                   disabled={newUser.length < 3 || !isAdmin}
                   className="w-full py-3"
                >
@@ -211,7 +190,7 @@ const Admin = () => {
             <div className="p-4">
                <p className="text-neutral-400">Möchten Sie den Benutzer <strong>{userToRemove?.username}</strong> wirklich entfernen?</p>
                <Button
-                  onClick={() => removeUserFromWhitelist(userToRemove?.username || '')}
+                  onClick={() => handleRemoveUser(userToRemove?.username || '')}
                   variant="destructive"
                   className="w-full py-3 mt-4"
                >

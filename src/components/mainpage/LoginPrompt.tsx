@@ -19,7 +19,7 @@ export const LoginPrompt: React.FC<LoginPromptProps> = ({ modal }) => {
                     </p>
                 </div>
 
-                <Link href="https://wordsofdeath-backend.vercel.app/auth/discord">
+                <Link href="http://localhost:3001/api/auth">
                     <Button
                         variant="primary"
                         size="lg"

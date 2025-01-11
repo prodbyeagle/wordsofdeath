@@ -6,6 +6,8 @@ import React, { useEffect, useState } from "react";
 import { UserRoleBadges } from "@/components/ui/UserRoleBadges";
 import { TimeStamp } from "@/components/ui/Timestamp";
 import { User, Entry } from "@/types";
+import { Calendar, LibraryBig, Filter, Search } from "lucide-react";
+import { UserAvatar } from "@/components/ui/UserAvatar";
 
 interface UserProfileProps {
    params: Promise<{ username: string }>;
@@ -15,12 +17,14 @@ const UserProfile = ({ params }: UserProfileProps) => {
    const [user, setUser] = useState<User | null>(null);
    const [entries, setEntries] = useState<Entry[]>([]);
    const [loading, setLoading] = useState(true);
+   const [searchTerm, setSearchTerm] = useState("");
+   const [sortOrder, setSortOrder] = useState<"newest" | "oldest">("newest");
 
    useEffect(() => {
       const fetchData = async () => {
          const { username } = await params;
          try {
-            const userResponse = await fetch(`https://wordsofdeath-backend.vercel.app/api/user/u/${username}`, {
+            const userResponse = await fetch(`http://localhost:3001/api/user/u/${username}`, {
                method: "GET",
                headers: {
                   Authorization: `Bearer ${document.cookie.split("=")[1]}`,
@@ -31,7 +35,7 @@ const UserProfile = ({ params }: UserProfileProps) => {
                const userData = await userResponse.json();
                setUser(userData);
 
-               const entriesResponse = await fetch(`https://wordsofdeath-backend.vercel.app/api/entries/u/${username}`, {
+               const entriesResponse = await fetch(`http://localhost:3001/api/entries/u/${username}`, {
                   method: "GET",
                   headers: {
                      Authorization: `Bearer ${document.cookie.split("=")[1]}`,
@@ -55,34 +59,44 @@ const UserProfile = ({ params }: UserProfileProps) => {
       fetchData();
    }, [params]);
 
+   const filteredAndSortedEntries = entries
+      .filter((entry) =>
+         entry.entry.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      .sort((a, b) => {
+         const timeA = new Date(a.timestamp).getTime();
+         const timeB = new Date(b.timestamp).getTime();
+         return sortOrder === "newest" ? timeB - timeA : timeA - timeB;
+      });
+
+
    if (loading) {
       return (
          <div className="min-h-screen bg-neutral-900 p-6 pt-20">
-            <div className="max-w-7xl mx-auto">
-               <div className="flex flex-col lg:flex-row gap-8">
-                  {/* Profile Skeleton */}
-                  <div className="w-full lg:w-80 bg-neutral-800/50 rounded-2xl p-6 backdrop-blur-sm">
-                     <div className="flex flex-col items-center">
-                        <div className="w-32 h-32 rounded-full bg-neutral-700 animate-pulse" />
-                        <div className="w-48 h-6 mt-4 bg-neutral-700 rounded animate-pulse" />
-                        <div className="w-36 h-4 mt-3 bg-neutral-700 rounded animate-pulse" />
-                     </div>
-                  </div>
-
-                  {/* Entries Skeleton */}
-                  <div className="flex-1 bg-neutral-800/50 rounded-2xl p-6 backdrop-blur-sm">
-                     <div className="w-48 h-8 bg-neutral-700 rounded animate-pulse mb-8" />
-                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {[...Array(6)].map((_, i) => (
-                           <div key={i} className="bg-neutral-800 rounded-xl p-4 animate-pulse">
-                              <div className="w-3/4 h-5 bg-neutral-700 rounded mb-3" />
-                              <div className="w-1/2 h-4 bg-neutral-700 rounded mb-2" />
-                              <div className="w-1/3 h-3 bg-neutral-700 rounded mt-4" />
-                           </div>
-                        ))}
-                     </div>
-                  </div>
+            <div className="max-w-6xl mx-auto">
+               <div className="h-64 bg-neutral-800/50 rounded-2xl animate-pulse mb-6" />
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {[...Array(6)].map((_, i) => (
+                     <div key={i} className="h-48 bg-neutral-800/50 rounded-xl animate-pulse" />
+                  ))}
                </div>
+            </div>
+         </div>
+      );
+   }
+
+   if (!user) {
+      return (
+         <div className="min-h-screen bg-neutral-900 flex items-center justify-center p-6">
+            <div className="text-center">
+               <h1 className="text-3xl font-bold text-neutral-100 mb-4">Benutzer nicht gefunden</h1>
+               <p className="text-neutral-400 mb-8">Dieser Benutzer existiert nicht oder wurde gelöscht.</p>
+               <button
+                  onClick={() => window.history.back()}
+                  className="px-6 py-3 bg-neutral-800 hover:bg-neutral-700 rounded-xl text-neutral-100 transition-colors"
+               >
+                  Zurück
+               </button>
             </div>
          </div>
       );
@@ -90,70 +104,96 @@ const UserProfile = ({ params }: UserProfileProps) => {
 
    return (
       <div className="min-h-screen bg-neutral-900 p-6 pt-20">
-         <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col lg:flex-row gap-4">
-               <div className="lg:w-80 h-fit bg-neutral-800/50 rounded-2xl p-6 border border-neutral-700/50">
-                  {user ? (
-                     <div className="flex flex-col items-center">
-                        <div className="relative">
-                           <img
-                              src={`https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}`}
-                              alt={user.username}
-                              className="w-32 h-32 rounded-full border-4 border-neutral-700/50 duration-300"
-                           />
-                           <div className="absolute -bottom-2 -right-2 bg-neutral-800 rounded-full p-1.5 border border-neutral-700">
-                              <div className="flex gap-1.5">
-                                 {user.roles?.map((role, index) => (
-                                    <UserRoleBadges key={index} roles={[role]} />
-                                 ))}
-                              </div>
-                           </div>
+         <div className="max-w-6xl mx-auto">
+            <div className="bg-neutral-800/50 rounded-2xl p-8 mb-8 border border-neutral-700/50 backdrop-blur-sm">
+               <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
+                  <div className="relative group">
+                     <div/>
+                     <UserAvatar avatar={user.avatar} id={user.id} username={user.username} size="username" />
+                  </div>
+                  <div className="flex-1 text-center md:text-left">
+                     <div className="flex flex-col md:flex-row md:items-center gap-2 mb-4">
+                        <h1 className="text-4xl font-bold text-neutral-100">{user.username}</h1>
+                        <div className="flex justify-center md:justify-start">
+                           {user.roles?.map((role, index) => (
+                              <UserRoleBadges key={index} roles={[role]} />
+                           ))}
                         </div>
-                        <h2 className="mt-4 text-2xl font-bold bg-clip-text text-neutral-100">
-                           {user.username}
-                        </h2>
-                        <TimeStamp timestamp={user.joined_at} />
                      </div>
-                  ) : (
-                     <div className="text-center py-8">
-                        <p className="text-neutral-400">Benutzer nicht gefunden</p>
+                     <div className="flex flex-col md:flex-row gap-6 text-neutral-400">
+                        <div className="flex items-center justify-center md:justify-start gap-2">
+                           <Calendar className="w-4 h-4" />
+                           <TimeStamp timestamp={user.joined_at} showIcon={false} extended text="beigetreten" />
+                        </div>
+                        <div className="flex items-center text-sm justify-center md:justify-start gap-2">
+                           <LibraryBig className="w-4 h-4" />
+                           <span>{entries.length} {entries.length === 1 ? 'Eintrag' : 'Einträge'}</span>
+                        </div>
                      </div>
-                  )}
-               </div>
-
-               <div className="flex-1 bg-neutral-800/50 rounded-2xl p-6 border border-neutral-700/50">
-                  <h3 className="text-2xl font-bold mb-6 bg-clip-text text-neutral-100">
-                     {entries.length} {entries.length === 1 ? 'Eintrag' : 'Einträge'}
-                  </h3>
-                  {entries.length > 0 ? (
-                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        {entries.map((entry) => (
-                           <span key={entry._id}>
-                              <div className="group bg-neutral-900/50 rounded-xl p-4 border border-neutral-800 hover:border-neutral-600 transition-all duration-300 hover:scale-[1.02]">
-                                 <h4 className="font-semibold text-lg text-neutral-100 group-hover:text-neutral-100 mb-2 truncate">
-                                    {entry.entry}
-                                 </h4>
-                                 {entry.categories.length > 0 && (
-                                    <div className="flex flex-wrap gap-2 mb-3">
-                                       {entry.categories.map((category) => (
-                                          <span key={category} className="text-xs px-2 py-1 rounded-full bg-neutral-800 text-neutral-400">
-                                             {category}
-                                          </span>
-                                       ))}
-                                    </div>
-                                 )}
-                                 <TimeStamp timestamp={entry.timestamp} />
-                              </div>
-                           </span>
-                        ))}
-                     </div>
-                  ) : (
-                     <div className="text-center py-12">
-                        <p className="text-neutral-400">Keine Einträge vorhanden</p>
-                     </div>
-                  )}
+                  </div>
                </div>
             </div>
+
+            <div className="bg-neutral-800/50 rounded-xl p-4 mb-6 border border-neutral-700/50 backdrop-blur-sm">
+               <div className="flex flex-col md:flex-row gap-4">
+                  <div className="flex-1 relative">
+                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
+                     <input
+                        type="text"
+                        placeholder="Einträge durchsuchen..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full bg-neutral-900/50 border border-neutral-700 rounded-lg pl-10 pr-4 py-2 text-neutral-100 placeholder-neutral-500 focus:outline-none focus:border-neutral-600"
+                     />
+                  </div>
+                  <div className="flex gap-4">
+                     <select
+                        value={sortOrder}
+                        onChange={(e) => setSortOrder(e.target.value as "newest" | "oldest")}
+                        className="bg-neutral-900/50 border border-neutral-700 rounded-lg px-4 py-2 text-neutral-100 focus:outline-none focus:border-neutral-600"
+                     >
+                        <option value="newest">Neueste zuerst</option>
+                        <option value="oldest">Älteste zuerst</option>
+                     </select>
+                  </div>
+               </div>
+            </div>
+
+            {filteredAndSortedEntries.length > 0 ? (
+               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {filteredAndSortedEntries.map((entry) => (
+                     <div
+                        key={entry._id}
+                        className="group bg-neutral-800/50 rounded-xl p-6 border border-neutral-700/50 hover:border-neutral-600 backdrop-blur-sm transition-all duration-300 hover:transform hover:translate-y-[-2px]"
+                     >
+                        <p className="text-lg text-neutral-100 mb-4 line-clamp-3">{entry.entry}</p>
+                        {entry.categories.length > 0 && (
+                           <div className="flex flex-wrap gap-2 mb-4">
+                              {entry.categories.map((category) => (
+                                 <span
+                                    key={category}
+                                    className="text-xs px-3 py-1 rounded-full bg-neutral-900/50 text-neutral-300 border border-neutral-700/50"
+                                 >
+                                    {category}
+                                 </span>
+                              ))}
+                           </div>
+                        )}
+                        <TimeStamp timestamp={entry.timestamp} className="text-sm text-neutral-500" />
+                     </div>
+                  ))}
+               </div>
+            ) : (
+               <div className="bg-neutral-800/50 rounded-xl p-8 text-center border border-neutral-700/50 backdrop-blur-sm">
+                  <Filter className="w-12 h-12 text-neutral-400 mx-auto mb-4" />
+                  <h3 className="text-xl font-medium text-neutral-100 mb-2">Keine Einträge gefunden</h3>
+                  <p className="text-neutral-400">
+                     {searchTerm
+                        ? "Versuche es mit anderen Filtereinstellungen."
+                        : "Dieser Benutzer hat noch keine Einträge erstellt."}
+                  </p>
+               </div>
+            )}
          </div>
       </div>
    );

@@ -114,14 +114,13 @@ const Homepage = () => {
         }
 
         const errorMessage = await deleteEntry(authToken, id);
-        if (errorMessage) {
+        if (errorMessage !== null) {
+            console.error("Fehler beim Löschen des Eintrags:", errorMessage);
             return;
-        } else {
-            const updatedEntries = entries.filter(entry => entry.id !== id);
-            setEntries(updatedEntries);
-            setUniqueEntries(updatedEntries.slice((page - 1) * entriesPerPage, page * entriesPerPage));
         }
-    }
+
+        setEntries((prevEntries) => prevEntries.filter((entry) => entry.id !== id));
+    };
 
     return (
         <div className="min-h-screen pt-16 bg-neutral-900 text-neutral-100">

@@ -6,7 +6,7 @@ import React, { useEffect, useState } from "react";
 import { UserRoleBadges } from "@/components/ui/UserRoleBadges";
 import { TimeStamp } from "@/components/ui/Timestamp";
 import { User, Entry } from "@/types";
-import { Calendar, LibraryBig, Filter, Search } from "lucide-react";
+import { LibraryBig, Filter, Search } from "lucide-react";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { fetchEntriesByUsername, fetchUserDataByUsername, getAuthToken } from "@/lib/api";
 
@@ -110,12 +110,9 @@ const UserProfile = ({ params }: UserProfileProps) => {
                         </div>
                      </div>
                      <div className="flex flex-col md:flex-row gap-6 text-neutral-400">
-                        <div className="flex items-center justify-center md:justify-start gap-2">
-                           <Calendar className="w-4 h-4" />
-                           <TimeStamp timestamp={user.joined_at} showIcon={false} extended text="beigetreten" />
-                        </div>
+                        <TimeStamp timestamp={user.joined_at} showIcon extended live text="beigetreten" />
                         <div className="flex items-center text-sm justify-center md:justify-start gap-2">
-                           <LibraryBig className="w-4 h-4" />
+                           <LibraryBig size={16} />
                            <span>{entries.length} {entries.length === 1 ? 'Eintrag' : 'Einträge'}</span>
                         </div>
                      </div>
@@ -168,7 +165,7 @@ const UserProfile = ({ params }: UserProfileProps) => {
                               ))}
                            </div>
                         )}
-                        <TimeStamp timestamp={entry.timestamp} />
+                        <TimeStamp live timestamp={entry.timestamp} />
                      </div>
                   ))}
                </div>

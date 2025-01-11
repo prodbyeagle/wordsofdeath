@@ -141,7 +141,7 @@ const Admin = () => {
                                        {user.username}
                                     </span>
                                  </div>
-                                 <TimeStamp timestamp={user.added_at} />
+                                 <TimeStamp timestamp={user.added_at} live />
                               </div>
                               {isAdmin && (
                                  <Button

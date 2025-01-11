@@ -48,7 +48,6 @@ const UserProfile = ({ params }: UserProfileProps) => {
       fetchData();
    }, [params]);
 
-
    const filteredAndSortedEntries = entries
       .filter((entry) =>
          entry.entry.toLowerCase().includes(searchTerm.toLowerCase())
@@ -58,7 +57,6 @@ const UserProfile = ({ params }: UserProfileProps) => {
          const timeB = new Date(b.timestamp).getTime();
          return sortOrder === "newest" ? timeB - timeA : timeA - timeB;
       });
-
 
    if (loading) {
       return (

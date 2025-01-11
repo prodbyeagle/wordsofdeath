@@ -220,9 +220,9 @@ export const createEntry = async (
  * Deletes an entry by its ID.
  * @param token The authentication token.
  * @param entryId The ID of the entry to delete.
- * @returns True if the entry was successfully deleted, otherwise false.
+ * @returns Null if the entry was successfully deleted, otherwise an error message.
  */
-export const deleteEntry = async (token: string, entryId: string): Promise<boolean> => {
+export const deleteEntry = async (token: string, entryId: string): Promise<string | null> => {
     try {
         const response = await fetch(`${getBaseApiUrl()}/api/entries/${entryId}`, {
             method: "DELETE",
@@ -232,14 +232,16 @@ export const deleteEntry = async (token: string, entryId: string): Promise<boole
         });
 
         if (response.ok) {
-            return true;
+            return null;
         } else {
-            console.error("Failed to delete entry:", response.statusText);
-            return false;
+            const errorMessage = `Failed to delete entry: ${response.statusText}`;
+            console.error(errorMessage);
+            return errorMessage;
         }
     } catch (error) {
-        console.error("Error deleting entry:", error);
-        return false;
+        const errorMessage = `Error deleting entry: ${error}`;
+        console.error(errorMessage);
+        return errorMessage;
     }
 };
 

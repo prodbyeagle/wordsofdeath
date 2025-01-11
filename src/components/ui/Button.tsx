@@ -78,7 +78,7 @@ export const Button: React.FC<ButtonProps> = ({
             {...props}
         >
             {loading ? (
-                <Spinner />
+                <Spinner className="w-6 h-6" />
             ) : (
                 children
             )}

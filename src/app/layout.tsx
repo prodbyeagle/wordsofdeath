@@ -16,7 +16,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html className="cursor-default" lang="en">
+    <html className="cursor-default select-none" lang="en">
       <head>
         <link rel="icon" href={metadata.icons.icon} />
         <meta name="google-site-verification" content="hzsS2qiDIdpqUiOcQrA-Dou7pxxilhW0INsyVueX7jY" />

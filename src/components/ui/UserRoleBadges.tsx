@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BadgeCheck, HeartHandshake, UserCheck, UserPlus, Wrench } from "lucide-react";
+import { BadgeCheck, HeartHandshake, Wrench } from "lucide-react";
 import { Tooltip } from "./Tooltip";
 
 interface UserRoleBadgesProps {
@@ -7,7 +7,7 @@ interface UserRoleBadgesProps {
     tooltip?: boolean;
 }
 
-type Role = 'owner' | 'admin' | 'developer' | 'moderator' | 'contributor';
+type Role = 'owner' | 'admin' | 'developer';
 
 export const UserRoleBadges = ({ roles, tooltip = true }: UserRoleBadgesProps) => {
     if (!roles?.length) return null;
@@ -15,23 +15,15 @@ export const UserRoleBadges = ({ roles, tooltip = true }: UserRoleBadgesProps) =
     const badges: { [key in Role]: { icon: React.ForwardRefExoticComponent<any>; color: string; } } = {
         owner: {
             icon: BadgeCheck,
-            color: 'text-red-400',
+            color: 'text-red-300',
         },
         admin: {
             icon: HeartHandshake,
-            color: 'text-yellow-400',
+            color: 'text-orange-300',
         },
         developer: {
             icon: Wrench,
-            color: 'text-neutral-100',
-        },
-        moderator: {
-            icon: UserCheck,
-            color: 'text-green-400',
-        },
-        contributor: {
-            icon: UserPlus,
-            color: 'text-purple-400',
+            color: 'text-neutral-600',
         },
     };
 

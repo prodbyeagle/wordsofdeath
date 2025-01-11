@@ -117,7 +117,7 @@ const Homepage = () => {
     };
 
     if (!isLoggedIn) {
-        return <LoginPrompt />;
+        return <LoginPrompt modal={false} />;
     }
 
     const totalPages = Math.ceil(entries.length / entriesPerPage);

@@ -43,7 +43,7 @@ const Admin = () => {
       const fetchWhitelistedUsers = async () => {
          setLoading(true);
          try {
-            const response = await fetch("http://localhost:3001/api/whitelist", {
+            const response = await fetch("https://wordsofdeath-backend.vercel.app/api/whitelist", {
                headers: { 'Authorization': `Bearer ${token}` },
             });
 
@@ -65,7 +65,7 @@ const Admin = () => {
 
       const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
       try {
-         const response = await fetch("http://localhost:3001/api/whitelist", {
+         const response = await fetch("https://wordsofdeath-backend.vercel.app/api/whitelist", {
             method: "POST",
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: newUser }),
@@ -86,7 +86,7 @@ const Admin = () => {
 
       const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
       try {
-         const response = await fetch(`http://localhost:3001/api/whitelist/${username}`, {
+         const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/whitelist/${username}`, {
             method: "DELETE",
             headers: { 'Authorization': `Bearer ${token}` },
          });

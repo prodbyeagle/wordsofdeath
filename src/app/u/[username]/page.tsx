@@ -24,7 +24,7 @@ const UserProfile = ({ params }: UserProfileProps) => {
       const fetchData = async () => {
          const { username } = await params;
          try {
-            const userResponse = await fetch(`http://localhost:3001/api/user/u/${username}`, {
+            const userResponse = await fetch(`https://wordsofdeath-backend.vercel.app/api/user/u/${username}`, {
                method: "GET",
                headers: {
                   Authorization: `Bearer ${document.cookie.split("=")[1]}`,
@@ -35,7 +35,7 @@ const UserProfile = ({ params }: UserProfileProps) => {
                const userData = await userResponse.json();
                setUser(userData);
 
-               const entriesResponse = await fetch(`http://localhost:3001/api/entries/u/${username}`, {
+               const entriesResponse = await fetch(`https://wordsofdeath-backend.vercel.app/api/entries/u/${username}`, {
                   method: "GET",
                   headers: {
                      Authorization: `Bearer ${document.cookie.split("=")[1]}`,
@@ -108,7 +108,7 @@ const UserProfile = ({ params }: UserProfileProps) => {
             <div className="bg-neutral-800/50 rounded-2xl p-8 mb-8 border border-neutral-700/50 backdrop-blur-sm">
                <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
                   <div className="relative group">
-                     <div/>
+                     <div />
                      <UserAvatar avatar={user.avatar} id={user.id} username={user.username} size="username" />
                   </div>
                   <div className="flex-1 text-center md:text-left">

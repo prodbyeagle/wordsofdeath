@@ -4,7 +4,7 @@
 'use client';
 import React, { useEffect, useState } from "react";
 import { CacheManager } from "@/lib/avatarCache";
-import { fetchEntries as fetchEntriesFromAPI } from "@/lib/api";
+import { createEntry, fetchEntries, getAuthToken } from "@/lib/api";
 import type { Entry, User } from "@/types";
 import { Modal } from "@/components/ui/Modal";
 import { useRouter } from "next/navigation";
@@ -25,22 +25,21 @@ const Homepage = () => {
     const [user] = useState<User | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [page, setPage] = useState<number>(1);
-    const entriesPerPage = 10;
+    const entriesPerPage = 15;
     const [cacheManager, setCacheManager] = useState<CacheManager | null>(null);
     const [avatarUrls, setAvatarUrls] = useState<{ [key: string]: string }>({});
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
-        const pageParam = urlParams.get("page");
-        setPage(pageParam ? parseInt(pageParam, 25) : 1);
+        const pageParam = urlParams.get("p");
+        setPage(pageParam ? parseInt(pageParam, 15) : 1);
     }, []);
 
     useEffect(() => {
-        const cookies = document.cookie.split("; ");
-        const token = cookies.find((row) => row.startsWith("wordsofdeath="));
+        const token = getAuthToken()
         if (token) {
             setIsLoggedIn(true);
-            loadEntries(token.split("=")[1]);
+            loadEntries(token);
             setCacheManager(new CacheManager());
         } else {
             console.warn("No token found.");
@@ -65,7 +64,7 @@ const Homepage = () => {
     }, [entries, cacheManager]);
 
     const loadEntries = async (token: string): Promise<Entry[]> => {
-        const fetchedEntries = await fetchEntriesFromAPI(token);
+        const fetchedEntries = await fetchEntries(token);
         setEntries(fetchedEntries);
         return fetchedEntries;
     };
@@ -78,41 +77,24 @@ const Homepage = () => {
 
     const handlePageChange = (newPage: number) => {
         setPage(newPage);
-        router.push(`/?page=${newPage}`, undefined);
+        router.push(`/?p=${newPage}`, undefined);
     };
 
     const handleNewEntrySubmit = async () => {
-        const token = document.cookie.split("; ").find((row) => row.startsWith("wordsofdeath="))?.split("=")[1];
-        if (!token || !newEntry.trim()) {
-            setError("Kein Token oder leerer Eintrag.");
-            return;
-        }
+        const errorMessage = await createEntry(newEntry, categories, user);
 
-        try {
-            const response = await fetch("https://wordsofdeath-backend.vercel.app/api/entries", {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    entry: newEntry,
-                    timestamp: new Date().toISOString(),
-                    categories: categories.split(",").map((cat) => cat.trim()).filter(Boolean),
-                    author: user?.username,
-                }),
-            });
-
-            if (response.ok) {
-                setNewEntry("");
-                setCategories("");
-                setIsModalOpen(false);
-                loadEntries(token);
+        if (errorMessage) {
+            setError(errorMessage);
+        } else {
+            setNewEntry("");
+            setCategories("");
+            setIsModalOpen(false);
+            const authToken = getAuthToken();
+            if (authToken) {
+                loadEntries(authToken);
             } else {
-                setError(`Fehler beim Erstellen des Eintrags: ${response.statusText}`);
+                console.error("Auth token is null or undefined");
             }
-        } catch (error) {
-            setError("Fehler beim Erstellen des Eintrags.");
         }
     };
 

@@ -4,13 +4,13 @@
 'use client';
 import React, { useEffect, useState } from "react";
 import { CacheManager } from "@/lib/avatarCache";
-import { createEntry, fetchEntries, getAuthToken } from "@/lib/api";
+import { createEntry, fetchEntries, getAuthToken, deleteEntry, fetchAdminStatus } from "@/lib/api";
 import type { Entry, User } from "@/types";
 import { Modal } from "@/components/ui/Modal";
 import { useRouter } from "next/navigation";
-import { LoginPrompt } from "@/components/mainpage/LoginPrompt";
-import { Pagination } from "@/components/mainpage/Pagination";
-import { EntryCard } from "@/components/mainpage/EntryCard";
+import { LoginPrompt } from "@/components/feed/LoginPrompt";
+import { Pagination } from "@/components/feed/Pagination";
+import { EntryCard } from "@/components/feed/EntryCard";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
@@ -28,6 +28,7 @@ const Homepage = () => {
     const entriesPerPage = 15;
     const [cacheManager, setCacheManager] = useState<CacheManager | null>(null);
     const [avatarUrls, setAvatarUrls] = useState<{ [key: string]: string }>({});
+    const [isAdmin, setIsAdmin] = useState<boolean>(false);
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -36,11 +37,12 @@ const Homepage = () => {
     }, []);
 
     useEffect(() => {
-        const token = getAuthToken()
+        const token = getAuthToken();
         if (token) {
             setIsLoggedIn(true);
             loadEntries(token);
             setCacheManager(new CacheManager());
+            fetchAdminStatus(token).then(status => setIsAdmin(status));
         } else {
             console.warn("No token found.");
         }
@@ -81,7 +83,7 @@ const Homepage = () => {
     };
 
     const handleNewEntrySubmit = async () => {
-        const errorMessage = await createEntry(newEntry, categories, user);
+        const errorMessage = await createEntry(newEntry, categories, user) as string | null;
 
         if (errorMessage) {
             setError(errorMessage);
@@ -103,6 +105,23 @@ const Homepage = () => {
     }
 
     const totalPages = Math.ceil(entries.length / entriesPerPage);
+
+    const handleDelete = async (id: string) => {
+        const authToken = getAuthToken();
+        if (!authToken) {
+            console.error("Auth token is null or undefined");
+            return;
+        }
+
+        const errorMessage = await deleteEntry(authToken, id);
+        if (errorMessage) {
+            return;
+        } else {
+            const updatedEntries = entries.filter(entry => entry.id !== id);
+            setEntries(updatedEntries);
+            setUniqueEntries(updatedEntries.slice((page - 1) * entriesPerPage, page * entriesPerPage));
+        }
+    }
 
     return (
         <div className="min-h-screen pt-16 bg-neutral-900 text-neutral-100">
@@ -138,6 +157,8 @@ const Homepage = () => {
                                     avatar={avatarUrls[entry.author] || ''}
                                     userRoles={cacheManager?.getRoles(entry.author) || []}
                                     tooltip={false}
+                                    isAdmin={isAdmin}
+                                    onDelete={handleDelete}
                                 />
                             ))
                         ) : (

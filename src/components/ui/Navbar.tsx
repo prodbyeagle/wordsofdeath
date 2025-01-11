@@ -15,7 +15,7 @@ const Navbar = () => {
    const menuRef = useRef<HTMLDivElement>(null);
 
    useEffect(() => {
-      const token = getAuthToken()
+      const token = getAuthToken();
       if (token) {
          const decoded = JSON.parse(atob(token.split('.')[1])) as User;
          setUser(decoded);

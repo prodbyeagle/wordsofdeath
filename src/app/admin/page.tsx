@@ -6,7 +6,7 @@ import { UserX, UserPlus, Search } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { TimeStamp } from '@/components/ui/Timestamp';
-import { LoginPrompt } from '@/components/mainpage/LoginPrompt';
+import { LoginPrompt } from '@/components/feed/LoginPrompt';
 import { addUserToWhitelist, fetchAdminStatus, fetchWhitelistedUsers, getAuthToken, removeUserFromWhitelist } from '@/lib/api';
 
 const Admin = () => {
@@ -77,7 +77,7 @@ const Admin = () => {
          console.error(error);
       }
    };
-   
+
    const filteredUsers = whitelistedUsers.filter(user =>
       user.username.toLowerCase().includes(searchQuery.toLowerCase())
    );

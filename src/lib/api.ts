@@ -74,7 +74,7 @@ export const addUserToWhitelist = async (
     username: string
 ): Promise<Whitelist | null> => {
     try {
-        const response = await fetch(`/api/whitelist`, {
+        const response = await fetch(`${getBaseApiUrl()}/api/whitelist`, {
             method: "POST",
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -213,6 +213,33 @@ export const createEntry = async (
         /* eslint-disable @typescript-eslint/no-unused-vars */
     } catch (error) {
         return "Fehler beim Erstellen des Eintrags.";
+    }
+};
+
+/**
+ * Deletes an entry by its ID.
+ * @param token The authentication token.
+ * @param entryId The ID of the entry to delete.
+ * @returns True if the entry was successfully deleted, otherwise false.
+ */
+export const deleteEntry = async (token: string, entryId: string): Promise<boolean> => {
+    try {
+        const response = await fetch(`${getBaseApiUrl()}/api/entries/${entryId}`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        if (response.ok) {
+            return true;
+        } else {
+            console.error("Failed to delete entry:", response.statusText);
+            return false;
+        }
+    } catch (error) {
+        console.error("Error deleting entry:", error);
+        return false;
     }
 };
 

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { LockKeyhole, ShieldOff } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
-import { LoginPrompt } from '@/components/mainpage/LoginPrompt';
+import { LoginPrompt } from '@/components/feed/LoginPrompt';
 
 export const UnauthorizedPage = () => {
     const [showLoginPrompt, setShowLoginPrompt] = useState(false);

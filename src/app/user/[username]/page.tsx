@@ -8,6 +8,7 @@ import { TimeStamp } from "@/components/ui/Timestamp";
 import { User, Entry } from "@/types";
 import { Calendar, LibraryBig, Filter, Search } from "lucide-react";
 import { UserAvatar } from "@/components/ui/UserAvatar";
+import { fetchEntriesByUsername, fetchUserDataByUsername, getAuthToken } from "@/lib/api";
 
 interface UserProfileProps {
    params: Promise<{ username: string }>;
@@ -23,32 +24,20 @@ const UserProfile = ({ params }: UserProfileProps) => {
    useEffect(() => {
       const fetchData = async () => {
          const { username } = await params;
-         try {
-            const userResponse = await fetch(`http://localhost:3001/api/user/u/${username}`, {
-               method: "GET",
-               headers: {
-                  Authorization: `Bearer ${document.cookie.split("=")[1]}`,
-               },
-            });
 
-            if (userResponse.ok) {
-               const userData = await userResponse.json();
+         try {
+            const token = getAuthToken();
+
+            if (token) {
+               const userData = await fetchUserDataByUsername(username, token);
                setUser(userData);
 
-               const entriesResponse = await fetch(`http://localhost:3001/api/entries/u/${username}`, {
-                  method: "GET",
-                  headers: {
-                     Authorization: `Bearer ${document.cookie.split("=")[1]}`,
-                  },
-               });
-
-               if (entriesResponse.ok) {
-                  const entriesData = await entriesResponse.json();
-                  setEntries(entriesData);
-               }
+               const userEntries = await fetchEntriesByUsername(username, token);
+               setEntries(userEntries);
             } else {
-               setUser(null);
+               console.error("Auth token is null or undefined");
             }
+
          } catch (error) {
             console.error("Error fetching data:", error);
          } finally {
@@ -58,6 +47,7 @@ const UserProfile = ({ params }: UserProfileProps) => {
 
       fetchData();
    }, [params]);
+
 
    const filteredAndSortedEntries = entries
       .filter((entry) =>
@@ -163,7 +153,7 @@ const UserProfile = ({ params }: UserProfileProps) => {
                   {filteredAndSortedEntries.map((entry) => (
                      <div
                         key={entry._id}
-                        className="group bg-neutral-800/50 rounded-xl p-6 border border-neutral-700/50 hover:border-neutral-600 backdrop-blur-sm transition-all duration-300 hover:transform hover:translate-y-[-2px]"
+                        className="group bg-neutral-800/50 rounded-xl p-6 border border-neutral-700/50 hover:border-neutral-600 backdrop-blur-sm transition-all duration-300"
                      >
                         <p className="text-lg text-neutral-100 mb-4 line-clamp-3">{entry.entry}</p>
                         {entry.categories.length > 0 && (

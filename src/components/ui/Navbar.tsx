@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { UserAvatar } from './UserAvatar';
 import { User } from '@/types';
 import { LogOut, Shield, CircleUserRound, Home, Menu } from 'lucide-react';
+import { getAuthToken } from '@/lib/api';
 
 const Navbar = () => {
    const [user, setUser] = useState<User | null>(null);
@@ -14,10 +15,9 @@ const Navbar = () => {
    const menuRef = useRef<HTMLDivElement>(null);
 
    useEffect(() => {
-      const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='));
+      const token = getAuthToken()
       if (token) {
-         const tokenValue = token.split('=')[1];
-         const decoded = JSON.parse(atob(tokenValue.split('.')[1])) as User;
+         const decoded = JSON.parse(atob(token.split('.')[1])) as User;
          setUser(decoded);
       }
    }, []);
@@ -64,7 +64,7 @@ const Navbar = () => {
                            {isMenuOpen && (
                               <div className="absolute right-0 mt-2 w-48 bg-neutral-800 rounded-lg shadow-xl border border-neutral-700 overflow-hidden">
                                  <Link
-                                    href={`/u/${user.username}`}
+                                    href={`/user/${user.username}`}
                                     className="flex items-center px-4 py-3 text-neutral-100 hover:bg-neutral-700 transition-colors"
                                     onClick={handleMenuSelect}
                                  >

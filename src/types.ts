@@ -7,6 +7,7 @@
  * @property `roles` - (Optional) Array of roles associated with the user, if any.
  */
 export interface User {
+   _id: string;
    id: string;
    username: string;
    avatar: string;

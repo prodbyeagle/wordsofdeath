@@ -23,11 +23,11 @@ export const EntryCard = ({ entry, avatar, userRoles = [], tooltip = true }: Ent
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center space-x-1">
                                 <span className="text-sm font-medium text-neutral-200 truncate">
-                                    @{entry.author}
+                                    {entry.author}
                                 </span>
                                 <UserRoleBadges roles={userRoles} tooltip={tooltip} />
                             </div>
-                            <TimeStamp timestamp={entry.timestamp} />
+                            <TimeStamp timestamp={entry.timestamp} showIcon={true} />
                         </div>
                     </header>
 

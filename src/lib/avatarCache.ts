@@ -1,3 +1,5 @@
+import { fetchUserDataByUsername } from "./api";
+
 // @lib/avatarCache.ts
 type AvatarCache = { [username: string]: string };
 type UserRoles = { [username: string]: string[] };
@@ -7,15 +9,15 @@ export class CacheManager {
     private userRoles: UserRoles = {};
 
     /**
-     * Retrieves the authentication token from the cookie.
-     * @returns The authentication token or `null` if no token is present.
+     * Retrieves the authentication token from cookies.
+     * @returns The authentication token or null if not found.
      */
-    private getToken(): string | null {
-        return document.cookie
+    getAuthToken = (): string | null => {
+        const token = document.cookie
             .split("; ")
-            .find((row) => row.startsWith("wordsofdeath="))
-            ?.split("=")[1] || null;
-    }
+            .find((row) => row.startsWith("wordsofdeath="))?.split("=")[1] || null;
+        return token;
+    };
 
     /**
      * Fetches the avatar URL for a given user and stores it in the cache.
@@ -27,26 +29,19 @@ export class CacheManager {
             return this.avatarCache[author];
         }
 
-        const token = this.getToken();
+        const token = this.getAuthToken();
         if (!token) {
             console.error("Authentication token is missing.");
             return null;
         }
 
         try {
-            const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/user/u/${author}`, {
-                method: "GET",
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-
-            if (!response.ok) {
-                console.error(`Failed to fetch user data for ${author}: ${response.statusText}`);
+            const response = await fetchUserDataByUsername(author, token)
+            if (!response) {
+                console.error(`No response received for user: ${author}`);
                 return null;
             }
-
-            const data = await response.json();
+            const data = response;
 
             if (!data.avatar) {
                 console.warn(`No avatar found for user: ${author}`);

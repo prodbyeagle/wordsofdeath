@@ -7,9 +7,10 @@ interface UserAvatarProps {
     username: string;
     id: string;
     size?: 'sm' | 'md' | 'lg' | 'username';
+    className?: string;
 }
 
-export const UserAvatar = ({ avatar, id, username, size = 'md' }: UserAvatarProps) => {
+export const UserAvatar = ({ avatar, id, username, size = 'md', className = '' }: UserAvatarProps) => {
     const sizeClasses = {
         sm: 'w-8 h-8',
         md: 'w-10 h-10',
@@ -24,9 +25,11 @@ export const UserAvatar = ({ avatar, id, username, size = 'md' }: UserAvatarProp
         username: { width: 160, height: 160 }
     };
 
+    const avatarClassName = `${sizeClasses[size]} rounded-full overflow-hidden bg-neutral-700 ${className}`;
+
     if (avatar) {
         return (
-            <div className={`${sizeClasses[size]} rounded-full overflow-hidden bg-neutral-700`}>
+            <div className={avatarClassName}>
                 <Image
                     src={`https://cdn.discordapp.com/avatars/${id}/${avatar}`}
                     alt={`${username}'s avatar`}
@@ -41,7 +44,7 @@ export const UserAvatar = ({ avatar, id, username, size = 'md' }: UserAvatarProp
     }
 
     return (
-        <div className={`${sizeClasses[size]} rounded-full bg-neutral-700 flex items-center justify-center`}>
+        <div className={avatarClassName + ' flex items-center justify-center'}>
             <span className="text-neutral-400">
                 {username.charAt(0).toUpperCase()}
             </span>

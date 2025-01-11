@@ -55,11 +55,11 @@ export const fetchAdminStatus = async (token: string): Promise<boolean> => {
  * @returns An array of whitelisted users.
  */
 export const fetchWhitelistedUsers = async (token: string): Promise<Whitelist[]> => {
-    const data = await fetchData<User[]>("/api/whitelist", token);
+    const data = await fetchData<Whitelist[]>("/api/whitelist", token);
     return data ? data.map((user) => ({
         _id: user._id,
         username: user.username,
-        added_at: user.joined_at,
+        added_at: user.added_at,
     })) : [];
 };
 

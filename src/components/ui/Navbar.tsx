@@ -15,6 +15,28 @@ const Navbar = () => {
    const menuRef = useRef<HTMLDivElement>(null);
 
    useEffect(() => {
+      const handleClickOutside = (event: MouseEvent) => {
+         if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+            setIsMenuOpen(false);
+         }
+      };
+
+      const handleEscape = (event: KeyboardEvent) => {
+         if (event.key === 'Escape') {
+            setIsMenuOpen(false);
+         }
+      };
+
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEscape);
+
+      return () => {
+         document.removeEventListener('mousedown', handleClickOutside);
+         document.removeEventListener('keydown', handleEscape);
+      };
+   }, []);
+
+   useEffect(() => {
       const token = getAuthToken();
       if (token) {
          const decoded = JSON.parse(atob(token.split('.')[1])) as User;
@@ -45,7 +67,7 @@ const Navbar = () => {
                <div className="flex items-center">
                   <button
                      onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                     className="md:hidden p-2 rounded-lg hover:bg-neutral-800 transition-colors"
+                     className="md:hidden p-2 rounded-lg hover:bg-neutral-800 transition-all"
                   >
                      <Menu className="w-6 h-6 text-neutral-100" />
                   </button>
@@ -55,20 +77,23 @@ const Navbar = () => {
                         <div ref={menuRef} className="relative">
                            <button
                               onClick={() => setIsMenuOpen(!isMenuOpen)}
-                              className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-colors"
+                              className="flex items-center space-x-3 px-3 py-2 rounded-lg hover:bg-neutral-800 transition-all"
                            >
-                              <UserAvatar avatar={user.avatar} username={user.username} id={user.id} />
+                              <UserAvatar size='sm' avatar={user.avatar} username={user.username} id={user.id} />
                               <span className="text-neutral-100 font-medium">{user.username}</span>
                            </button>
 
                            {isMenuOpen && (
-                              <div className="absolute right-0 mt-2 w-48 bg-neutral-800 rounded-lg shadow-xl border border-neutral-700 overflow-hidden">
+                              <div
+                                 className="absolute right-0 mt-2 w-48 bg-neutral-800 rounded-lg shadow-xl border border-neutral-700 overflow-hidden opacity-0 transition-opacity duration-300 ease-out"
+                                 style={{ opacity: isMenuOpen ? 1 : 0 }}
+                              >
                                  <Link
                                     href={`/user/${user.username}`}
                                     className="flex items-center px-4 py-3 text-neutral-100 hover:bg-neutral-700 transition-colors"
                                     onClick={handleMenuSelect}
                                  >
-                                    <CircleUserRound className="w-5 h-5 mr-3" />
+                                    <UserAvatar username={user.username} avatar={user.avatar} id={user.id} className="w-5 h-5 mr-3" />
                                     Account
                                  </Link>
                                  <Link

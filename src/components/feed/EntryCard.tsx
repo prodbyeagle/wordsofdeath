@@ -18,15 +18,9 @@ interface EntryCardProps {
 
 export const EntryCard = ({ entry, avatar, userRoles = [], tooltip = true, isAdmin, onDelete }: EntryCardProps) => {
     const [isHovered, setIsHovered] = useState(false);
-    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
     const handleDelete = () => {
-        if (showDeleteConfirm) {
-            onDelete(entry.id);
-            setShowDeleteConfirm(false);
-        } else {
-            setShowDeleteConfirm(true);
-        }
+        onDelete(entry.id);
     };
 
     return (
@@ -35,7 +29,6 @@ export const EntryCard = ({ entry, avatar, userRoles = [], tooltip = true, isAdm
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => {
                 setIsHovered(false);
-                setShowDeleteConfirm(false);
             }}
         >
             <article className="h-full bg-neutral-800/50 backdrop-blur-sm rounded-xl border border-neutral-700/50 overflow-hidden hover:border-neutral-500/50 transition-all duration-300 relative">
@@ -49,7 +42,7 @@ export const EntryCard = ({ entry, avatar, userRoles = [], tooltip = true, isAdm
                                 </span>
                                 <UserRoleBadges roles={userRoles} tooltip={tooltip} />
                             </div>
-                            <TimeStamp timestamp={entry.timestamp} showIcon={true} />
+                            <TimeStamp timestamp={entry.timestamp} showIcon live />
                         </div>
                     </header>
 
@@ -81,15 +74,11 @@ export const EntryCard = ({ entry, avatar, userRoles = [], tooltip = true, isAdm
 
                 <div className={`absolute top-2 right-2 transition-all duration-500 ${isAdmin ? (isHovered ? 'opacity-100 scale-110' : 'opacity-0') : 'hidden'}`}>
                     <Button
-                        variant={showDeleteConfirm ? "destructive" : "destructive"}
+                        variant={"destructive"}
                         size="sm"
                         onClick={handleDelete}
                     >
-                        {showDeleteConfirm ? (
-                            "Confirm Delete"
-                        ) : (
-                            <Trash2 className="h-4 w-4"/>
-                        )}
+                        <Trash2 className="h-4 w-4" />
                     </Button>
                 </div>
             </article>

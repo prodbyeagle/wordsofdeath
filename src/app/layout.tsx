@@ -20,9 +20,7 @@ export default function RootLayout({
       <head>
         <link rel="icon" href={metadata.icons.icon} />
         <meta name="google-site-verification" content="hzsS2qiDIdpqUiOcQrA-Dou7pxxilhW0INsyVueX7jY" />
-        <meta name="theme-color" content="#171717" />#
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="#171717" />
+        <meta name="theme-color" content="#171717" />
       </head>
       <body className={font.className}>
         <Navbar />

@@ -1,22 +1,22 @@
 'use client'
 
 import { useState, useEffect } from 'react';
-import { Entry, Whitelist } from '@/types';
-import { Trash, UserPlus, UserRoundCog, Users, BookText, Loader2 } from 'lucide-react';
+import { Whitelist } from '@/types';
+import { UserX, UserPlus, Search } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
-import { Tooltip } from '@/components/ui/Tooltip';
-import Link from 'next/link';
 import { Button } from '@/components/ui/Button';
 import { TimeStamp } from '@/components/ui/Timestamp';
+import { LoginPrompt } from '@/components/mainpage/LoginPrompt';
 
 const Admin = () => {
    const [whitelistedUsers, setWhitelistedUsers] = useState<Whitelist[]>([]);
-   const [entries, setEntries] = useState<Entry[]>([]);
    const [newUser, setNewUser] = useState('');
-   const [isAdmin, setIsAdmin] = useState(false);
+   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
+   const [isRemoveUserModalOpen, setIsRemoveUserModalOpen] = useState(false);
+   const [userToRemove, setUserToRemove] = useState<Whitelist | null>(null);
    const [loading, setLoading] = useState(false);
-   const [isModalOpen, setIsModalOpen] = useState(false);
-   const [activeTab, setActiveTab] = useState<'users' | 'entries'>('users');
+   const [searchQuery, setSearchQuery] = useState('');
+   const [isAdmin, setIsAdmin] = useState(false);
 
    useEffect(() => {
       const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
@@ -24,7 +24,7 @@ const Admin = () => {
 
       const fetchUserStatus = async () => {
          try {
-            const response = await fetch("https://wordsofdeath-backend.vercel.app/auth/admin", {
+            const response = await fetch("http://localhost:3001/auth/admin", {
                method: 'GET',
                headers: { 'Authorization': `Bearer ${token}` },
             });
@@ -38,36 +38,34 @@ const Admin = () => {
          }
       };
 
-      const fetchUsersAndEntries = async () => {
+      fetchUserStatus();
+
+      const fetchWhitelistedUsers = async () => {
          setLoading(true);
          try {
-            const [usersResponse, entriesResponse] = await Promise.all([
-               fetch("https://wordsofdeath-backend.vercel.app/api/whitelist", { headers: { 'Authorization': `Bearer ${token}` } }),
-               fetch("https://wordsofdeath-backend.vercel.app/api/entries", { headers: { 'Authorization': `Bearer ${token}` } }),
-            ]);
+            const response = await fetch("http://localhost:3001/api/whitelist", {
+               headers: { 'Authorization': `Bearer ${token}` },
+            });
 
-            if (!usersResponse.ok || !entriesResponse.ok) throw new Error("Fehler beim Abrufen der Daten.");
-            setWhitelistedUsers(await usersResponse.json());
-            setEntries(await entriesResponse.json());
+            if (!response.ok) throw new Error("Fehler beim Abrufen der Whitelist-Daten.");
+            setWhitelistedUsers(await response.json());
          } catch (error) {
-            console.error("Fehler beim Abrufen der Daten:", error);
+            console.error("Fehler beim Abrufen der Whitelist-Daten:", error);
          } finally {
             setLoading(false);
          }
       };
 
-      if (isAdmin) {
-         fetchUsersAndEntries();
-      } else {
-         fetchUserStatus();
-      }
-   }, [isAdmin]);
+      fetchWhitelistedUsers();
+   }, []);
 
    const addUserToWhitelist = async () => {
       if (!newUser.trim()) return;
+      if (!isAdmin) return;
+
       const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
       try {
-         const response = await fetch("https://wordsofdeath-backend.vercel.app/api/whitelist", {
+         const response = await fetch("http://localhost:3001/api/whitelist", {
             method: "POST",
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: newUser }),
@@ -77,54 +75,46 @@ const Admin = () => {
          const newUserData = await response.json();
          setWhitelistedUsers(prev => [...prev, newUserData]);
          setNewUser("");
-         setIsModalOpen(false);
+         setIsAddUserModalOpen(false);
       } catch (error) {
          console.error("Fehler beim Hinzufügen des Benutzers:", error);
       }
    };
 
    const removeUserFromWhitelist = async (username: string) => {
+      if (!username || !isAdmin) return;
+
       const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
       try {
-         const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/whitelist/${username}`, {
+         const response = await fetch(`http://localhost:3001/api/whitelist/${username}`, {
             method: "DELETE",
             headers: { 'Authorization': `Bearer ${token}` },
          });
 
          if (!response.ok) throw new Error("Fehler beim Entfernen des Benutzers.");
          setWhitelistedUsers(prev => prev.filter(user => user.username !== username));
+         setIsRemoveUserModalOpen(false);
       } catch (error) {
          console.error("Fehler beim Entfernen des Benutzers:", error);
       }
    };
 
-   const deleteEntry = async (entryId: string) => {
-      const token = document.cookie.split('; ').find(row => row.startsWith('wordsofdeath='))?.split('=')[1];
-      try {
-         const response = await fetch(`https://wordsofdeath-backend.vercel.app/api/entries/${entryId}`, {
-            method: "DELETE",
-            headers: { 'Authorization': `Bearer ${token}` },
-         });
+   const filteredUsers = whitelistedUsers.filter(user =>
+      user.username.toLowerCase().includes(searchQuery.toLowerCase())
+   );
 
-         if (!response.ok) throw new Error("Fehler beim Löschen des Eintrags.");
-         setEntries(prev => prev.filter(entry => entry.id !== entryId));
-      } catch (error) {
-         console.error("Fehler beim Löschen des Eintrags:", error);
-      }
-   };
+   if (!isAdmin) {
+      return <LoginPrompt />;
+   }
+
    if (loading) {
       return (
          <div className="min-h-screen bg-neutral-900 flex items-center justify-center">
             <div className="flex items-center gap-3">
-               <Loader2 className="w-6 h-6 animate-spin" />
-               <span className="text-neutral-300">Lade Dashboard...</span>
+               <span className="text-neutral-300">Lade Whitelist...</span>
             </div>
          </div>
       );
-   }
-
-   function goToPage(username: string): void {
-      window.location.href = `/u/${username}`;
    }
 
    return (
@@ -132,114 +122,68 @@ const Admin = () => {
          <div className="max-w-7xl mx-auto">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
                <div>
-                  <h1 className="text-4xl font-bold text-white">
-                     Admin Dashboard
-                  </h1>
-                  <p className="text-neutral-400 mt-2">
-                     Verwalte Benutzer und Einträge
-                  </p>
+                  <h1 className="text-4xl font-bold text-white">Whitelist-Verwaltung</h1>
+                  <p className="text-neutral-400 mt-2">Verwalte die Benutzer, die auf die Anwendung zugreifen dürfen</p>
                </div>
-               <Button
-                  onClick={() => setIsModalOpen(true)}
-                  className="px-5 py-2.5"
-                  variant='secondary'
-               >
-                  <UserPlus size={18} className="mr-2" />
-                  Benutzer Hinzufügen
-               </Button>
-            </div>
-
-            <div className="flex gap-2 mb-6">
-               <button
-                  onClick={() => setActiveTab('users')}
-                  className={`flex items-center gap-2.5 px-5 py-2.5 rounded-lg transition-all duration-200
-                     ${activeTab === 'users'
-                        ? 'bg-neutral-700 text-white'
-                        : 'text-neutral-400 hover:text-white hover:bg-neutral-800'}`}
-               >
-                  <Users className="w-5 h-5" />
-                  Benutzer ({whitelistedUsers.length})
-               </button>
-               <button
-                  onClick={() => setActiveTab('entries')}
-                  className={`flex items-center gap-2.5 px-5 py-2.5 rounded-lg transition-all duration-200
-                     ${activeTab === 'entries'
-                        ? 'bg-neutral-700 text-white'
-                        : 'text-neutral-400 hover:text-white hover:bg-neutral-800'}`}
-               >
-                  <BookText className="w-5 h-5" />
-                  Einträge ({entries.length})
-               </button>
-            </div>
-
-            <div className="bg-neutral-800 rounded-xl p-6 border border-neutral-700">
-               {activeTab === 'users' && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                     {whitelistedUsers.map(user => (
-                        <div key={user._id}
-                           className="bg-neutral-900 rounded-xl p-5 border border-neutral-800 hover:border-neutral-700 transition-all duration-300">
-                           <div className="flex justify-between items-center">
-                              <h4 className="text-lg font-semibold text-white">
-                                 {user.username}
-                              </h4>
-                              <div className="flex gap-3">
-                                 <Tooltip content="Zum User">
-                                    <Button
-                                       onClick={() => goToPage(user.username)}
-                                       variant='primary'
-                                    >
-                                       <UserRoundCog size={18} />
-                                    </Button>
-                                 </Tooltip>
-                                 <Tooltip content="Entfernen">
-                                    <Button
-                                       onClick={() => removeUserFromWhitelist(user.username)}
-                                       variant='destructive'
-                                    >
-                                       <Trash size={18} />
-                                    </Button>
-                                 </Tooltip>
-                              </div>
-                           </div>
-                        </div>
-                     ))}
+               <div className="flex gap-4 w-full sm:w-auto">
+                  <div className="relative flex-1 sm:flex-none">
+                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-5 h-5" />
+                     <input
+                        type="text"
+                        placeholder="Suche nach Benutzern..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full sm:w-64 pl-10 pr-4 py-2 bg-neutral-800 border border-neutral-700 rounded-lg 
+                           text-white placeholder:text-neutral-500 focus:outline-none focus:border-neutral-400"
+                     />
                   </div>
-               )}
+                  {isAdmin && (
+                     <Button
+                        onClick={() => setIsAddUserModalOpen(true)}
+                        className="px-5 py-2.5"
+                        variant="secondary"
+                     >
+                        <UserPlus size={18} className="mr-2" />
+                        Benutzer Hinzufügen
+                     </Button>
+                  )}
+               </div>
+            </div>
 
-               {activeTab === 'entries' && (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                     {entries.map(entry => (
-                        <div key={entry._id}
-                           className="bg-neutral-900 rounded-xl p-4 border border-neutral-800 hover:border-neutral-700 transition-all duration-300">
-                           <div className="mb-4">
-                              <h4 className="text-lg font-semibold text-white truncate">
-                                 {entry.entry}
-                              </h4>
-                              <div className="flex flex-col gap-1.5 mt-3">
-                                 <p className="text-sm text-neutral-400">
-                                    Von: <Link href={`/u/${entry.author}`} className="hover:text-neutral-100 transition-colors">@{entry.author}</Link>
-                                 </p>
-                                 <TimeStamp timestamp={entry.timestamp} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+               {filteredUsers.map(user => (
+                  <span key={user._id || user.username} className="block group">
+                     <article className="h-full bg-neutral-800/50 backdrop-blur-sm rounded-xl border border-neutral-700/50 overflow-hidden hover:border-neutral-500/50 transition-all duration-300">
+                        <div className="p-4">
+                           <header className="flex items-center space-x-3">
+                              <div className="flex-1 min-w-0">
+                                 <div className="flex items-center space-x-1">
+                                    <span className="text-sm font-medium text-neutral-200 truncate">
+                                       {user.username}
+                                    </span>
+                                 </div>
+                                 <TimeStamp timestamp={user.added_at} showIcon={true} />
                               </div>
-                           </div>
-                           <div className="flex justify-end">
-                              <Tooltip content="Löschen">
+                              {isAdmin && (
                                  <Button
-                                    onClick={() => deleteEntry(entry.id)}
-                                    variant='destructive'
+                                    onClick={() => {
+                                       setUserToRemove(user);
+                                       setIsRemoveUserModalOpen(true);
+                                    }}
+                                    variant="destructive"
                                  >
-                                    <Trash size={18} />
+                                    <UserX size={18} />
                                  </Button>
-                              </Tooltip>
-                           </div>
+                              )}
+                           </header>
                         </div>
-                     ))}
-                  </div>
-               )}
+                     </article>
+                  </span>
+               ))}
             </div>
          </div>
 
-         <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Benutzer hinzufügen">
+         <Modal isOpen={isAddUserModalOpen} onClose={() => setIsAddUserModalOpen(false)} title="Benutzer hinzufügen">
             <div className="p-4">
                <input
                   type="text"
@@ -251,10 +195,27 @@ const Admin = () => {
                />
                <Button
                   onClick={addUserToWhitelist}
-                  disabled={newUser.length < 3}
-                  className={`w-full py-3`}
+                  disabled={newUser.length < 3 || !isAdmin}
+                  className="w-full py-3"
                >
                   Hinzufügen
+               </Button>
+            </div>
+         </Modal>
+
+         <Modal
+            isOpen={isRemoveUserModalOpen}
+            onClose={() => setIsRemoveUserModalOpen(false)}
+            title={`Benutzer ${userToRemove?.username}`}
+         >
+            <div className="p-4">
+               <p className="text-neutral-400">Möchten Sie den Benutzer <strong>{userToRemove?.username}</strong> wirklich entfernen?</p>
+               <Button
+                  onClick={() => removeUserFromWhitelist(userToRemove?.username || '')}
+                  variant="destructive"
+                  className="w-full py-3 mt-4"
+               >
+                  Entfernen
                </Button>
             </div>
          </Modal>

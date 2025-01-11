@@ -104,7 +104,7 @@ const Admin = () => {
    );
 
    if (!isAdmin) {
-      return <LoginPrompt />;
+      return <LoginPrompt modal={false} />;
    }
 
    if (loading) {

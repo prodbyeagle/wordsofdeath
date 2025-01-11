@@ -68,7 +68,7 @@ export const UnauthorizedPage = () => {
             </div>
 
             <Modal isOpen={showLoginPrompt} onClose={handleModalClose} title="Login Required">
-                <LoginPrompt modal={false} />
+                <LoginPrompt modal={true} />
             </Modal>
         </div>
     );

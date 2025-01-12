@@ -71,7 +71,10 @@
   "id": "01JCFCRRW04PW5RZEWMPNA57H7",
   "entry": "testword123",
   "categories": [
-    "discord"
+    "discord",
+    "erm",
+    "thiscanbeit?",
+    "words"
   ],
   "author": "prodbyeagle",
   "authorId": "893759402832699392",

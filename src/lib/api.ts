@@ -22,7 +22,9 @@ const fetchData = async <T>(url: string, token: string): Promise<T | null> => {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (!response.ok) throw new Error("Request failed.");
+        if (!response.ok) {
+            return null;
+        }
         return await response.json();
     } catch (error) {
         console.error(`Error fetching data from ${url}:`, error);

@@ -4,7 +4,7 @@ import React from 'react';
 import { Shield, LockKeyhole } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
-const AccessDeniedPage = () => {
+export const AdminDeniedPage = () => {
     return (
         <div className="min-h-screen flex items-center justify-center bg-neutral-900 p-4">
             <div className="w-full max-w-md">
@@ -12,7 +12,7 @@ const AccessDeniedPage = () => {
                     <div className="p-6">
                         <header className="flex flex-col items-center space-y-4 mb-6">
                             <div className="relative">
-                                <div className="absolute -inset- bg-red-500/30 rounded-full blur-md" />
+                                <div className="absolute -inset-1 bg-red-500/30 rounded-full blur-md" />
                                 <Shield className="w-12 h-12 text-red-500 relative" />
                             </div>
                             <div className="text-center">
@@ -31,10 +31,10 @@ const AccessDeniedPage = () => {
                                     <LockKeyhole className="w-5 h-5 text-neutral-400 flex-shrink-0" />
                                     <div className="flex-1 min-w-0">
                                         <div className="text-sm text-neutral-300">
-                                            Whitelist Error
+                                            Admin Error
                                         </div>
                                         <div className="text-xs text-neutral-500">
-                                            User not Found in Whitelist
+                                            User is not an Admin
                                         </div>
                                     </div>
                                 </div>
@@ -57,5 +57,3 @@ const AccessDeniedPage = () => {
         </div>
     );
 };
-
-export default AccessDeniedPage;

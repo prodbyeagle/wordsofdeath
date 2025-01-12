@@ -25,15 +25,15 @@ export const UserAvatar = ({ avatar, id, username, size = 'md', className = '' }
         username: { width: 160, height: 160 }
     };
 
-    const avatarClassName = `${sizeClasses[size]} rounded-full overflow-hidden bg-neutral-700 ${className}`;
+    const avatarClassName = `${sizeClasses[size]} rounded overflow-hidden ${className}`;
 
     if (avatar) {
         return (
             <div className={avatarClassName}>
                 <Image
-                    src={`https://cdn.discordapp.com/avatars/${id}/${avatar}`}
+                    src={`https://cdn.discordapp.com/avatars/${id}/${avatar}?size=512`}
                     alt={`${username}'s avatar`}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-fit"
                     width={sizeDimensions[size].width}
                     height={sizeDimensions[size].height}
                     priority

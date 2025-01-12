@@ -6,8 +6,8 @@ import { UserX, UserPlus, Search } from 'lucide-react';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { TimeStamp } from '@/components/ui/Timestamp';
-import { LoginPrompt } from '@/components/feed/LoginPrompt';
 import { addUserToWhitelist, fetchAdminStatus, fetchWhitelistedUsers, getAuthToken, removeUserFromWhitelist } from '@/lib/api';
+import { AdminDeniedPage } from '@/app/error/access-denied/page';
 
 const Admin = () => {
    const [whitelistedUsers, setWhitelistedUsers] = useState<Whitelist[]>([]);
@@ -27,7 +27,7 @@ const Admin = () => {
          try {
             const isAdminStatus = await fetchAdminStatus(token);
             setIsAdmin(isAdminStatus);
-            if (!isAdminStatus) throw new Error("User is not an admin!");
+            if (!isAdminStatus) return null;
 
             const whitelist = await fetchWhitelistedUsers(token);
             setWhitelistedUsers(whitelist);
@@ -83,7 +83,7 @@ const Admin = () => {
    );
 
    if (!isAdmin) {
-      return <LoginPrompt modal={false} />;
+      return <AdminDeniedPage />;
    }
 
    if (loading) {

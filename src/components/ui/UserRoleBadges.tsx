@@ -3,12 +3,29 @@ import { BadgeCheck, HeartHandshake, Wrench } from "lucide-react";
 import { Tooltip } from "./Tooltip";
 
 interface UserRoleBadgesProps {
+    /** 
+     * An array of user roles that determines which badges to display.
+     * Valid roles include 'owner', 'admin', 'developer', 'moderator', and 'contributor'.
+     */
     roles: string[];
+
+    /** 
+     * Whether to display a tooltip when hovering over the badge.
+     * Default is true.
+     */
     tooltip?: boolean;
 }
 
 type Role = 'owner' | 'admin' | 'developer';
 
+/** 
+ * A component that displays badges representing the roles of a user.
+ * Each badge corresponds to a specific user role and can optionally show a tooltip with the role name.
+ * 
+ * @param {string[]} roles - A list of user roles to display badges for.
+ * @param {boolean} [tooltip=true] - Whether to display a tooltip for each badge with the role name.
+ * @returns {React.JSX.Element | null} A JSX element displaying the badges or null if no valid roles are provided.
+ */
 export const UserRoleBadges = ({ roles, tooltip = true }: UserRoleBadgesProps) => {
     if (!roles?.length) return null;
 

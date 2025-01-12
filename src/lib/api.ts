@@ -1,9 +1,12 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { Entry, User, Whitelist } from "@/types";
 import { CacheManager } from "./avatarCache";
 
 /**
  * Retrieves the authentication token from cookies.
- * @returns The authentication token or null if not found.
+ * This token is used for authenticating API requests.
+ * 
+ * @returns {string | null} The authentication token or null if not found.
  */
 export const getAuthToken = (): string | null => {
     const token = document.cookie
@@ -14,6 +17,10 @@ export const getAuthToken = (): string | null => {
 
 /**
  * A helper function to handle API requests efficiently with caching.
+ * 
+ * @param {string} url - The API endpoint URL.
+ * @param {string} token - The authentication token used for the request.
+ * @returns {Promise<T | null>} The response data if the request is successful, otherwise null.
  */
 const fetchData = async <T>(url: string, token: string): Promise<T | null> => {
     try {
@@ -34,8 +41,10 @@ const fetchData = async <T>(url: string, token: string): Promise<T | null> => {
 
 /**
  * Determines the base URL for the API based on the environment (development or production).
+ * 
+ * @returns {string} The base API URL.
  */
-const getBaseApiUrl = (): string => {
+export const getBaseApiUrl = (): string => {
     return process.env.NEXT_PUBLIC_DEVELOPMENT === "true"
         ? "http://localhost:3001"
         : "https://wordsofdeath-backend.vercel.app";
@@ -43,8 +52,9 @@ const getBaseApiUrl = (): string => {
 
 /**
  * Fetches the admin status of the current user.
- * @param token The authentication token.
- * @returns True if the user is an admin, otherwise false.
+ * 
+ * @param {string} token - The authentication token.
+ * @returns {Promise<boolean>} True if the user is an admin, otherwise false.
  */
 export const fetchAdminStatus = async (token: string): Promise<boolean> => {
     const data = await fetchData<{ isAdmin: boolean }>("/api/auth/admin", token);
@@ -53,8 +63,9 @@ export const fetchAdminStatus = async (token: string): Promise<boolean> => {
 
 /**
  * Fetches the whitelist of users.
- * @param token The authentication token.
- * @returns An array of whitelisted users.
+ * 
+ * @param {string} token - The authentication token.
+ * @returns {Promise<Whitelist[]>} An array of whitelisted users.
  */
 export const fetchWhitelistedUsers = async (token: string): Promise<Whitelist[]> => {
     const data = await fetchData<Whitelist[]>("/api/whitelist", token);
@@ -67,9 +78,10 @@ export const fetchWhitelistedUsers = async (token: string): Promise<Whitelist[]>
 
 /**
  * Adds a user to the whitelist.
- * @param token The authentication token.
- * @param username The username of the user to add.
- * @returns The added user data or null if the addition fails.
+ * 
+ * @param {string} token - The authentication token.
+ * @param {string} username - The username of the user to add.
+ * @returns {Promise<Whitelist | null>} The added user data or null if the addition fails.
  */
 export const addUserToWhitelist = async (
     token: string,
@@ -101,9 +113,10 @@ export const addUserToWhitelist = async (
 
 /**
  * Removes a user from the whitelist.
- * @param token The authentication token.
- * @param username The username of the user to remove.
- * @returns True if the user was successfully removed, otherwise false.
+ * 
+ * @param {string} token - The authentication token.
+ * @param {string} username - The username of the user to remove.
+ * @returns {Promise<boolean>} True if the user was successfully removed, otherwise false.
  */
 export const removeUserFromWhitelist = async (
     token: string,
@@ -124,9 +137,10 @@ export const removeUserFromWhitelist = async (
 
 /**
  * Fetches a subset of entries from the API.
- * @param token The authentication token.
- * @param limit The number of entries to fetch.
- * @returns A list of entries or an empty array if the request fails.
+ * 
+ * @param {string} token - The authentication token.
+ * @param {number} [limit=5] - The number of entries to fetch.
+ * @returns {Promise<Entry[]>} A list of entries or an empty array if the request fails.
  */
 export const fetchSomeEntries = async (token: string, limit: number = 5): Promise<Entry[]> => {
     const data = await fetchData<Entry[]>(`/api/entries/some?limit=${limit}`, token);
@@ -135,8 +149,9 @@ export const fetchSomeEntries = async (token: string, limit: number = 5): Promis
 
 /**
  * Fetches a list of entries from the API.
- * @param token The authentication token.
- * @returns A list of entries or an empty array if the request fails.
+ * 
+ * @param {string} token - The authentication token.
+ * @returns {Promise<Entry[]>} A list of entries or an empty array if the request fails.
  */
 export const fetchEntries = async (token: string): Promise<Entry[]> => {
     const data = await fetchData<Entry[]>("/api/entries", token);
@@ -148,9 +163,10 @@ export const fetchEntries = async (token: string): Promise<Entry[]> => {
 
 /**
  * Fetches entries for a specific user by their username.
- * @param username The username of the user.
- * @param token The authentication token.
- * @returns A list of entries or an empty array if the request fails.
+ * 
+ * @param {string} username - The username of the user.
+ * @param {string} token - The authentication token.
+ * @returns {Promise<Entry[]>} A list of entries or an empty array if the request fails.
  */
 export const fetchEntriesByUsername = async (
     username: string,
@@ -162,9 +178,10 @@ export const fetchEntriesByUsername = async (
 
 /**
  * Fetches user data by their username.
- * @param username The username of the user.
- * @param token The authentication token.
- * @returns The user data or `null` if the request fails.
+ * 
+ * @param {string} username - The username of the user.
+ * @param {string} token - The authentication token.
+ * @returns {Promise<User | null>} The user data or `null` if the request fails.
  */
 export const fetchUserDataByUsername = async (
     username: string,
@@ -176,10 +193,11 @@ export const fetchUserDataByUsername = async (
 
 /**
  * Creates a new entry for the user.
- * @param newEntry The text of the new entry.
- * @param categories A comma-separated list of categories for the entry.
- * @param user The user object containing the username.
- * @returns An error message in case of failure, or `null` if the entry was created successfully.
+ * 
+ * @param {string} newEntry - The text of the new entry.
+ * @param {string} categories - A comma-separated list of categories for the entry.
+ * @param {object | null} user - The user object containing the username. If null, the request fails.
+ * @returns {Promise<string | null>} An error message in case of failure, or `null` if the entry was created successfully.
  */
 export const createEntry = async (
     newEntry: string,
@@ -212,7 +230,6 @@ export const createEntry = async (
         } else {
             return `Fehler beim Erstellen des Eintrags: ${response.statusText}`;
         }
-        /* eslint-disable @typescript-eslint/no-unused-vars */
     } catch (error) {
         return "Fehler beim Erstellen des Eintrags.";
     }
@@ -220,9 +237,10 @@ export const createEntry = async (
 
 /**
  * Deletes an entry by its ID.
- * @param token The authentication token.
- * @param entryId The ID of the entry to delete.
- * @returns Null if the entry was successfully deleted, otherwise an error message.
+ * 
+ * @param {string} token - The authentication token.
+ * @param {string} entryId - The ID of the entry to delete.
+ * @returns {Promise<string | null>} Null if the entry was successfully deleted, otherwise an error message.
  */
 export const deleteEntry = async (token: string, entryId: string): Promise<string | null> => {
     try {
@@ -249,9 +267,10 @@ export const deleteEntry = async (token: string, entryId: string): Promise<strin
 
 /**
  * Fetches the user Avatar, if the cache manager is provided.
- * @param author The username of the author.
- * @param avatarCacheManager An optional CacheManager instance to retrieve the avatar URL.
- * @returns The avatar URL or `null` if the avatar data is not found.
+ * 
+ * @param {string} author - The username of the author.
+ * @param {CacheManager | null} avatarCacheManager - An optional CacheManager instance to retrieve the avatar URL.
+ * @returns {Promise<string | null>} The URL of the avatar image or null if unavailable.
  */
 export const fetchUserAvatar = async (
     author: string,

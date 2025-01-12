@@ -7,6 +7,12 @@ import { User } from '@/types';
 import { LogOut, Shield, CircleUserRound, Home, Menu } from 'lucide-react';
 import { getAuthToken } from '@/lib/api';
 
+/**
+ * Navbar component that displays navigation links, user account details, and mobile menu toggle.
+ * It supports user login/logout, displaying the user's avatar and username, and handles mobile-responsive design.
+ * 
+ * @returns {JSX.Element} The rendered Navbar component.
+ */
 const Navbar = () => {
    const [user, setUser] = useState<User | null>(null);
    const [isMenuOpen, setIsMenuOpen] = useState(false);

@@ -5,6 +5,13 @@ interface SpinnerProps {
     className?: string;
 }
 
+/**
+ * Spinner component that renders a loading spinner.
+ * The spinner can be customized with a `className` prop to add extra styling.
+ * 
+ * @param {string} className - Optional class name for custom styling.
+ * @returns {JSX.Element} The rendered spinner component.
+ */
 export const Spinner: React.FC<SpinnerProps> = ({ className = "" }) => {
     return (
         <svg

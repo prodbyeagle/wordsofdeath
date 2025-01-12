@@ -2,40 +2,44 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { Spinner } from "./Spinner";
 
+/**
+ * The props for the Button component, allowing for customization of variant, size, and loading state.
+ */
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     /**
-     * The variant of the button, which determines its style.
-     * - `primary`: A neutral button for primary actions.
-     * - `secondary`: A neutral dark button.
-     * - `outline`: A transparent button with a border.
-     * - `destructive`: A red button for dangerous actions.
+     * Specifies the style variant of the button.
+     * - `primary`: A neutral button for primary actions (default).
+     * - `secondary`: A dark button for secondary actions.
+     * - `outline`: A transparent button with a border, ideal for less prominent actions.
+     * - `destructive`: A red button for dangerous or destructive actions, such as delete.
      * @default "primary"
      */
     variant?: "primary" | "secondary" | "outline" | "destructive";
 
     /**
-     * The size of the button.
-     * - `sm`: Small button.
-     * - `md`: Medium button (default).
-     * - `lg`: Large button.
+     * Defines the button size.
+     * - `sm`: Small button with reduced padding and font size.
+     * - `md`: Medium button (default) with standard padding and font size.
+     * - `lg`: Large button with increased padding and font size.
      * @default "md"
      */
     size?: "sm" | "md" | "lg";
 
     /**
-     * Whether the button is in a loading state.
-     * If `true`, a spinner will be displayed, and the button will be disabled.
+     * Indicates whether the button is in a loading state.
+     * - When `true`, a spinner is shown inside the button, and the button is disabled.
      * @default false
      */
     loading?: boolean;
 }
 
 /**
- * A versatile Button component with support for multiple variants, sizes, 
- * loading state, and custom class names.
+ * A customizable Button component that supports different styles (variants), sizes, and a loading state.
+ * This component can display a loading spinner when in the loading state, making it suitable for actions 
+ * that require async operations (e.g., form submissions, data fetching).
  *
- * @param {ButtonProps} props - The props for the Button component.
- * @returns {JSX.Element} A styled button element.
+ * @param {ButtonProps} props - The properties for the button component, including variant, size, and loading state.
+ * @returns {JSX.Element} A styled button element, either displaying content or a spinner based on the loading state.
  */
 export const Button: React.FC<ButtonProps> = ({
     children,

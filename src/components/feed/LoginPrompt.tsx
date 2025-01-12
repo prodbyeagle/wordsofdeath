@@ -3,9 +3,21 @@ import Link from "next/link";
 import { Button } from "../ui/Button";
 
 interface LoginPromptProps {
+    /** 
+     * A boolean indicating whether the login prompt is displayed as a modal or a full-page component. 
+     * If `true`, the prompt appears as a modal. If `false`, it occupies the full screen.
+     */
     modal: boolean;
 }
 
+/** 
+ * A component that prompts the user to log in. 
+ * It displays a message and a login button which redirects the user to the authentication URL.
+ * The appearance of the prompt can vary based on whether it is a modal or a full-page prompt.
+ * 
+ * @param {boolean} modal - Determines whether the prompt is displayed as a modal or a full-page component.
+ * @returns {JSX.Element} The LoginPrompt component.
+ */
 const getApiBaseUrl = (): string => {
     return process.env.NEXT_PUBLIC_DEVELOPMENT === "true"
         ? "http://localhost:3001"

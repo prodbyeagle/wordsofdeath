@@ -7,7 +7,7 @@ import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { TimeStamp } from '@/components/ui/Timestamp';
 import { addUserToWhitelist, fetchAdminStatus, fetchWhitelistedUsers, getAuthToken, removeUserFromWhitelist } from '@/lib/api';
-import { AdminDeniedPage } from '@/app/error/access-denied/page';
+import { AdminDeniedPage } from '@/components/ui/AdminDenied';
 
 const Admin = () => {
    const [whitelistedUsers, setWhitelistedUsers] = useState<Whitelist[]>([]);

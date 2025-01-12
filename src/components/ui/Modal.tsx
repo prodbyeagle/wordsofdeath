@@ -1,18 +1,50 @@
-// src/components/Modal.tsx
-
 import React, { useEffect, useState, ReactNode } from 'react';
 import { X } from 'lucide-react';
 import '../../styles/Modal.css';
 
+/**
+ * Props for the Modal component, which controls the visibility, content, and styling of a modal dialog.
+ */
 interface ModalProps {
+   /**
+    * A boolean that determines if the modal is open.
+    * @default false
+    */
    isOpen: boolean;
+
+   /**
+    * A function to close the modal when triggered (e.g., by clicking the close button).
+    */
    onClose: () => void;
+
+   /**
+    * The title of the modal, displayed at the top of the modal content.
+    */
    title?: string;
+
+   /**
+    * The content displayed inside the modal.
+    */
    children: ReactNode;
+
+   /**
+    * Additional custom classes for the modal container.
+    */
    className?: string;
+
+   /**
+    * The size of the modal shadow. This determines the intensity of the shadow effect around the modal.
+    */
    shadowSize?: string;
 }
 
+/**
+ * A Modal component that provides a flexible dialog box with customizable content, title, and styling.
+ * Supports opening and closing the modal with animations, and allows closing the modal via the Escape key or close button.
+ *
+ * @param {ModalProps} props - The properties for the Modal component, including visibility, title, and content.
+ * @returns {JSX.Element | null} A modal dialog, or null if the modal is not open.
+ */
 export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, className, shadowSize }) => {
    const [show, setShow] = useState(isOpen);
 

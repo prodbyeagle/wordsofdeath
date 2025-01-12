@@ -4,6 +4,15 @@ import React from 'react';
 import { Shield, LockKeyhole } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
+/**
+ * AdminDeniedPage component renders a page indicating that access is denied.
+ * 
+ * This component displays a message informing the user that they do not have
+ * permission to access the page. It includes a styled message with an icon,
+ * and a button to navigate back to the previous page.
+ * 
+ * @returns {React.JSX.Element} The rendered AdminDeniedPage component.
+ */
 export const AdminDeniedPage = () => {
     return (
         <div className="min-h-screen flex items-center justify-center bg-neutral-900 p-4">

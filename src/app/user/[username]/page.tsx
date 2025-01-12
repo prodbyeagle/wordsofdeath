@@ -9,6 +9,8 @@ import { User, Entry } from "@/types";
 import { LibraryBig, Filter, Search } from "lucide-react";
 import { UserAvatar } from "@/components/ui/UserAvatar";
 import { fetchEntriesByUsername, fetchUserDataByUsername, getAuthToken } from "@/lib/api";
+import { Input } from "@/components/ui/Input";
+import { Select } from "@/components/ui/Select";
 
 interface UserProfileProps {
    params: Promise<{ username: string }>;
@@ -93,7 +95,7 @@ const UserProfile = ({ params }: UserProfileProps) => {
    return (
       <div className="min-h-screen bg-neutral-900 p-6 pt-20">
          <div className="max-w-6xl mx-auto">
-            <div className="bg-neutral-800/50 rounded-2xl p-8 mb-8 border border-neutral-700/50 backdrop-blur-sm">
+            <div className="bg-neutral-800/50 rounded-2xl p-8 mb-6 border border-neutral-700/50 backdrop-blur-sm">
                <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
                   <div className="relative group">
                      <UserAvatar avatar={user.avatar} id={user.id} username={user.username} size="username" />
@@ -118,27 +120,27 @@ const UserProfile = ({ params }: UserProfileProps) => {
                </div>
             </div>
 
-            <div className="bg-neutral-800/50 rounded-xl p-4 mb-6 border border-neutral-700/50 backdrop-blur-sm">
+            <div className="rounded-xl mb-6">
                <div className="flex flex-col md:flex-row gap-4">
-                  <div className="flex-1 relative">
-                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
-                     <input
+                  <div className="flex-1">
+                     <Input
                         type="text"
                         placeholder="Einträge durchsuchen..."
+                        icon={Search}
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-neutral-900/50 border border-neutral-700 rounded-lg pl-10 pr-4 py-2 text-neutral-100 placeholder-neutral-500 focus:outline-none focus:border-neutral-600"
                      />
                   </div>
                   <div className="flex gap-4">
-                     <select
+                     <Select
                         value={sortOrder}
-                        onChange={(e) => setSortOrder(e.target.value as "newest" | "oldest")}
-                        className="bg-neutral-900/50 border border-neutral-700 rounded-lg px-4 py-2 text-neutral-100 focus:outline-none focus:border-neutral-600"
-                     >
-                        <option value="newest">Neueste zuerst</option>
-                        <option value="oldest">Älteste zuerst</option>
-                     </select>
+                        onChange={(value: "newest" | "oldest") => setSortOrder(value)}
+                        options={[
+                           { value: 'newest', label: 'Neueste zuerst' },
+                           { value: 'oldest', label: 'Älteste zuerst' },
+                        ]}
+                        className="w-full"
+                     />
                   </div>
                </div>
             </div>

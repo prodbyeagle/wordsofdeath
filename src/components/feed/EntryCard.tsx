@@ -91,7 +91,7 @@ export const EntryCard = ({ entry, avatar, userRoles = [], tooltip = true, isAdm
                                 </span>
                                 <UserRoleBadges roles={userRoles} tooltip={tooltip} />
                             </div>
-                            <TimeStamp timestamp={entry.timestamp} showIcon live />
+                            <TimeStamp timestamp={entry.timestamp} extended text="erstellt" live />
                         </div>
                     </header>
 
@@ -106,7 +106,7 @@ export const EntryCard = ({ entry, avatar, userRoles = [], tooltip = true, isAdm
                 {entry.categories && entry.categories.length > 0 && (
                     <footer className="px-4 py-3 border-t border-neutral-700/50 bg-neutral-800/30">
                         <div className="flex items-center gap-2 text-sm overflow-x-auto scrollbar-none">
-                            <Tag className="w-4 h-4 text-neutral-400 flex-shrink-0" />
+                            <Tag size={16} className="text-neutral-400 flex-shrink-0" />
                             <div className="flex gap-2 flex-wrap">
                                 {entry.categories.map((category, index) => (
                                     <span

@@ -73,9 +73,9 @@ export const TimeStamp = ({
     return (
         <time
             dateTime={timestamp}
-            className={`flex items-center gap-1 text-sm text-neutral-400 ${className}`}
+            className={`flex items-center text-sm text-neutral-400 ${className}`}
         >
-            {showIcon && <Clock size={16} />}
+            {showIcon && <Clock size={16} className="mr-1" />}
             {formatDistanceToNow(new Date(timestamp), {
                 includeSeconds: true,
                 addSuffix: true,
@@ -84,7 +84,7 @@ export const TimeStamp = ({
 
             {live && <span className="text-sm text-neutral-400"></span>}
             {extended && text && (
-                <span className="text-sm text-neutral-400">{text}</span>
+                <span className="ml-1 text-sm text-neutral-400">{text}</span>
             )}
         </time>
     );

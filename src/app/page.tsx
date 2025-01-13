@@ -11,9 +11,10 @@ import { useRouter } from "next/navigation";
 import { LoginPrompt } from "@/components/feed/LoginPrompt";
 import { Pagination } from "@/components/feed/Pagination";
 import { EntryCard } from "@/components/feed/EntryCard";
-import { Pencil, Plus, PlusSquare, Send, Tag } from "lucide-react";
+import { Pencil, Plus, Send, Tag } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { SearchBar } from "@/components/ui/Searchbar";
 
 const Homepage = () => {
     const router = useRouter();
@@ -30,6 +31,8 @@ const Homepage = () => {
     const [cacheManager, setCacheManager] = useState<CacheManager | null>(null);
     const [avatarUrls, setAvatarUrls] = useState<{ [key: string]: string }>({});
     const [isAdmin, setIsAdmin] = useState<boolean>(false);
+    const [searchQuery, setSearchQuery] = useState<string>("");
+    const [filteredEntries, setFilteredEntries] = useState<Entry[]>([]);
 
     useEffect(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -69,14 +72,15 @@ const Homepage = () => {
     const loadEntries = async (token: string): Promise<Entry[]> => {
         const fetchedEntries = await fetchEntries(token);
         setEntries(fetchedEntries);
+        setFilteredEntries(fetchedEntries);
         return fetchedEntries;
     };
 
     useEffect(() => {
         const startIdx = (page - 1) * entriesPerPage;
         const endIdx = startIdx + entriesPerPage;
-        setUniqueEntries(entries.slice(startIdx, endIdx));
-    }, [page, entries]);
+        setUniqueEntries(filteredEntries.slice(startIdx, endIdx));
+    }, [page, filteredEntries]);
 
     const handlePageChange = (newPage: number) => {
         setPage(newPage);
@@ -98,6 +102,20 @@ const Homepage = () => {
             } else {
                 console.error("Auth token is null or undefined");
             }
+        }
+    };
+
+    const handleSearch = (query: string) => {
+        setSearchQuery(query);
+        if (query.trim() === "") {
+            setFilteredEntries(entries);
+        } else {
+            setFilteredEntries(
+                entries.filter(
+                    (entry) =>
+                        entry.entry.toLowerCase().includes(query.toLowerCase())
+                )
+            );
         }
     };
 
@@ -126,29 +144,32 @@ const Homepage = () => {
     return (
         <div className="min-h-screen pt-16 bg-neutral-900 text-neutral-100">
             <div className="max-w-2xl mx-auto px-4 py-10">
-                <header className="mb-8">
+                <header className="mb-6">
                     <h1 className="text-4xl font-bold text-center">Feed</h1>
                 </header>
 
-                <div className="mb-8">
-                    <Pagination
-                        currentPage={page}
-                        totalPages={totalPages}
-                        onPageChange={handlePageChange}
-                    />
+                <div className="flex items-center gap-3">
+                    <div className="flex-1">
+                        <SearchBar
+                            value={searchQuery}
+                            onChange={(e) => handleSearch(e.target.value)}
+                            onClear={() => handleSearch("")}
+                        />
+                    </div>
+                    <div className="flex-shrink-0 w-2/6">
+                        <Button
+                            onClick={() => setIsDialogOpen(true)}
+                            className="w-full"
+                            variant="primary"
+                            content="Add Entry"
+                            icon={Plus}
+                        >
+                        </Button>
+                    </div>
                 </div>
 
-                <Button
-                    onClick={() => setIsDialogOpen(true)}
-                    className="w-full"
-                    variant="secondary"
-                    icon={PlusSquare}
-                    content="Neuen Eintrag Hinzufügen"
-                >
-                </Button>
-
-                <main className="mt-8">
-                    <div className="space-y-4">
+                <main className="mt-6">
+                    <div className="space-y-3">
                         {uniqueEntries.length > 0 ? (
                             uniqueEntries.map((entry) => (
                                 <EntryCard

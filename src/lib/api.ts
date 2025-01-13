@@ -175,7 +175,7 @@ export const fetchUserDataByUsername = async (
     username: string,
     token: string
 ): Promise<User | null> => {
-    const data = await fetchData<User>(`/api/user/u/${username}`, token);
+    const data = await fetchData<User>(`/api/user/${username}`, token);
     return data || null;
 };
 
@@ -251,6 +251,92 @@ export const deleteEntry = async (token: string, entryId: string): Promise<strin
         console.error(errorMessage);
         return errorMessage;
     }
+};
+
+/**
+ * Fetches all badges (roles) for the current user.
+ * 
+ * @param {string} token - The authentication token.
+ * @returns {Promise<string[]>} An array of badges (roles) or an empty array if the request fails.
+ */
+export const fetchBadges = async (token: string): Promise<string[]> => {
+    const data = await fetchData<{ roles: string[] }>("/api/badges/", token);
+    return data ? data.roles : [];
+};
+
+/**
+ * Adds a badge (role) to a user.
+ * 
+ * @param {string} token - The authentication token.
+ * @param {string} username - The username of the user to add the badge to.
+ * @param {string} role - The badge (role) to add.
+ * @returns {Promise<boolean>} True if the badge was successfully added, otherwise false.
+ */
+export const addBadgeToUser = async (
+    token: string,
+    username: string,
+    role: string
+): Promise<boolean> => {
+    try {
+        const response = await fetch(`${getBaseApiUrl()}/api/badges/${username}`, {
+            method: "POST",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ role }),
+        });
+
+        return response.ok;
+    } catch (error) {
+        console.error("Error adding badge to user:", error);
+        return false;
+    }
+};
+
+/**
+ * Removes a badge (role) from a user.
+ * 
+ * @param {string} token - The authentication token.
+ * @param {string} username - The username of the user to remove the badge from.
+ * @param {string} role - The badge (role) to remove.
+ * @returns {Promise<boolean>} True if the badge was successfully removed, otherwise false.
+ */
+export const removeBadgeFromUser = async (
+    token: string,
+    username: string,
+    role: string
+): Promise<boolean> => {
+    try {
+        const response = await fetch(`${getBaseApiUrl()}/api/badges/${username}`, {
+            method: "DELETE",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ role }),
+        });
+
+        return response.ok;
+    } catch (error) {
+        console.error("Error removing badge from user:", error);
+        return false;
+    }
+};
+
+/**
+ * Fetches badges for a specific user.
+ * 
+ * @param {string} username - The username of the user.
+ * @param {string} token - The authentication token.
+ * @returns {Promise<string[]>} An array of badges (roles) or an empty array if the request fails.
+ */
+export const fetchBadgesForUser = async (
+    username: string,
+    token: string
+): Promise<string[]> => {
+    const data = await fetchData<{ roles: string[] }>(`/api/badges/${username}`, token);
+    return data ? data.roles : [];
 };
 
 /**

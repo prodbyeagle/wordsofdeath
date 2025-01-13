@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { Whitelist } from '@/types';
-import { UserX, UserPlus, Search, User, UserCheck, X, CircleSlash } from 'lucide-react';
+import { UserX, Search, User, UserCheck, X, CircleSlash, Badge, UserPlus, UserCircle } from 'lucide-react';
 import { Dialog } from '@/components/ui/Dialog';
 import { Button } from '@/components/ui/Button';
 import { TimeStamp } from '@/components/ui/Timestamp';
-import { addUserToWhitelist, fetchAdminStatus, fetchWhitelistedUsers, getAuthToken, removeUserFromWhitelist } from '@/lib/api';
+import { addUserToWhitelist, fetchAdminStatus, fetchWhitelistedUsers, getAuthToken, removeUserFromWhitelist, fetchBadgesForUser, addBadgeToUser, removeBadgeFromUser } from '@/lib/api';
 import { AdminDeniedPage } from '@/components/ui/AdminDenied';
 import { Input } from '@/components/ui/Input';
+import { BadgeManagementDialog } from '@/components/ui/BadgeDialog';
 
 const Admin = () => {
    const [whitelistedUsers, setWhitelistedUsers] = useState<Whitelist[]>([]);
@@ -16,6 +17,8 @@ const Admin = () => {
    const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false);
    const [isRemoveUserDialogOpen, setIsRemoveUserDialogOpen] = useState(false);
    const [userToRemove, setUserToRemove] = useState<Whitelist | null>(null);
+   const [userToManageBadges, setUserToManageBadges] = useState<Whitelist | null>(null);
+   const [badges, setBadges] = useState<string[]>([]);
    const [loading, setLoading] = useState(false);
    const [searchQuery, setSearchQuery] = useState('');
    const [isAdmin, setIsAdmin] = useState(false);
@@ -79,9 +82,54 @@ const Admin = () => {
       }
    };
 
+   const handleAddBadge = async (role: string) => {
+      if (!userToManageBadges || !role || !isAdmin) return;
+
+      const token = getAuthToken();
+      if (!token) return;
+
+      try {
+         const success = await addBadgeToUser(token, userToManageBadges.username, role);
+         if (success) {
+            setBadges((prev) => [...prev, role]);
+         }
+      } catch (error) {
+         console.error(error);
+      }
+   };
+
+   const handleRemoveBadge = async (role: string) => {
+      if (!userToManageBadges || !role || !isAdmin) return;
+
+      const token = getAuthToken();
+      if (!token) return;
+
+      try {
+         const success = await removeBadgeFromUser(token, userToManageBadges.username, role);
+         if (success) {
+            setBadges((prev) => prev.filter((badge) => badge !== role));
+         }
+      } catch (error) {
+         console.error(error);
+      }
+   };
+
    const filteredUsers = whitelistedUsers.filter(user =>
       user.username.toLowerCase().includes(searchQuery.toLowerCase())
    );
+
+   const openBadgeManagementDialog = async (user: Whitelist) => {
+      setUserToManageBadges(user);
+      const token = getAuthToken();
+      if (!token) return;
+
+      try {
+         const userBadges = await fetchBadgesForUser(user.username, token);
+         setBadges(userBadges);
+      } catch (error) {
+         console.error(error);
+      }
+   };
 
    if (!isAdmin) {
       return <AdminDeniedPage />;
@@ -97,36 +145,38 @@ const Admin = () => {
       );
    }
 
+   function goToUserpage(user: Whitelist) {
+      window.location.href = `/user/${user.username}`;
+   }
+
    return (
       <div className="min-h-screen bg-neutral-900 p-6 pt-24">
          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-               <div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6">
+               <div className="text-center sm:text-left">
                   <h1 className="text-4xl font-bold text-white">Whitelist-Verwaltung</h1>
                   <p className="text-neutral-400 mt-2">Verwalte die Benutzer, die auf die Anwendung zugreifen dürfen</p>
                </div>
-               <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-                  <div className="relative w-full sm:w-64 flex items-center">
-                     <Input
-                        type="text"
-                        icon={Search}
-                        placeholder="Suche nach Benutzern..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                     />
-                  </div>
+               <div className="flex items-center w-full sm:w-auto space-x-4">
+                  <Input
+                     type="text"
+                     icon={Search}
+                     placeholder="Suche nach Benutzern..."
+                     value={searchQuery}
+                     onChange={(e) => setSearchQuery(e.target.value)}
+                  />
                   {isAdmin && (
                      <Button
                         onClick={() => setIsAddUserDialogOpen(true)}
                         variant="secondary"
                         icon={UserPlus}
-                        content='Benutzer Hinzufügen'
+                        content='Hinzufügen'
                      >
                      </Button>
                   )}
                </div>
             </div>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                {filteredUsers.map(user => (
                   <span key={user._id || user.username} className="block group">
@@ -141,18 +191,31 @@ const Admin = () => {
                                  </div>
                                  <TimeStamp timestamp={user.added_at} live />
                               </div>
-                              {isAdmin && (
+                              <div className="flex gap-2">
                                  <Button
                                     onClick={() => {
-                                       setUserToRemove(user);
-                                       setIsRemoveUserDialogOpen(true);
+                                       goToUserpage(user);
                                     }}
-                                    variant="destructive"
-                                    icon={UserX}
-                                    content='Entfernen'
-                                 >
-                                 </Button>
-                              )}
+                                    variant="primary"
+                                    icon={UserCircle}
+                                 />
+                                 {isAdmin && (
+                                    <Button
+                                       onClick={() => openBadgeManagementDialog(user)}
+                                       icon={Badge}
+                                    />
+                                 )}
+                                 {isAdmin && (
+                                    <Button
+                                       onClick={() => {
+                                          setUserToRemove(user);
+                                          setIsRemoveUserDialogOpen(true);
+                                       }}
+                                       variant="destructive"
+                                       icon={UserX}
+                                    />
+                                 )}
+                              </div>
                            </header>
                         </div>
                      </article>
@@ -206,6 +269,15 @@ const Admin = () => {
                </Button>
             </div>
          </Dialog>
+
+         <BadgeManagementDialog
+            isOpen={userToManageBadges !== null}
+            onClose={() => setUserToManageBadges(null)}
+            username={userToManageBadges?.username || ''}
+            currentBadges={badges}
+            onAddBadge={handleAddBadge}
+            onRemoveBadge={handleRemoveBadge}
+         />
       </div>
    );
 };

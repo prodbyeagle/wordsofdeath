@@ -1,5 +1,6 @@
 /**
  * Represents a user in the application.
+ * @property `_id` - Unique identifier for the entry in the database.
  * @property `id` - Unique Discord user ID.
  * @property `username` - The user's Discord username.
  * @property `avatar` - Hash representing the user's avatar image. Can be used to construct the full avatar URL.
@@ -7,6 +8,11 @@
  * @property `roles` - (Optional) Array of roles associated with the user, if any.
  */
 export interface User {
+   /**
+ * Unique identifier for the entry in the database.
+ */
+   _id: string;
+
    /**
     * Unique Discord user ID.
     */

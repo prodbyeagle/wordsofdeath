@@ -161,7 +161,7 @@ const Homepage = () => {
                             onClick={() => setIsDialogOpen(true)}
                             className="w-full"
                             variant="primary"
-                            content="Add Entry"
+                            content="Neuen Eintrag hinzufügen"
                             icon={Plus}
                         >
                         </Button>

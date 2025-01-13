@@ -16,7 +16,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
      * Should be a valid Lucide React Icon.
      * @default undefined
      */
-    icon?: LucideIcon;
+    icon: LucideIcon;
 
     /**
      * Error message displayed below the input field.
@@ -75,7 +75,7 @@ export const Input: React.FC<InputProps> = ({
                 )}
                 <input
                     {...props}
-                    className={`w-full pl-${Icon ? '10' : '4'} pr-4 py-2 text-sm bg-neutral-800 border border-neutral-700 
+                    className={`w-full pl-10 pr-4 py-2 text-sm bg-neutral-800 border border-neutral-700 
                     rounded-lg placeholder:text-neutral-500 text-white focus:outline-none focus:ring-1 
                     focus:ring-neutral-400 focus:border-neutral-400
                     ${error ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}`}

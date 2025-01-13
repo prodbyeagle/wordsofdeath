@@ -64,7 +64,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
     */
    const hideTooltip = () => {
       if (timeoutId) {
-         clearTimeout(timeoutId); // Clears the timeout if mouse leaves before delay.
+         clearTimeout(timeoutId);
       }
       setIsVisible(false);
    };

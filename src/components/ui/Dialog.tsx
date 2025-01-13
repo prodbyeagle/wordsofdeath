@@ -77,7 +77,7 @@ export const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, title, children
       >
          <div
             className={`${isOpen ? 'dialog-enter' : 'dialog-exit'
-               } p-4 rounded-2xl ${shadowClass} bg-neutral-900 w-fit relative transition-all duration-300 max-h-150 overflow-y-scroll border border-neutral-800 max-w-200 ${className}`}
+               } p-4 rounded-2xl ${shadowClass} bg-neutral-900 w-fit mx-5 relative transition-all duration-300 max-h-150 overflow-y-scroll border border-neutral-800 max-w-200 ${className}`}
          >
             <button
                onClick={onClose}

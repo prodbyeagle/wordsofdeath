@@ -160,7 +160,7 @@ const Homepage = () => {
                         <Button
                             onClick={() => setIsDialogOpen(true)}
                             className="w-full"
-                            content="Neuen Eintrag"
+                            content="Neuer Eintrag"
                             icon={Plus}
                         >
                         </Button>

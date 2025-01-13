@@ -6,20 +6,21 @@ import React, { useEffect, useState } from "react";
 import { CacheManager } from "@/lib/avatarCache";
 import { createEntry, fetchEntries, getAuthToken, deleteEntry, fetchAdminStatus } from "@/lib/api";
 import type { Entry, User } from "@/types";
-import { Modal } from "@/components/ui/Modal";
+import { Dialog } from "@/components/ui/Dialog";
 import { useRouter } from "next/navigation";
 import { LoginPrompt } from "@/components/feed/LoginPrompt";
 import { Pagination } from "@/components/feed/Pagination";
 import { EntryCard } from "@/components/feed/EntryCard";
-import { Plus } from "lucide-react";
+import { Pencil, Plus, PlusSquare, Send, Tag } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 
 const Homepage = () => {
     const router = useRouter();
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
     const [entries, setEntries] = useState<Entry[]>([]);
     const [uniqueEntries, setUniqueEntries] = useState<Entry[]>([]);
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+    const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
     const [newEntry, setNewEntry] = useState<string>("");
     const [categories, setCategories] = useState<string>("");
     const [user] = useState<User | null>(null);
@@ -90,7 +91,7 @@ const Homepage = () => {
         } else {
             setNewEntry("");
             setCategories("");
-            setIsModalOpen(false);
+            setIsDialogOpen(false);
             const authToken = getAuthToken();
             if (authToken) {
                 loadEntries(authToken);
@@ -101,7 +102,7 @@ const Homepage = () => {
     };
 
     if (!isLoggedIn) {
-        return <LoginPrompt modal={false} />;
+        return <LoginPrompt dialog={false} />;
     }
 
     const totalPages = Math.ceil(entries.length / entriesPerPage);
@@ -138,12 +139,12 @@ const Homepage = () => {
                 </div>
 
                 <Button
-                    onClick={() => setIsModalOpen(true)}
-                    className="w-full py-3 px-8"
-                    variant="primary"
+                    onClick={() => setIsDialogOpen(true)}
+                    className="w-full"
+                    variant="secondary"
+                    icon={PlusSquare}
+                    content="Neuen Eintrag Hinzufügen"
                 >
-                    <Plus size={18} className="mr-2" />
-                    <span>Neuen Eintrag hinzufügen</span>
                 </Button>
 
                 <main className="mt-8">
@@ -175,38 +176,40 @@ const Homepage = () => {
                 </footer>
             </div>
 
-            <Modal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+            <Dialog
+                isOpen={isDialogOpen}
+                onClose={() => setIsDialogOpen(false)}
                 title="Neuen Eintrag erstellen"
-                className="w-full bg-neutral-800/80 md:max-w-md"
+                className="w-full md:max-w-md"
             >
-                <textarea
+                <Input
                     value={newEntry}
                     onChange={(e) => setNewEntry(e.target.value)}
                     placeholder="Gib hier deinen neuen Eintrag ein..."
-                    className="w-full p-3 bg-neutral-700 border resize-none border-neutral-600 rounded-lg mb-4 placeholder-gray-400 text-neutral-100"
-                    rows={1}
-                    minLength={3}
+                    className="w-full mb-4"
+                    icon={Pencil}
                 />
 
-                <input
+                <Input
                     type="text"
                     value={categories}
                     onChange={(e) => setCategories(e.target.value)}
                     placeholder="Füge Kategorien hinzu (kommagetrennt)"
-                    className="w-full p-3 h-12 bg-neutral-700 border border-neutral-600 rounded-lg mb-4 placeholder-gray-400 text-neutral-100"
+                    className="w-full mb-4"
+                    icon={Tag}
                 />
 
                 <Button
                     onClick={handleNewEntrySubmit}
-                    className="w-full bg-neutral-600 hover:bg-neutral-700 text-neutral-100 font-semibold py-3 px-8 rounded-xl"
-                    disabled={!newEntry.trim() || !categories.trim()}
+                    variant="primary"
+                    className="w-full"
+                    icon={Send}
+                    content="Eintrag hinzufügen"
+                    disabled={newEntry.trim().length < 3 || !categories.trim()}
                 >
-                    Eintrag hinzufügen
                 </Button>
                 {error && <p className="text-red-500 text-center mt-4">{error}</p>}
-            </Modal>
+            </Dialog>
         </div>
     );
 };

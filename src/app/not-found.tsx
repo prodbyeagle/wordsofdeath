@@ -44,8 +44,9 @@ const PageNotFound = () => {
                             <Button
                                 className="px-4 py-2"
                                 onClick={() => window.location.href = '/'}
+                                icon={Home}
+                                content='Go to Home'
                             >
-                                Go to Home
                             </Button>
                         </div>
                     </footer>

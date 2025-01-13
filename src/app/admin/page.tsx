@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { Whitelist } from '@/types';
-import { UserX, UserPlus, Search, User } from 'lucide-react';
-import { Modal } from '@/components/ui/Modal';
+import { UserX, UserPlus, Search, User, UserCheck, X, CircleSlash } from 'lucide-react';
+import { Dialog } from '@/components/ui/Dialog';
 import { Button } from '@/components/ui/Button';
 import { TimeStamp } from '@/components/ui/Timestamp';
 import { addUserToWhitelist, fetchAdminStatus, fetchWhitelistedUsers, getAuthToken, removeUserFromWhitelist } from '@/lib/api';
@@ -13,8 +13,8 @@ import { Input } from '@/components/ui/Input';
 const Admin = () => {
    const [whitelistedUsers, setWhitelistedUsers] = useState<Whitelist[]>([]);
    const [newUser, setNewUser] = useState('');
-   const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false);
-   const [isRemoveUserModalOpen, setIsRemoveUserModalOpen] = useState(false);
+   const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false);
+   const [isRemoveUserDialogOpen, setIsRemoveUserDialogOpen] = useState(false);
    const [userToRemove, setUserToRemove] = useState<Whitelist | null>(null);
    const [loading, setLoading] = useState(false);
    const [searchQuery, setSearchQuery] = useState('');
@@ -53,7 +53,7 @@ const Admin = () => {
          if (addedUser) {
             setWhitelistedUsers((prev) => [...prev, addedUser]);
             setNewUser("");
-            setIsAddUserModalOpen(false);
+            setIsAddUserDialogOpen(false);
          }
       } catch (error) {
          console.error(error);
@@ -72,7 +72,7 @@ const Admin = () => {
             setWhitelistedUsers((prev) =>
                prev.filter((user) => user.username !== username)
             );
-            setIsRemoveUserModalOpen(false);
+            setIsRemoveUserDialogOpen(false);
          }
       } catch (error) {
          console.error(error);
@@ -120,12 +120,12 @@ const Admin = () => {
                   </div>
                   {isAdmin && (
                      <Button
-                        onClick={() => setIsAddUserModalOpen(true)}
+                        onClick={() => setIsAddUserDialogOpen(true)}
                         className="px-5 py-2.5"
                         variant="secondary"
+                        icon={UserPlus}
+                        content='Benutzer Hinzufügen'
                      >
-                        <UserPlus size={18} className="mr-2" />
-                        Benutzer Hinzufügen
                      </Button>
                   )}
                </div>
@@ -149,11 +149,12 @@ const Admin = () => {
                                  <Button
                                     onClick={() => {
                                        setUserToRemove(user);
-                                       setIsRemoveUserModalOpen(true);
+                                       setIsRemoveUserDialogOpen(true);
                                     }}
                                     variant="destructive"
+                                    icon={UserX}
+                                    content='Entfernen'
                                  >
-                                    <UserX size={18} />
                                  </Button>
                               )}
                            </header>
@@ -164,7 +165,7 @@ const Admin = () => {
             </div>
          </div>
 
-         <Modal isOpen={isAddUserModalOpen} onClose={() => setIsAddUserModalOpen(false)} title="Benutzer hinzufügen">
+         <Dialog isOpen={isAddUserDialogOpen} onClose={() => setIsAddUserDialogOpen(false)} title="Benutzer hinzufügen">
             <div className="p-4">
                <Input
                   type="text"
@@ -177,16 +178,17 @@ const Admin = () => {
                <Button
                   onClick={() => handleAddUser()}
                   disabled={newUser.length < 3 || !isAdmin}
-                  className="w-full py-3"
+                  className="w-full"
+                  icon={UserCheck}
                >
                   Hinzufügen
                </Button>
             </div>
-         </Modal>
+         </Dialog>
 
-         <Modal
-            isOpen={isRemoveUserModalOpen}
-            onClose={() => setIsRemoveUserModalOpen(false)}
+         <Dialog
+            isOpen={isRemoveUserDialogOpen}
+            onClose={() => setIsRemoveUserDialogOpen(false)}
             title={`Benutzer ${userToRemove?.username}`}
          >
             <div className="p-4">
@@ -194,12 +196,21 @@ const Admin = () => {
                <Button
                   onClick={() => handleRemoveUser(userToRemove?.username || '')}
                   variant="destructive"
-                  className="w-full py-3 mt-4"
+                  className="w-full mt-4"
+                  icon={X}
+                  content='Ja. Entfernen'
                >
-                  Entfernen
+               </Button>
+               <Button
+                  onClick={() => setIsRemoveUserDialogOpen(false)}
+                  variant="primary"
+                  className="w-full mt-4"
+                  icon={CircleSlash}
+                  content='Nein. Doch nicht'
+               >
                </Button>
             </div>
-         </Modal>
+         </Dialog>
       </div>
    );
 };

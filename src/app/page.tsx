@@ -161,7 +161,7 @@ const Homepage = () => {
                             onClick={() => setIsDialogOpen(true)}
                             className="w-full"
                             variant="primary"
-                            content="Neuen Eintrag hinzufügen"
+                            content="Neuen Eintrag"
                             icon={Plus}
                         >
                         </Button>
@@ -215,7 +215,7 @@ const Homepage = () => {
                     type="text"
                     value={categories}
                     onChange={(e) => setCategories(e.target.value)}
-                    placeholder="Füge Kategorien hinzu (kommagetrennt)"
+                    placeholder="Füge Kategorien hinzu (kommagetrennt)" 
                     className="w-full mb-4"
                     icon={Tag}
                 />

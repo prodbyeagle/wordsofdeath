@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BadgeCheck, CrownIcon, HeartHandshake, Wrench } from "lucide-react";
+import { BadgeCheck, CrownIcon, HeartHandshake } from "lucide-react";
 import { Tooltip } from "./Tooltip";
 
 interface UserRoleBadgesProps {
@@ -16,7 +16,7 @@ interface UserRoleBadgesProps {
     tooltip?: boolean;
 }
 
-type Role = 'owner' | 'admin' | 'developer' | 'vip';
+type Role = 'owner' | 'admin' | 'vip';
 
 /** 
  * A component that displays badges representing the roles of a user.
@@ -32,25 +32,21 @@ export const UserRoleBadges = ({ roles, tooltip = true }: UserRoleBadgesProps) =
     const badges: { [key in Role]: { icon: React.ForwardRefExoticComponent<any>; color: string; } } = {
         owner: {
             icon: BadgeCheck,
-            color: 'text-red-300',
+            color: 'text-blue-400',
         },
         admin: {
             icon: HeartHandshake,
             color: 'text-orange-300',
         },
-        developer: {
-            icon: Wrench,
-            color: 'text-neutral-600',
-        },
         vip: {
             icon: CrownIcon,
-            color: 'text-purple-300',
+            color: 'text-neutral-400',
         },
     };
 
     return (
         <div className="flex items-center gap-1">
-            {roles.filter((role): role is Role => ['owner', 'admin', 'developer', 'vip'].includes(role)).map((role: Role) => {
+            {roles.filter((role): role is Role => ['owner', 'admin', 'vip'].includes(role)).map((role: Role) => {
                 const badge = badges[role];
                 if (!badge) return null;
 
@@ -58,12 +54,12 @@ export const UserRoleBadges = ({ roles, tooltip = true }: UserRoleBadgesProps) =
 
                 return (
                     tooltip ? (
-                        <Tooltip key={role} content={role} position="top">
+                        <Tooltip key={role} content={role} position="bottom" >
                             <div
                                 key={role}
                                 className="group relative"
                             >
-                                <Icon className={`h-5 w-5 ${badge.color}`} />
+                                <Icon size={16} className={`${badge.color}`} />
                             </div>
                         </Tooltip>
                     ) : (
@@ -71,7 +67,7 @@ export const UserRoleBadges = ({ roles, tooltip = true }: UserRoleBadgesProps) =
                             key={role}
                             className="group relative"
                         >
-                            <Icon className={`h-4 w-4 ${badge.color}`} />
+                            <Icon size={16} className={`${badge.color}`} />
                         </div>
                     )
                 );

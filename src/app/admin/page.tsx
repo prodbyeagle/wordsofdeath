@@ -107,9 +107,6 @@ const Admin = () => {
                </div>
                <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                   <div className="relative w-full sm:w-64 flex items-center">
-                     <div className="absolute left-3 flex items-center justify-center h-full">
-                        <Search className="text-neutral-400 w-5 h-5" />
-                     </div>
                      <Input
                         type="text"
                         icon={Search}
@@ -121,7 +118,6 @@ const Admin = () => {
                   {isAdmin && (
                      <Button
                         onClick={() => setIsAddUserDialogOpen(true)}
-                        className="px-5 py-2.5"
                         variant="secondary"
                         icon={UserPlus}
                         content='Benutzer Hinzufügen'
@@ -166,7 +162,7 @@ const Admin = () => {
          </div>
 
          <Dialog isOpen={isAddUserDialogOpen} onClose={() => setIsAddUserDialogOpen(false)} title="Benutzer hinzufügen">
-            <div className="p-4">
+            <div>
                <Input
                   type="text"
                   value={newUser}
@@ -191,7 +187,7 @@ const Admin = () => {
             onClose={() => setIsRemoveUserDialogOpen(false)}
             title={`Benutzer ${userToRemove?.username}`}
          >
-            <div className="p-4">
+            <div>
                <p className="text-neutral-400">Möchten Sie den Benutzer <strong>{userToRemove?.username}</strong> wirklich entfernen?</p>
                <Button
                   onClick={() => handleRemoveUser(userToRemove?.username || '')}
@@ -203,7 +199,6 @@ const Admin = () => {
                </Button>
                <Button
                   onClick={() => setIsRemoveUserDialogOpen(false)}
-                  variant="primary"
                   className="w-full mt-4"
                   icon={CircleSlash}
                   content='Nein. Doch nicht'

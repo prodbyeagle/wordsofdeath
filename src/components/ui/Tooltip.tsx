@@ -31,7 +31,7 @@ interface TooltipProps {
 
 /** 
  * A Tooltip component that displays additional information when the user hovers over a child element. 
- * The tooltip can be customized for position, delay, and font size.
+ * The tooltip can be customized for position, and delay.
  * 
  * @param {string} content - The content that will be displayed in the tooltip.
  * @param {ReactNode} children - The elements that will trigger the tooltip on hover.
@@ -78,7 +78,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
       >
          <div
             ref={tooltipRef}
-            className={`absolute z-10 px-2 py-1 bg-neutral-700 border border-neutral-600 text-neutral-100 rounded-md whitespace-nowrap transition-opacity duration-300 ease-in-out
+            className={`absolute z-10 px-2 py-1 bg-neutral-700 border border-neutral-600 text-neutral-100 text-xs rounded-md whitespace-nowrap transition-opacity duration-300 ease-in-out
             ${isVisible ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'} 
             ${position === 'bottom' ? 'top-full mt-2 left-1/2 transform -translate-x-1/2'
                   : position === 'top' ? 'bottom-full mb-2 left-1/2 transform -translate-x-1/2'

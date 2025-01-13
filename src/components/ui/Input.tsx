@@ -70,7 +70,7 @@ export const Input: React.FC<InputProps> = ({
             <div className="relative flex items-center">
                 {Icon && (
                     <div className="absolute left-3 flex items-center justify-center text-neutral-400">
-                        <Icon className="w-5 h-5" />
+                        <Icon size={16} />
                     </div>
                 )}
                 <input

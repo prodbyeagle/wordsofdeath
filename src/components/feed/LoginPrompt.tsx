@@ -42,7 +42,6 @@ export const LoginPrompt: React.FC<LoginPromptProps> = ({ dialog }) => {
 
                 <Link href={loginUrl}>
                     <Button
-                        variant="primary"
                         size="lg"
                         className="w-full"
                         content="Anmelden"

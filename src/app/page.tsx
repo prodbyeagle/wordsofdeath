@@ -160,7 +160,6 @@ const Homepage = () => {
                         <Button
                             onClick={() => setIsDialogOpen(true)}
                             className="w-full"
-                            variant="primary"
                             content="Neuen Eintrag"
                             icon={Plus}
                         >
@@ -177,7 +176,6 @@ const Homepage = () => {
                                     entry={entry}
                                     avatar={avatarUrls[entry.author] || ''}
                                     userRoles={cacheManager?.getRoles(entry.author) || []}
-                                    tooltip={false}
                                     isAdmin={isAdmin}
                                     onDelete={handleDelete}
                                 />
@@ -222,7 +220,6 @@ const Homepage = () => {
 
                 <Button
                     onClick={handleNewEntrySubmit}
-                    variant="primary"
                     className="w-full"
                     icon={Send}
                     content="Eintrag hinzufügen"

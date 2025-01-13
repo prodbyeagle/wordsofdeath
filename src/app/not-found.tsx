@@ -13,7 +13,7 @@ const PageNotFound = () => {
                         <header className="flex flex-col items-center space-y-4 mb-6">
                             <div className="relative">
                                 <div className="absolute -inset-1 bg-yellow-500/30 rounded-full blur-md" />
-                                <FileX className="w-12 h-12 text-yellow-500 relative" />
+                                <FileX size={40} className="text-yellow-500 relative" />
                             </div>
                             <div className="text-center">
                                 <h1 className="text-2xl font-semibold text-neutral-100 mb-2">
@@ -28,7 +28,7 @@ const PageNotFound = () => {
                         <div className="space-y-4">
                             <div className="bg-neutral-700/30 rounded-lg p-4">
                                 <div className="flex items-center space-x-3">
-                                    <Home className="w-5 h-5 text-neutral-400 flex-shrink-0" />
+                                    <Home size={20} className="text-neutral-400 flex-shrink-0" />
                                     <div className="flex-1 min-w-0">
                                         <div className="text-sm text-neutral-300">
                                             Check the URL or go back to the home page.

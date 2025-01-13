@@ -121,13 +121,14 @@ export const EntryCard = ({ entry, avatar, userRoles = [], tooltip = true, isAdm
                     </footer>
                 )}
 
-                <div className={`absolute top-2 right-2 transition-all duration-500 ${isAdmin ? (isHovered ? 'opacity-100 scale-110' : 'opacity-0') : 'hidden'}`}>
+                <div className={`absolute top-2 right-2 transition-all duration-200 ${isAdmin ? (isHovered ? 'opacity-100' : 'opacity-0') : 'hidden'}`}>
                     <Button
                         variant={"destructive"}
                         size="sm"
                         onClick={handleDelete}
+                        icon={Trash2}
+                        content="Remove"
                     >
-                        <Trash2 className="h-4 w-4" />
                     </Button>
                 </div>
             </article>

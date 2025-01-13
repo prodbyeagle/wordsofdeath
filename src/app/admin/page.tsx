@@ -180,8 +180,8 @@ const Admin = () => {
                   disabled={newUser.length < 3 || !isAdmin}
                   className="w-full"
                   icon={UserCheck}
+                  content='Hinzufügen'
                >
-                  Hinzufügen
                </Button>
             </div>
          </Dialog>

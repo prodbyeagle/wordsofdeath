@@ -43,8 +43,8 @@ const DiscordCallback = () => {
                   variant="destructive"
                   className="w-full"
                   icon={RefreshCcw}
+                  content="Erneut Anmelden"
                >
-                  Erneut Anmelden
                </Button>
             </div>
          </div>

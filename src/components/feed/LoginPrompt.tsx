@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { Button } from "../ui/Button";
+import { LogInIcon } from "lucide-react";
 
 interface LoginPromptProps {
     /** 
@@ -44,8 +45,9 @@ export const LoginPrompt: React.FC<LoginPromptProps> = ({ dialog }) => {
                         variant="primary"
                         size="lg"
                         className="w-full"
+                        content="Anmelden"
+                        icon={LogInIcon}
                     >
-                        Anmelden
                     </Button>
                 </Link>
             </div>

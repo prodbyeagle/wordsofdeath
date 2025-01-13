@@ -1,5 +1,6 @@
 import "./globals.css";
 import Navbar from '@/components/ui/Navbar';
+import { AuthProvider } from "@/context/AuthProvider";
 
 import { DM_Sans } from 'next/font/google'
 const font = DM_Sans({ fallback: ["system-ui"], subsets: ['latin-ext'] })
@@ -23,8 +24,10 @@ export default function RootLayout({
         <meta name="theme-color" content="#171717" />
       </head>
       <body className={font.className}>
-        <Navbar />
-        {children}
+        <AuthProvider>
+          <Navbar />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

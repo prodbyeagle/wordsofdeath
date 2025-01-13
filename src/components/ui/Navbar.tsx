@@ -3,9 +3,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { UserAvatar } from './UserAvatar';
-import { User } from '@/types';
-import { LogOut, Shield, CircleUserRound, Home, Menu } from 'lucide-react';
-import { getAuthToken } from '@/lib/api';
+import { LogOut, Shield, Home, Menu } from 'lucide-react';
+import { useAuth } from '@/context/AuthProvider';
+import { UserRoleBadges } from './UserRoleBadges';
 
 /**
  * Navbar component that displays navigation links, user account details, and mobile menu toggle.
@@ -14,7 +14,7 @@ import { getAuthToken } from '@/lib/api';
  * @returns {JSX.Element} The rendered Navbar component.
  */
 const Navbar = () => {
-   const [user, setUser] = useState<User | null>(null);
+   const { user, setUser } = useAuth();
    const [isMenuOpen, setIsMenuOpen] = useState(false);
    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -42,16 +42,9 @@ const Navbar = () => {
       };
    }, []);
 
-   useEffect(() => {
-      const token = getAuthToken();
-      if (token) {
-         const decoded = JSON.parse(atob(token.split('.')[1])) as User;
-         setUser(decoded);
-      }
-   }, []);
-
    const handleLogout = () => {
       document.cookie = 'wordsofdeath=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;';
+      setUser(null);
       window.location.href = '/';
    };
 
@@ -87,6 +80,7 @@ const Navbar = () => {
                            >
                               <UserAvatar size='sm' avatar={user.avatar} username={user.username} id={user.id} />
                               <span className="text-neutral-100 font-medium">{user.username}</span>
+                              <UserRoleBadges roles={user?.roles || []} />
                            </button>
 
                            {isMenuOpen && (
@@ -107,14 +101,14 @@ const Navbar = () => {
                                     className="flex items-center px-4 py-3 text-neutral-100 hover:bg-neutral-700 transition-colors border-t border-neutral-700"
                                     onClick={handleMenuSelect}
                                  >
-                                    <Shield className="w-5 h-5 mr-3" />
-                                    Admin
+                                    <Shield size={20} className="mr-3" />
+                                    Dashboard
                                  </Link>
                                  <button
                                     onClick={handleLogout}
                                     className="flex items-center w-full px-4 py-3 text-red-400 hover:bg-red-400/20 transition-colors border-t border-neutral-700"
                                  >
-                                    <LogOut className="w-5 h-5 mr-3" />
+                                    <LogOut size={20} className="mr-3" />
                                     Abmelden
                                  </button>
                               </div>
@@ -127,7 +121,6 @@ const Navbar = () => {
 
             {isMobileMenuOpen && (
                <div className="md:hidden border-t border-neutral-700">
-
                   {user && (
                      <div className="pb-4 px-4">
                         <div className="space-y-1">
@@ -136,7 +129,7 @@ const Navbar = () => {
                               className="flex items-center px-4 py-3 text-neutral-100 hover:bg-neutral-700 rounded-lg transition-colors mt-4"
                               onClick={handleMenuSelect}
                            >
-                              <CircleUserRound className="w-5 h-5 mr-3" />
+                              <UserAvatar username={user.username} avatar={user.avatar} id={user.id} className="w-5 h-5 mr-3" />
                               Account
                            </Link>
                            <Link
@@ -144,14 +137,14 @@ const Navbar = () => {
                               className="flex items-center px-4 py-3 text-neutral-100 hover:bg-neutral-700 rounded-lg transition-colors"
                               onClick={handleMenuSelect}
                            >
-                              <Shield className="w-5 h-5 mr-3" />
-                              Admin
+                              <Shield size={20} className="mr-3" />
+                              Dashboard
                            </Link>
                            <button
                               onClick={handleLogout}
                               className="flex items-center w-full px-4 py-3 text-red-400 hover:bg-red-400/20 rounded-lg transition-colors"
                            >
-                              <LogOut className="w-5 h-5 mr-3" />
+                              <LogOut size={20} className="mr-3" />
                               Abmelden
                            </button>
                         </div>

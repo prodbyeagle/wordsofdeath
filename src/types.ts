@@ -7,11 +7,29 @@
  * @property `roles` - (Optional) Array of roles associated with the user, if any.
  */
 export interface User {
-   _id: string;
+   /**
+    * Unique Discord user ID.
+    */
    id: string;
+
+   /**
+    * The user's Discord username.
+    */
    username: string;
+
+   /**
+    * Hash representing the user's avatar image. Can be used to construct the full avatar URL.
+    */
    avatar: string;
+
+   /**
+    * Timestamp when the user first joined the application, in ISO 8601 format.
+    */
    joined_at: string;
+
+   /**
+    * (Optional) Array of roles associated with the user, if any.
+    */
    roles?: string[];
 }
 
@@ -26,12 +44,39 @@ export interface User {
  * @property `timestamp` - Timestamp of entry creation, in ISO 8601 format.
  */
 export interface Entry {
+   /**
+    * Unique identifier for the entry in the database.
+    */
    _id: string;
+
+   /**
+    * Secondary identifier for the entry.
+    */
    id: string;
+
+   /**
+    * The content of the entry.
+    */
    entry: string;
+
+   /**
+    * Categories associated with the entry.
+    */
    categories: string[];
+
+   /**
+    * The name of the author who created the entry.
+    */
    author: string;
+
+   /**
+    * Unique identifier for the author.
+    */
    authorId: string;
+
+   /**
+    * Timestamp indicating when the entry was created.
+    */
    timestamp: string;
 }
 
@@ -42,7 +87,18 @@ export interface Entry {
  * @property `added_at` - Timestamp when the user was added to the whitelist, in ISO 8601 format.
  */
 export interface Whitelist {
+   /**
+    * Unique identifier for the whitelist entry in the database.
+    */
    _id: string;
+
+   /**
+    * Username of the whitelisted user.
+    */
    username: string;
+
+   /**
+    * Timestamp when the user was added to the whitelist, in ISO 8601 format.
+    */
    added_at: string;
 }

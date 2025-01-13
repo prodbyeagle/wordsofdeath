@@ -91,7 +91,7 @@ export const Select = <T extends string | number>({
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 className={`
-                    relative w-full rounded-lg px-3 py-2
+                    relative w-full h-full rounded-lg px-3 py-2
                     bg-neutral-800
                     border border-neutral-700
                     text-left text-sm

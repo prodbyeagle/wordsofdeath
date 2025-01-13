@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BadgeCheck, CrownIcon, HeartHandshake } from "lucide-react";
+import { BadgeCheck, CrownIcon, HeartHandshake, Puzzle } from "lucide-react";
 import { Tooltip } from "./Tooltip";
 
 interface UserRoleBadgesProps {
@@ -16,7 +16,7 @@ interface UserRoleBadgesProps {
     tooltip?: boolean;
 }
 
-type Role = 'owner' | 'admin' | 'vip';
+type Role = 'Owner' | 'Admin' | 'VIP' | 'Developer';
 
 /** 
  * A component that displays badges representing the roles of a user.
@@ -30,23 +30,27 @@ export const UserRoleBadges = ({ roles, tooltip = true }: UserRoleBadgesProps) =
     if (!roles?.length) return null;
 
     const badges: { [key in Role]: { icon: React.ForwardRefExoticComponent<any>; color: string; } } = {
-        owner: {
+        Owner: {
             icon: BadgeCheck,
             color: 'text-blue-400',
         },
-        admin: {
+        Admin: {
             icon: HeartHandshake,
-            color: 'text-orange-300',
+            color: 'text-zinc-600',
         },
-        vip: {
+        VIP: {
             icon: CrownIcon,
-            color: 'text-neutral-400',
+            color: 'text-emerald-400',
         },
+        Developer: {
+            icon: Puzzle,
+            color: 'text-zinc-600',
+        }
     };
 
     return (
         <div className="flex items-center gap-1">
-            {roles.filter((role): role is Role => ['owner', 'admin', 'vip'].includes(role)).map((role: Role) => {
+            {roles.filter((role): role is Role => ['Owner', 'Admin', 'VIP', 'Developer'].includes(role)).map((role: Role) => {
                 const badge = badges[role];
                 if (!badge) return null;
 

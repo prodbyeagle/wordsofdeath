@@ -132,7 +132,7 @@ const Navbar = () => {
                      <div className="pb-4 px-4">
                         <div className="space-y-1">
                            <Link
-                              href={`/u/${user.username}`}
+                              href={`/user/${user.username}`}
                               className="flex items-center px-4 py-3 text-neutral-100 hover:bg-neutral-700 rounded-lg transition-colors mt-4"
                               onClick={handleMenuSelect}
                            >

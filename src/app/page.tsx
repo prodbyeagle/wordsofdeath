@@ -11,10 +11,9 @@ import { useRouter } from "next/navigation";
 import { LoginPrompt } from "@/components/feed/LoginPrompt";
 import { Pagination } from "@/components/feed/Pagination";
 import { EntryCard } from "@/components/feed/EntryCard";
-import { Pencil, Plus, Send, Tag } from "lucide-react";
+import { Pencil, Plus, Search, Send, Tag } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { SearchBar } from "@/components/ui/Searchbar";
 
 const Homepage = () => {
     const router = useRouter();
@@ -148,15 +147,16 @@ const Homepage = () => {
                     <h1 className="text-4xl font-bold text-center">Feed</h1>
                 </header>
 
-                <div className="flex items-center gap-3">
-                    <div className="flex-1">
-                        <SearchBar
+                <div className="flex flex-col md:flex-row items-center gap-3">
+                    <div className="flex-1 w-full md:w-auto">
+                        <Input
                             value={searchQuery}
                             onChange={(e) => handleSearch(e.target.value)}
-                            onClear={() => handleSearch("")}
+                            icon={Search}
+                            placeholder="Durchsuche WordsOfDeath..."
                         />
                     </div>
-                    <div className="flex-shrink-0 w-2/6">
+                    <div className="flex-shrink-0 w-full md:w-2/6">
                         <Button
                             onClick={() => setIsDialogOpen(true)}
                             className="w-full"

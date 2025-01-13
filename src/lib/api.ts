@@ -136,18 +136,6 @@ export const removeUserFromWhitelist = async (
 };
 
 /**
- * Fetches a subset of entries from the API.
- * 
- * @param {string} token - The authentication token.
- * @param {number} [limit=5] - The number of entries to fetch.
- * @returns {Promise<Entry[]>} A list of entries or an empty array if the request fails.
- */
-export const fetchSomeEntries = async (token: string, limit: number = 5): Promise<Entry[]> => {
-    const data = await fetchData<Entry[]>(`/api/entries/some?limit=${limit}`, token);
-    return data || [];
-};
-
-/**
  * Fetches a list of entries from the API.
  * 
  * @param {string} token - The authentication token.

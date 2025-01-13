@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BadgeCheck, HeartHandshake, Wrench } from "lucide-react";
+import { BadgeCheck, CrownIcon, HeartHandshake, Wrench } from "lucide-react";
 import { Tooltip } from "./Tooltip";
 
 interface UserRoleBadgesProps {
     /** 
      * An array of user roles that determines which badges to display.
-     * Valid roles include 'owner', 'admin', 'developer', 'moderator', and 'contributor'.
+     * Valid roles include 'owner', 'admin', 'developer' and 'vip'.
      */
     roles: string[];
 
@@ -16,7 +16,7 @@ interface UserRoleBadgesProps {
     tooltip?: boolean;
 }
 
-type Role = 'owner' | 'admin' | 'developer';
+type Role = 'owner' | 'admin' | 'developer' | 'vip';
 
 /** 
  * A component that displays badges representing the roles of a user.
@@ -42,11 +42,15 @@ export const UserRoleBadges = ({ roles, tooltip = true }: UserRoleBadgesProps) =
             icon: Wrench,
             color: 'text-neutral-600',
         },
+        vip: {
+            icon: CrownIcon,
+            color: 'text-purple-300',
+        },
     };
 
     return (
         <div className="flex items-center gap-1">
-            {roles.filter((role): role is Role => ['owner', 'admin', 'developer', 'moderator', 'contributor'].includes(role)).map((role: Role) => {
+            {roles.filter((role): role is Role => ['owner', 'admin', 'developer', 'vip'].includes(role)).map((role: Role) => {
                 const badge = badges[role];
                 if (!badge) return null;
 

@@ -98,7 +98,7 @@ const UserProfile = ({ params }: UserProfileProps) => {
             <div className="bg-neutral-800/50 rounded-2xl p-8 mb-6 border border-neutral-700/50 backdrop-blur-sm">
                <div className="flex flex-col md:flex-row items-center md:items-start gap-8">
                   <div className="relative group">
-                     <UserAvatar avatar={user.avatar} id={user.id} username={user.username} size="username" />
+                     <UserAvatar avatar={user.avatar} id={user.id} username={user.username} size="userpage" quality={512} className="rounded-full" />
                   </div>
                   <div className="flex-1 text-center md:text-left">
                      <div className="flex flex-col md:flex-row md:items-center gap-2 mb-4">

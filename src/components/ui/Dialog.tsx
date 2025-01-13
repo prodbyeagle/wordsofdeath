@@ -72,18 +72,20 @@ export const Dialog: React.FC<DialogProps> = ({ isOpen, onClose, title, children
 
    return (
       <div
-         className={`fixed inset-0 px-2 flex items-center justify-center bg-neutral-950 bg-opacity-60 backdrop-blur-xl z-50 ${isOpen ? 'dialog-enter' : 'dialog-exit'}`}
+         className={`fixed inset-0 flex items-center justify-center z-50 transition-all duration-300 ${isOpen ? 'opacity-100 backdrop-blur-md' : 'opacity-0 backdrop-blur-none'
+            } bg-neutral-950/50`}
       >
-         <div className={`p-4 rounded-xl ${shadowClass} bg-neutral-900 w-fit relative transition-all duration-100 max-h-150 overflow-y-scroll border border-neutral-800 max-w-200 ${className}`}>
+         <div
+            className={`${isOpen ? 'dialog-enter' : 'dialog-exit'
+               } p-4 rounded-2xl ${shadowClass} bg-neutral-900 w-fit relative transition-all duration-300 max-h-150 overflow-y-scroll border border-neutral-800 max-w-200 ${className}`}
+         >
             <button
                onClick={onClose}
-               className="absolute top-5 right-5 text-neutral-100 p-0 bg-transparent hover:bg-neutral-800 hover:scale-105 transition-all duration-200 rounded"
+               className="absolute top-4 right-4 text-neutral-100 p-0 bg-transparent hover:bg-neutral-800 hover:scale-105 transition-all duration-200 rounded"
             >
                <X size={24} />
             </button>
-            {title && (
-               <h2 className="text-xl font-semibold mb-4 text-neutral-100">{title}</h2>
-            )}
+            {title && <h2 className="text-lg font-semibold mb-4 text-neutral-100">{title}</h2>}
             <div>{children}</div>
          </div>
       </div>

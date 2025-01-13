@@ -1,6 +1,7 @@
 import React from "react";
 import { cn } from "@/lib/utils";
-import { Spinner } from "./Spinner";
+import { Spinner } from "@/components/ui/Spinner";
+import { LucideIcon } from "lucide-react";
 
 /**
  * The props for the Button component, allowing for customization of variant, size, and loading state.
@@ -26,6 +27,20 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     size?: "sm" | "md" | "lg";
 
     /**
+     * Icon displayed inside the button (on the left side).
+     * Should be a valid Lucide React Icon.
+     * @default undefined
+     */
+    icon?: LucideIcon;
+
+    /**
+     * The text content displayed in the button.
+     * If not provided, you can pass content using `children`.
+     * @default undefined
+     */
+    content?: string;
+
+    /**
      * Indicates whether the button is in a loading state.
      * - When `true`, a spinner is shown inside the button, and the button is disabled.
      * @default false
@@ -38,14 +53,16 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
  * This component can display a loading spinner when in the loading state, making it suitable for actions 
  * that require async operations (e.g., form submissions, data fetching).
  *
- * @param {ButtonProps} props - The properties for the button component, including variant, size, and loading state.
+ * @param {ButtonProps} props - The properties for the button component, including variant, size, loading state, and text content.
  * @returns {JSX.Element} A styled button element, either displaying content or a spinner based on the loading state.
  */
 export const Button: React.FC<ButtonProps> = ({
+    content,
     children,
     variant = "primary",
     size = "md",
     loading = false,
+    icon: Icon,
     className,
     disabled,
     ...props
@@ -76,7 +93,8 @@ export const Button: React.FC<ButtonProps> = ({
                 baseStyles,
                 variants[variant],
                 sizes[size],
-                className
+                className,
+                !content && !children && Icon ? "p-2" : ""
             )}
             disabled={disabled || loading}
             {...props}
@@ -84,7 +102,17 @@ export const Button: React.FC<ButtonProps> = ({
             {loading ? (
                 <Spinner className="w-6 h-6" />
             ) : (
-                children
+                <>
+                    {Icon && (
+                        <Icon
+                            className={cn(
+                                "w-5 h-5",
+                                content || children ? "mr-2" : ""
+                            )}
+                        />
+                    )}
+                    {content || children}
+                </>
             )}
         </button>
     );

@@ -1,7 +1,7 @@
 'use client'
 
 import React from 'react';
-import { Shield, LockKeyhole } from 'lucide-react';
+import { Shield, LockKeyhole, Undo2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 
 /**
@@ -56,8 +56,9 @@ export const AdminDeniedPage = () => {
                             <Button
                                 className="px-4 py-2"
                                 onClick={() => window.history.back()}
+                                icon={Undo2}
+                                content='Go Back'
                             >
-                                Go Back
                             </Button>
                         </div>
                     </footer>

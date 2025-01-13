@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
+import { RefreshCcw } from "lucide-react";
+import { getBaseApiUrl } from "@/lib/api";
 
 const DiscordCallback = () => {
    const router = useRouter();
@@ -37,11 +39,12 @@ const DiscordCallback = () => {
                <h2 className="text-3xl font-bold text-red-500 mb-4">Fehler!</h2>
                <p className="text-neutral-300 mb-6">{error}</p>
                <Button
-                  onClick={() => window.location.reload()}
+                  onClick={() => window.location.href = `${getBaseApiUrl()}/api/auth`}
                   variant="destructive"
                   className="w-full"
+                  icon={RefreshCcw}
                >
-                  Erneut versuchen
+                  Erneut Anmelden
                </Button>
             </div>
          </div>
